@@ -73,6 +73,8 @@ class BotClient:
 
         # del self.ws
 
+        print("Connect...")
+
         self.ws = websocket.WebSocketApp(
             url=url,
             on_message=self.on_message,
@@ -107,11 +109,7 @@ class BotClient:
     def on_close(self, message):
 
         print("websocket is closed.")
-        self._connect(url=self.url)
-        # try:
-        #     getattr(self, self.last_request)()
-        # except:
-        #     print('tamere')
+        # self._connect(url=self.url)
 
     def on_message(self, ws, args):
 
@@ -149,15 +147,17 @@ class BotClient:
         print(f"Received reply: {args}")
 
     def end(self):
+
         print('this is the end')
 
 
 def main():
 
-    url = "ws://127.0.0.1/ws/"
+    url = "ws://127.0.0.1:8000/ws/chat/tamere/"
     # url = 'ws://money.getz.fr/ws/'
 
     bot = BotClient(url=url)
+    bot.init()
 
 
 if __name__ == "__main__":

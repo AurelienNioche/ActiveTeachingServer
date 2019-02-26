@@ -87,7 +87,7 @@ WSGI_APPLICATION = 'ActiveTeachingServer.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'DuopolyRefactor',
+        'NAME': 'ActiveTeaching',
         'USER': 'dasein',
         'PASSWORD': '',
         'HOST': '',
@@ -100,7 +100,7 @@ DATABASES = {
 if 'test' in sys.argv:
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'DuopolyRefactor',
+        'NAME': 'ActiveTeaching',
         'USER': 'dasein',
         'PASSWORD': '',
         'HOST': '',
