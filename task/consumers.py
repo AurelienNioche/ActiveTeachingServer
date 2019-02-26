@@ -21,6 +21,6 @@ class WebSocketConsumer(JsonWebsocketConsumer):
         self.send_json(to_reply)
 
         try:
-            print(f'Sending to current channel: {to_reply}', f=self.receive_json)
+            print(f'Sending to current channel: {to_reply}')
         except UnicodeEncodeError:
             print('Error printing request.')
