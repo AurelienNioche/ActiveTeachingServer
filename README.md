@@ -48,7 +48,7 @@ OR if you don't want/need a background service:
 Create user and db
 
     createuser dasein
-    createdb ActiveTeaching --owner dasein
+    createdb ActiveTeaching --owner postgres
 
 ### Initialize Django
 
