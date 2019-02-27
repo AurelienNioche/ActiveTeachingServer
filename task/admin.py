@@ -16,7 +16,7 @@ class DataAdmin(admin.ModelAdmin):
 
 class KanjiAdmin(admin.ModelAdmin):
     list_display = (
-        "id", "kanji", "translation_of_on", "translation_of_kun")
+        "id", "kanji", "translation_of_on", "translation_of_kun", "reading_within_joyo", "reading_beyond_joyo")
 
 
 admin.site.register(User, UserAdmin)
