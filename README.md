@@ -76,3 +76,9 @@ If you need to remove the db
 If you need to reset the table contents, you can write a script 'reset.sql' and call it:
     
     psql ActiveTeaching -a -f reset.sql
+    
+    
+   ## Info on the database
+   
+   Coming from Tamaoka, K., Makioka, S., Sanders, S. & Verdonschot, R.G. (2017). 
+www.kanjidatabase.com: a new interactive online database for psychological and linguistic research on Japanese kanji and their compound words. Psychological Research, 81, 696-708.
