@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from . models import User, Data
+from . models import User, Data, Kanjilist
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -14,5 +14,11 @@ class DataAdmin(admin.ModelAdmin):
         "id", "user_id", "t", "question", "reply")
 
 
+class KanjiAdmin(admin.ModelAdmin):
+    list_display = (
+        "id", "kanji", "translation_of_on", "translation_of_kun")
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Data, DataAdmin)
+admin.site.register(Kanjilist, KanjiAdmin)

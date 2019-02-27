@@ -88,7 +88,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'ActiveTeaching',
-        'USER': 'dasein',
+        'USER': 'postgres',
         'PASSWORD': '',
         'HOST': '',
         'PORT': '5432',
@@ -101,7 +101,7 @@ if 'test' in sys.argv:
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'ActiveTeaching',
-        'USER': 'dasein',
+        'USER': 'postgres',
         'PASSWORD': '',
         'HOST': '',
         'PORT': '5432',
