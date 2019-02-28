@@ -12,24 +12,12 @@ Server part for the Active Teaching project.
 ### Python libraries
 
 * django
-
-
-    pip3 install django
-
 * psycopg2-binary (interaction with postgreSQL)
-
-
-    pip3 install psycopg2-binary
-    
 * channels (for websockets)
-
-
-    pip3 install channels    
-
 * websocket-client (only for using the 'bot_client.py' script)
 
-
-    pip3 install websocket-client
+    
+    pip3 install django psycopg2-binary channels websocket-client
     
 ### PostgreSQL
 
@@ -47,8 +35,13 @@ OR if you don't want/need a background service:
 
 Create user and db
 
-    createuser dasein
+    createuser postgres
     createdb ActiveTeaching --owner postgres
+    
+Import kanji data
+    
+    psql ActiveTeaching < data/dump.sql
+
 
 ### Initialize Django
 
@@ -77,8 +70,9 @@ If you need to reset the table contents, you can write a script 'reset.sql' and 
     
     psql ActiveTeaching -a -f reset.sql
     
-    
-   ## Info on the database
+## Sources
+
+### Kanji database
    
    Coming from Tamaoka, K., Makioka, S., Sanders, S. & Verdonschot, R.G. (2017). 
 www.kanjidatabase.com: a new interactive online database for psychological and linguistic research on Japanese kanji and their compound words. Psychological Research, 81, 696-708.
