@@ -1,4 +1,5 @@
 import os
+import numpy as np
 
 # Django specific settings
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
@@ -35,17 +36,19 @@ def split(meanings):
 
 def extract_single_meaning(km, on):
 
-    if km != '-':
+    if km not in ('-', ' ', ''):
         out = split(km)
     else:
         out = split(on)
 
-    assert out != '-'
+    assert out not in ('-', '')
 
     return out.capitalize()
 
 
 def main():
+
+    ms = []
 
     for e in Kanjilist.objects.all():
 
@@ -54,9 +57,27 @@ def main():
 
         m = extract_single_meaning(km, om)
 
-        print(e.id)
+        # print(e.id)
         e.meaning = m
         e.save()
+
+        ms.append(m)
+
+    # Get common significations
+    from collections import Counter
+    c = Counter(ms)
+
+    element_in_double = [k for k, v in c.items() if v > 1]
+
+    for me in element_in_double:
+        for e in Kanjilist.objects.filter(meaning=me):
+
+            print(e.kanji)
+            print(e.meaning)
+            print(e.translation_of_kun)
+            print(e.translation_of_on)
+
+
 
 
 if __name__ == "__main__":
