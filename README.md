@@ -37,10 +37,6 @@ Create user and db
 
     createuser postgres
     createdb ActiveTeaching --owner postgres
-    
-Import kanji data
-    
-    psql ActiveTeaching < data/dump.sql
 
 
 ### Initialize Django
@@ -53,6 +49,18 @@ Prepare the DB (make migrations and migrate)
 Create superuser in order to have access to admin interface
 
     python3 manage.py createsuperuser
+    
+### Import Kanji data
+
+Import kanji data in PostgreSQL db
+    
+    psql ActiveTeaching < data/dump.sql
+    
+
+Synchronize with Django
+
+    python3 manage.py migrate --fake task
+    python3 manage.py migrate
    
 ### Run Django server
    
