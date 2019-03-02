@@ -56,11 +56,6 @@ Import kanji data in PostgreSQL db
     
     psql ActiveTeaching < data/dump.sql
     
-
-Synchronize with Django
-
-    python3 manage.py migrate --fake task
-    python3 manage.py migrate
    
 ### Run Django server
    

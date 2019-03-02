@@ -15,7 +15,8 @@ def has_numbers(string):
 
     return any(char.isdigit() for char in string)
 
-def extract_single_meaning(meanings):
+
+def split(meanings):
 
     m = meanings.split(";")[0].split(",")[0].split('(')[0]
 
@@ -25,27 +26,38 @@ def extract_single_meaning(meanings):
     if m == "A":
         m = "first"
     elif m == "B":
-        a = "second"
+        m = "second"
+    elif m == "C":
+        m = "third"
 
-    else "second"
+    return m
+
+
+def extract_single_meaning(km, on):
+
+    if km != '-':
+        out = split(km)
+    else:
+        out = split(on)
+
+    assert out != '-'
+
+    return out.capitalize()
+
 
 def main():
 
     for e in Kanjilist.objects.all():
 
-        k = e.kanji
         km = e.translation_of_kun
         om = e.translation_of_on
 
-        # if km == '-':
+        m = extract_single_meaning(km, om)
 
-        print(k)
-        print(extract_single_meaning(km))
-        print(km)
-        print()
-        print(extract_single_meaning(om))
-        print(om)
-        print("*" * 10)
+        print(e.id)
+        e.meaning = m
+        e.save()
+
 
 if __name__ == "__main__":
 
