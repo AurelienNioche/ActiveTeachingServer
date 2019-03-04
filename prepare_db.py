@@ -2,7 +2,7 @@ import os
 import numpy as np
 
 # Django specific settings
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ActiveTeachingServer.settings")
 # Ensure settings are read
 from django.core.wsgi import get_wsgi_application
 

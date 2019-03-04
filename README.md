@@ -56,6 +56,10 @@ Import kanji data in PostgreSQL db
     
     psql ActiveTeaching < data/dump.sql
     
+Add single meaning
+    
+    python3 prepare_db.py
+    
    
 ### Run Django server
    
