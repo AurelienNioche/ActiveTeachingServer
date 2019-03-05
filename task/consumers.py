@@ -1,8 +1,7 @@
 from channels.generic.websocket import WebsocketConsumer
 import json
-import numpy as np
 
-from . models import Kanji
+from . q_and_a import get_question
 
 
 class WebSocketConsumer(WebsocketConsumer):
@@ -19,26 +18,11 @@ class WebSocketConsumer(WebsocketConsumer):
 
     def receive(self, text_data=None, bytes_data=None):
 
-        print("Receive ", text_data)
-        # text_data_json = json.loads(text_data)
+        text_data_json = json.loads(text_data)
+        print("Receive:", text_data_json)
         # message = text_data_json['message']
 
-        k = list(Kanji.objects.all())
+        question = get_question(text_data_json)
 
-        while True:
-            idx = np.random.choice(np.arange(len(k)), size=6, replace=False)
-
-            possible_replies = [k[idx[i]].meaning for i in range(6)]
-            if len(np.unique(possible_replies)) == len(possible_replies):
-                break
-
-        question = k[idx[0]].kanji
-        correct_answer = k[idx[0]].meaning
-
-        np.random.shuffle(possible_replies)
-
-        self.send(text_data=json.dumps({
-            'question': question,
-            'correctAnswer': correct_answer,
-            'possibleReplies': possible_replies
-        }))
+        print("Send:", question)
+        self.send(text_data=json.dumps(question))

@@ -9,7 +9,7 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 # Your application specific imports
-from task.models import Kanji
+from task.models import Kanji, User
 
 
 def has_numbers(string):
@@ -93,3 +93,4 @@ def main():
 if __name__ == "__main__":
 
     main()
+    # User.objects.all().delete()

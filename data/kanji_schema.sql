@@ -17,12 +17,12 @@ CREATE TABLE kanji (
 	"On within Joyo" VARCHAR(255),
 	"Kanji ID in Nelson" INT,
 	"# of Meanings of On" INT,
-	"Translation of On" VARCHAR(1000),
+	"Translation of On" VARCHAR(2000),
 	"# of Kun within Joyo with inflections" INT,
 	"# of Kun within Joyo without inflections" INT,
 	"Kun within Joyo" VARCHAR(255),
 	"# of Meanings of Kun" INT,
-	"Translation of Kun" VARCHAR(1000),
+	"Translation of Kun" VARCHAR(2000),
 	"Year of Inclusion" INT,
 	"Kanji Frequency with Proper Nouns" INT,
 	"Acc. Freq. On with Proper Nouns" INT,
@@ -72,3 +72,7 @@ CREATE TABLE kanji (
 	"Right7sound" VARCHAR(255),
 	"Right7freq" INT
 );
+
+GRANT ALL ON ALL TABLES IN SCHEMA public to postgres;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public to postgres;
+GRANT ALL ON ALL FUNCTIONS IN SCHEMA public to postgres;
