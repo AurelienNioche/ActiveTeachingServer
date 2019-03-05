@@ -2,7 +2,7 @@ from channels.generic.websocket import WebsocketConsumer
 import json
 import numpy as np
 
-from . models import Kanjilist
+from . models import Kanji
 
 
 class WebSocketConsumer(WebsocketConsumer):
@@ -23,7 +23,7 @@ class WebSocketConsumer(WebsocketConsumer):
         # text_data_json = json.loads(text_data)
         # message = text_data_json['message']
 
-        k = list(Kanjilist.objects.all())
+        k = list(Kanji.objects.all())
 
         while True:
             idx = np.random.choice(np.arange(len(k)), size=6, replace=False)

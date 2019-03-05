@@ -9,7 +9,7 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 # Your application specific imports
-from task.models import Kanjilist
+from task.models import Kanji
 
 
 def has_numbers(string):
@@ -50,7 +50,7 @@ def main():
 
     ms = []
 
-    for e in Kanjilist.objects.all():
+    for e in Kanji.objects.all():
 
         km = e.translation_of_kun
         om = e.translation_of_on
@@ -70,7 +70,7 @@ def main():
     element_in_double = [k for k, v in c.items() if v > 1]
 
     for me in element_in_double:
-        for e in Kanjilist.objects.filter(meaning=me):
+        for e in Kanji.objects.filter(meaning=me):
 
             print(e.kanji)
             print(e.meaning)

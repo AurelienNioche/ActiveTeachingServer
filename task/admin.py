@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from . models import User, Data, Kanjilist
+from . models import User, Data, Kanji
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -22,4 +22,4 @@ class KanjiAdmin(admin.ModelAdmin):
 
 admin.site.register(User, UserAdmin)
 admin.site.register(Data, DataAdmin)
-admin.site.register(Kanjilist, KanjiAdmin)
+admin.site.register(Kanji, KanjiAdmin)
