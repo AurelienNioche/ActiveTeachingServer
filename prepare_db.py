@@ -19,7 +19,7 @@ def has_numbers(string):
 
 def split(meanings):
 
-    m = meanings.split(";")[0].split(",")[0].split('(')[0]
+    m = meanings.split(";")[0].split(",")[0] # .split('(')[0]
 
     if not has_numbers(m):
         m = m.split('.')[0]
@@ -30,6 +30,10 @@ def split(meanings):
         m = "second"
     elif m == "C":
         m = "third"
+
+    m = m[0].upper() + m[1:]
+    if m[0] == '(':
+        m = m[0] + m[1].upper() + m[2:]
 
     return m
 
@@ -43,27 +47,13 @@ def extract_single_meaning(km, on):
 
     assert out not in ('-', '')
 
-    return out.capitalize()
+    return out
 
 
-def main():
+def get_common_significations():
 
-    ms = []
+    ms = [e.meaning for e in Kanji.objects.order_by('id')]
 
-    for e in Kanji.objects.all():
-
-        km = e.translation_of_kun
-        om = e.translation_of_on
-
-        m = extract_single_meaning(km, om)
-
-        # print(e.id)
-        e.meaning = m
-        e.save()
-
-        ms.append(m)
-
-    # Get common significations
     from collections import Counter
     c = Counter(ms)
 
@@ -78,6 +68,26 @@ def main():
             print(e.translation_of_on)
 
 
+def main():
+
+    ms = []
+
+    for e in Kanji.objects.order_by('id'):
+
+        print(e.id)
+
+        km = e.translation_of_kun
+        om = e.translation_of_on
+
+        m = extract_single_meaning(km, om)
+
+        e.meaning = m
+        e.save()
+
+        ms.append(m)
+
+    # # Get common significations
+    # get_common_significations()
 
 
 if __name__ == "__main__":

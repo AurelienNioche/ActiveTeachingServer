@@ -54,7 +54,7 @@ Create superuser in order to have access to admin interface
 
 Import kanji data in PostgreSQL db
     
-    psql ActiveTeaching < data/dump.sql
+    psql ActiveTeaching < data/kanji_content.sql
     
 Add single meaning
     
@@ -73,9 +73,6 @@ If you need to remove the db
     
     dropdb ActiveTeaching 
 
-If you need to reset the table contents, you can write a script 'reset.sql' and call it:
-    
-    psql ActiveTeaching -a -f reset.sql
     
 ## Sources
 
