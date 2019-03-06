@@ -44,7 +44,7 @@ class User(models.Model):
 
 class Parameter(models.Model):
 
-    name = models.CharField(max_length=255, blank=True, null=True, default='<empty>')
+    name = models.CharField(max_length=255, null=False, unique=True)
     value = models.IntegerField(default=-1)
 
     class Meta:
@@ -52,7 +52,7 @@ class Parameter(models.Model):
         app_label = 'task'
 
 
-class PredefinedTask(models.Model):
+class PredefinedQuestion(models.Model):
 
     t = models.IntegerField(default=-1)
     question = models.CharField(max_length=255, blank=True, null=True, default='<empty>')
@@ -65,7 +65,7 @@ class PredefinedTask(models.Model):
     possible_reply_5 = models.CharField(max_length=255, blank=True, null=True, default='<empty>')
 
     class Meta:
-        db_table = 'predefined_task'
+        db_table = 'predefined_question'
         app_label = 'task'
 
 

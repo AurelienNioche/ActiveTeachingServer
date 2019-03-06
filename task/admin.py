@@ -1,7 +1,9 @@
 from django.contrib import admin
 
 # Register your models here.
-from . models import User, Question, Kanji
+from . models import User, Question, Kanji, Parameter, PredefinedQuestion
+
+from . parameters import n_possible_replies
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -11,7 +13,8 @@ class UserAdmin(admin.ModelAdmin):
 
 class QuestionAdmin(admin.ModelAdmin):
     list_display = (
-        "id", "user_id", "t", "question", "reply")
+        "user_id", "t", "question", "correct_answer", "reply", "time_display", "time_reply") \
+        + tuple(f"possible_reply_{i}" for i in range(n_possible_replies))
 
 
 class KanjiAdmin(admin.ModelAdmin):
@@ -20,6 +23,19 @@ class KanjiAdmin(admin.ModelAdmin):
     # , "reading_within_joyo", "reading_beyond_joyo")
 
 
+class ParameterAdmin(admin.ModelAdmin):
+    list_display = (
+        "name", "value")
+
+
+class PredefinedQuestionAdmin(admin.ModelAdmin):
+    list_display = (
+        "t", "question", "correct_answer") \
+        + tuple(f"possible_reply_{i}" for i in range(n_possible_replies))
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Kanji, KanjiAdmin)
+admin.site.register(Parameter, ParameterAdmin)
+admin.site.register(PredefinedQuestion, PredefinedQuestionAdmin)

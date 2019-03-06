@@ -1,5 +1,4 @@
 import os
-import sys
 import numpy as np
 
 # Django specific settings
@@ -10,13 +9,16 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 # Your application specific imports
-from task.models import Kanji, User, Parameter, PredefinedTask
+from task.models import Kanji, Parameter, PredefinedQuestion
 
 from task.parameters import n_possible_replies
+from operations_on_db import AskUser
 
 
-
+@AskUser
 def main(n_kanji=10, grade=1):
+
+    PredefinedQuestion.objects.all().delete()
 
     # Seed
     np.random.seed(123)
@@ -46,24 +48,27 @@ def main(n_kanji=10, grade=1):
     p = np.random.random(n_kanji)
     p /= p.sum()
 
-    q_idx = np.random.choice(np.arange(n_kanji), p=p, replace=True)
+    q_idx = np.random.choice(np.arange(n_kanji), size=t_max, p=p, replace=True)
 
-    for t in t_max:
+    for t in range(t_max):
 
         # Get question and correct answer
         question = kanji[q_idx[t]]
         correct_answer = meaning[q_idx[t]]
 
         # Select possible replies
+        meaning_without_correct = meaning.copy()
+        meaning_without_correct.remove(correct_answer)
+
         possible_replies = [correct_answer, ] + \
-            np.random.choice(meaning.copy().remove(correct_answer),
-                             size=n_possible_replies-1, replace=False)
+            list(np.random.choice(meaning_without_correct, size=n_possible_replies-1, replace=False))
 
         # Randomize the order of possible replies
         np.random.shuffle(possible_replies)
 
         # Create new entry
-        q = PredefinedTask()
+        q = PredefinedQuestion()
+        q.t = t
         q.question = question
         q.correct_answer = correct_answer
         for i in range(n_possible_replies):

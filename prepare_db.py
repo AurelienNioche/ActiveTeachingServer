@@ -91,7 +91,7 @@ def fill_kanji_table():
     os.system('psql ActiveTeaching < data/kanji_content.sql')
 
 
-def add_default_parameters(t_max=100, use_predefined_task=0):
+def add_default_parameters(t_max=100, use_predefined_question=0, test=0):
 
     p = Parameter()
     p.name = "t_max"
@@ -99,8 +99,13 @@ def add_default_parameters(t_max=100, use_predefined_task=0):
     p.save()
 
     p = Parameter()
-    p.name = "use_predefined_task"
-    p.value = use_predefined_task
+    p.name = "use_predefined_question"
+    p.value = use_predefined_question
+    p.save()
+
+    p = Parameter()
+    p.name = "test"
+    p.value = test
     p.save()
 
 
