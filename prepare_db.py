@@ -9,7 +9,7 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 # Your application specific imports
-from task.models import Kanji, User
+from task.models import Kanji, Parameter
 
 
 def has_numbers(string):
@@ -68,12 +68,11 @@ def get_common_significations():
             print(e.translation_of_on)
 
 
-def main():
+def fill_single_meaning_column():
 
     ms = []
 
     for e in Kanji.objects.order_by('id'):
-
         print(e.id)
 
         km = e.translation_of_kun
@@ -85,6 +84,31 @@ def main():
         e.save()
 
         ms.append(m)
+
+
+def fill_kanji_table():
+
+    os.system('psql ActiveTeaching < data/kanji_content.sql')
+
+
+def add_default_parameters(t_max=100, use_predefined_task=0):
+
+    p = Parameter()
+    p.name = "t_max"
+    p.value = t_max
+    p.save()
+
+    p = Parameter()
+    p.name = "use_predefined_task"
+    p.value = use_predefined_task
+    p.save()
+
+
+def main():
+
+    # fill_kanji_table()
+    # fill_single_meaning_column()
+    add_default_parameters()
 
     # # Get common significations
     # get_common_significations()

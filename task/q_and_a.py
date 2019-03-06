@@ -7,6 +7,8 @@ from datetime import datetime
 
 from . models import Kanji, User, Question
 
+from . parameters import n_possible_replies
+
 
 class Atomic:
 
@@ -41,16 +43,53 @@ def get_question(reply):
     # a = datetime.strptime("2019-03-05 14:38:15.324397", '%Y-%m-%d %H:%M:%S.%f')
 
     if reply['userId'] == -1:
-        user_id = _create_new_user()
+        user_id = _register_user()
         t = 0
+
     else:
-        user_id = reply['userId']
+        user_id, t = _register_response(reply)
+        t += 1
 
-        # TODO: Register response
+    q, correct_answer, correct_answer_idx, possible_replies = _prepare_new_question()
 
-        t = reply['questionId'] + 1
+    # Register new question
+    _register_question(user_id=user_id, t=t, question=q, correct_answer=correct_answer,
+                       possible_replies=possible_replies)
 
-    # Prepare new question
+    # Return dic for JSON reply to client
+    question_dic = {
+        'userId': user_id,
+        't': t,
+        'question': q,
+        'correctAnswer': correct_answer,
+        'correctAnswerIdx': correct_answer_idx,
+        'possibleReplies': possible_replies
+    }
+
+    return question_dic
+
+
+def _convert_to_time(string_time):
+
+    return datetime.strptime(string_time, '%Y-%m-%d %H:%M:%S.%f')
+
+
+def _register_response(reply):
+
+    user_id = reply['userId']
+    t = reply['t']
+
+    question = Question.objects.get(user_id=user_id, t=t)
+    question.reply = reply['reply']
+    question.time_display = _convert_to_time(reply['timeDisplay'])
+    question.time_reply = _convert_to_time(reply['timeReply'])
+    question.save(force_update=True)
+
+    return user_id, t
+
+
+def _prepare_new_question():
+
     k = list(Kanji.objects.all())
 
     while True:
@@ -68,25 +107,11 @@ def get_question(reply):
 
     correct_answer_idx = possible_replies.index(correct_answer)
 
-    # Register new question
-    _create_new_question(user_id=user_id, t=t, question=q, correct_answer=correct_answer,
-                         possible_replies=possible_replies)
-
-    # Return dic for JSON reply to client
-    question = {
-        'userId': user_id,
-        'questionId': t,
-        'question': q,
-        'correctAnswer': correct_answer,
-        'correctAnswerIdx': correct_answer_idx,
-        'possibleReplies': possible_replies
-    }
-
-    return question
+    return q, correct_answer, correct_answer_idx, possible_replies
 
 
 @Atomic
-def _create_new_user():
+def _register_user():
 
     """
     Creates a new user and returns its instance
@@ -99,24 +124,20 @@ def _create_new_user():
 
 
 @Atomic
-def _create_new_question(user_id, t, question, correct_answer, possible_replies):
+def _register_question(user_id, t, question, correct_answer, possible_replies):
 
     """
     Creates a new user and returns its instance
     """
 
-    q = Question(
-        user_id=user_id,
-        t=t,
-        question=question,
-        correct_answer=correct_answer,
-        possible_reply_0=possible_replies[0],
-        possible_reply_1=possible_replies[1],
-        possible_reply_2=possible_replies[2],
-        possible_reply_3=possible_replies[3],
-        possible_reply_4=possible_replies[4],
-        possible_reply_5=possible_replies[5],
-    )
+    q = Question()
+    q.user_id = user_id
+    q.t = t
+    q.question = question
+    q.correct_answer = correct_answer
+
+    for i in range(n_possible_replies):
+        setattr(q, f'possible_reply_{i}', possible_replies[i])
 
     q.save()
     return q.id

@@ -7,10 +7,10 @@ from django.db import models
 
 class Question(models.Model):
 
-    user_id = models.IntegerField()
-    t = models.IntegerField()
-    question = models.CharField(max_length=255, blank=True, null=True)
-    correct_answer = models.CharField(max_length=255, blank=True, null=True)
+    user_id = models.IntegerField(default=-1)
+    t = models.IntegerField(default=-1)
+    question = models.CharField(max_length=255, blank=True, null=True, default='<empty>')
+    correct_answer = models.CharField(max_length=255, blank=True, null=True, default='<empty>')
     possible_reply_0 = models.CharField(max_length=255, blank=True, null=True, default='<empty>')
     possible_reply_1 = models.CharField(max_length=255, blank=True, null=True, default='<empty>')
     possible_reply_2 = models.CharField(max_length=255, blank=True, null=True, default='<empty>')
@@ -34,11 +34,38 @@ class User(models.Model):
     # age = models.IntegerField(blank=True, null=True)
     # mother_tongue = models.TextField(blank=True, null=True)
     # other_language = models.TextField(blank=True, null=True)
-    t = models.IntegerField(blank=True, null=True, default=0)
+    # t = models.IntegerField(blank=True, null=True, default=0)
     registration_time = models.DateTimeField(default=now)
 
     class Meta:
         db_table = 'user'
+        app_label = 'task'
+
+
+class Parameter(models.Model):
+
+    name = models.CharField(max_length=255, blank=True, null=True, default='<empty>')
+    value = models.IntegerField(default=-1)
+
+    class Meta:
+        db_table = 'parameter'
+        app_label = 'task'
+
+
+class PredefinedTask(models.Model):
+
+    t = models.IntegerField(default=-1)
+    question = models.CharField(max_length=255, blank=True, null=True, default='<empty>')
+    correct_answer = models.CharField(max_length=255, blank=True, null=True, default='<empty>')
+    possible_reply_0 = models.CharField(max_length=255, blank=True, null=True, default='<empty>')
+    possible_reply_1 = models.CharField(max_length=255, blank=True, null=True, default='<empty>')
+    possible_reply_2 = models.CharField(max_length=255, blank=True, null=True, default='<empty>')
+    possible_reply_3 = models.CharField(max_length=255, blank=True, null=True, default='<empty>')
+    possible_reply_4 = models.CharField(max_length=255, blank=True, null=True, default='<empty>')
+    possible_reply_5 = models.CharField(max_length=255, blank=True, null=True, default='<empty>')
+
+    class Meta:
+        db_table = 'predefined_task'
         app_label = 'task'
 
 

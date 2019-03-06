@@ -16,7 +16,7 @@ class QuestionAdmin(admin.ModelAdmin):
 
 class KanjiAdmin(admin.ModelAdmin):
     list_display = (
-        "id", "kanji", "meaning", "translation_of_on", "translation_of_kun")
+        "id", "kanji", "meaning", "translation_of_on", "translation_of_kun", "grade")
     # , "reading_within_joyo", "reading_beyond_joyo")
 
 
