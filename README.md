@@ -51,12 +51,8 @@ Create superuser in order to have access to admin interface
     python3 manage.py createsuperuser
     
 ### Import Kanji data
-
-Import kanji data in PostgreSQL db
     
-    psql ActiveTeaching < data/kanji_content.sql
-    
-Add single meaning
+Import kanji data in db
     
     python3 prepare_db.py
     

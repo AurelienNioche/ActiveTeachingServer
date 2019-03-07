@@ -13,6 +13,8 @@ application = get_wsgi_application()
 # Your application specific imports
 from task.models import Kanji, Parameter
 
+from operations_on_db import AskUser
+
 
 def has_numbers(string):
 
@@ -72,23 +74,25 @@ def get_common_significations():
 
 def fill_single_meaning_column():
 
-    ms = []
-
     for e in Kanji.objects.order_by('id'):
+
         print(e.id)
 
-        tr = googletrans.Translator()
-        m = tr.translate(e.kanji, src='ja', dest='en').text
+        m = extract_single_meaning(km=e.translation_of_kun, on=e.translation_of_on)
+
+        # tr = googletrans.Translator()
+        # m = tr.translate(e.kanji, src='ja', dest='en').text
+        # m = m.capitalize()
 
         e.meaning = m
         e.save()
 
-        ms.append(m)
 
-
+@AskUser
 def fill_kanji_table():
 
-    os.system('psql ActiveTeaching < data/kanji_content.sql')
+    os.system('psql ActiveTeaching < data/kanji_table.sql')
+    # os.system('psql ActiveTeaching < data/kanji_content.sql')
 
 
 def add_default_parameters(t_max=100, use_predefined_question=0, test=0):
@@ -114,13 +118,12 @@ def add_default_parameters(t_max=100, use_predefined_question=0, test=0):
             django.db.utils.OperationalError,
             psycopg2.IntegrityError,
             psycopg2.OperationalError):
-        print("Parameters seems to have already been set.")
+        print("Parameters seem to have already been set.")
 
 
 def main():
 
-    # fill_kanji_table()
-    fill_single_meaning_column()
+    fill_kanji_table()
     add_default_parameters()
 
     # # Get common significations
