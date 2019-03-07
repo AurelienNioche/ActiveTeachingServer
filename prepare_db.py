@@ -1,5 +1,7 @@
 import os
-import numpy as np
+import django.db.utils
+import psycopg2
+import googletrans
 
 # Django specific settings
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ActiveTeachingServer.settings")
@@ -75,10 +77,8 @@ def fill_single_meaning_column():
     for e in Kanji.objects.order_by('id'):
         print(e.id)
 
-        km = e.translation_of_kun
-        om = e.translation_of_on
-
-        m = extract_single_meaning(km, om)
+        tr = googletrans.Translator()
+        m = tr.translate(e.kanji, src='ja', dest='en').text
 
         e.meaning = m
         e.save()
@@ -93,26 +93,34 @@ def fill_kanji_table():
 
 def add_default_parameters(t_max=100, use_predefined_question=0, test=0):
 
-    p = Parameter()
-    p.name = "t_max"
-    p.value = t_max
-    p.save()
+    try:
+        p = Parameter()
+        p.name = "t_max"
+        p.value = t_max
+        p.save()
 
-    p = Parameter()
-    p.name = "use_predefined_question"
-    p.value = use_predefined_question
-    p.save()
+        p = Parameter()
+        p.name = "use_predefined_question"
+        p.value = use_predefined_question
+        p.save()
 
-    p = Parameter()
-    p.name = "test"
-    p.value = test
-    p.save()
+        p = Parameter()
+        p.name = "test"
+        p.value = test
+        p.save()
+
+    except (django.db.IntegrityError,
+            django.db.OperationalError,
+            django.db.utils.OperationalError,
+            psycopg2.IntegrityError,
+            psycopg2.OperationalError):
+        print("Parameters seems to have already been set.")
 
 
 def main():
 
     # fill_kanji_table()
-    # fill_single_meaning_column()
+    fill_single_meaning_column()
     add_default_parameters()
 
     # # Get common significations

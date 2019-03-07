@@ -24,7 +24,7 @@ def main(n_kanji=10, grade=1):
     np.random.seed(123)
 
     # Select n kanji among first grade
-    k = list(Kanji.objects.filter(grade=grade))
+    k = list(Kanji.objects.filter(grade=grade).order_by('id'))
 
     while True:
 
