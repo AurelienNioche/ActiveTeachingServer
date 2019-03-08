@@ -11,17 +11,30 @@ application = get_wsgi_application()
 from task.models import User, Question
 
 
-from datetime import datetime, timedelta
-
-
 def main():
 
-    user_id = 244179
-    que = Question.objects.filter(user_id=user_id).order_by('t')
+    users = User.objects.all().order_by('id')
 
-    for q in que:
+    for user in users:
 
-        print(q.reply, q.correct_answer, int((q.time_reply - q.time_display).total_seconds()*10**3))
+        user_id = user.id
+
+        print(f"User {user_id}")
+        print("*" * 4)
+
+        que = Question.objects.filter(user_id=user_id).order_by('t')
+
+        for q in que:
+
+            t = q.t
+            reaction_time = int((q.time_reply - q.time_display).total_seconds()*10**3)
+            success = q.reply == q.correct_answer
+
+            to_print = f't:{t}, question: {q.question}, reply: {q.reply}, correct answer: {q.correct_answer}, ' \
+                f'success: {"Yes" if success else "No"}, reaction time: {reaction_time} ms'
+            print(to_print)
+
+        print()
 
 
 if __name__ == "__main__":
