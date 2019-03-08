@@ -1,41 +1,10 @@
 import numpy as np
-from django.db import transaction
-import threading
-import django.db.utils
-import psycopg2
 from datetime import datetime
 
 from . models import Kanji, User, Question, Parameter, PredefinedQuestion
 
 from . parameters import n_possible_replies
-
-
-class Atomic:
-
-    def __init__(self, f):
-        self.f = f
-
-    def __call__(self, **kwargs):
-
-        while True:
-            try:
-
-                with transaction.atomic():
-                    return self.f(**kwargs)
-
-            except (
-                    django.db.IntegrityError,
-                    django.db.OperationalError,
-                    django.db.utils.OperationalError,
-                    psycopg2.IntegrityError,
-                    psycopg2.OperationalError
-            ) as e:
-                print("*" * 50)
-                print("INTEGRITY ERROR" + "!" * 10)
-                print(str(e))
-                print("*" * 50)
-                threading.Event().wait(1 + np.random.random() * 4)
-                continue
+from . utils import Atomic
 
 
 def get_question(reply):

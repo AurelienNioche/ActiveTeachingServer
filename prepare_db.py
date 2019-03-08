@@ -1,7 +1,6 @@
 import os
 import django.db.utils
 import psycopg2
-import googletrans
 
 # Django specific settings
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ActiveTeachingServer.settings")
@@ -80,6 +79,7 @@ def fill_single_meaning_column():
 
         m = extract_single_meaning(km=e.translation_of_kun, on=e.translation_of_on)
 
+        # import googletrans
         # tr = googletrans.Translator()
         # m = tr.translate(e.kanji, src='ja', dest='en').text
         # m = m.capitalize()
