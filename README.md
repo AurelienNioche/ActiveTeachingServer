@@ -65,7 +65,12 @@ Using the Django command
     
 ## Manipulations of DB
 
-If you need to remove the db
+Dump data for backing up in an already existing db
+
+    pg_dump --data-only  --table question --table user ActiveTeaching --inserts > data/data_only.sql
+
+
+Remove the db
     
     dropdb ActiveTeaching 
 
