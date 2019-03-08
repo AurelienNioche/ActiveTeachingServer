@@ -4,7 +4,7 @@ from datetime import datetime
 from . models import Kanji, User, Question, Parameter, PredefinedQuestion
 
 from . parameters import n_possible_replies
-from . utils import Atomic
+from utils import Atomic
 
 
 def get_question(reply):
