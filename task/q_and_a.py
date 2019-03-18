@@ -6,33 +6,52 @@ from . models import Kanji, User, Question, Parameter, PredefinedQuestion
 from . parameters import n_possible_replies
 from utils import Atomic
 
+USER_DEFAULT_ID = -1
+USER_TEST_ID = -2
+
 
 def get_question(reply):
 
-    if reply['userId'] == -1:
-        user_id = _register_user()
+    # Get task parameters
+    is_test = Parameter.objects.get(name='test').value == 1
+    t_max = Parameter.objects.get(name='t_max').value
+    use_predefined_question = Parameter.objects.get(name='use_predefined_question').value == 1
+
+    if reply['userId'] == USER_DEFAULT_ID:
+
+        if not is_test:
+            user_id = _register_user()
+        else:
+            user_id = USER_TEST_ID
+
         t = 0
 
     else:
-        user_id, t = _register_response(reply)
+
+        if not is_test:
+            user_id, t = _register_response(reply)
+        else:
+            user_id = USER_TEST_ID
+            t = reply['t']
+
         t += 1
 
     # Check for t_max
-    t_max = Parameter.objects.get(name='t_max').value
     if t == t_max:
         return {
             't': -1
         }
 
-    if Parameter.objects.get(name='use_predefined_question').value == 1:
+    if use_predefined_question:
         q, correct_answer, correct_answer_idx, possible_replies = _load_predefined_question(t)
 
     else:
         q, correct_answer, correct_answer_idx, possible_replies = _prepare_new_question()
 
     # Register new question
-    _register_question(user_id=user_id, t=t, question=q, correct_answer=correct_answer,
-                       possible_replies=possible_replies)
+    if not is_test:
+        _register_question(user_id=user_id, t=t, question=q, correct_answer=correct_answer,
+                           possible_replies=possible_replies)
 
     # Return dic for JSON reply to client
     question_dic = {

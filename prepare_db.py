@@ -91,6 +91,7 @@ def fill_single_meaning_column():
 @AskUser
 def fill_kanji_table():
 
+    Kanji.objects.all().delete()
     os.system('psql ActiveTeaching < data/kanji_table.sql')
     # os.system('psql ActiveTeaching < data/kanji_content.sql')
 
