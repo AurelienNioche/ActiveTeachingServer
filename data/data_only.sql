@@ -319,6 +319,106 @@ INSERT INTO public.question VALUES (346, 8, 96, '八', 'Eight', 'King', 'Eight',
 INSERT INTO public.question VALUES (347, 8, 97, '虫', 'Insect', 'Power', 'Insect', 'King', 'Leg', 'Flower', 'Living', 'Insect', '2019-03-08 11:16:38.541571+02', '2019-03-08 11:16:41.558308+02');
 INSERT INTO public.question VALUES (348, 8, 98, '二', 'Two', 'Seven', 'King', 'Eight', 'Two', 'Leg', 'Insect', 'Two', '2019-03-08 11:16:42.607923+02', '2019-03-08 11:16:44.142286+02');
 INSERT INTO public.question VALUES (349, 8, 99, '中', 'Inside', 'King', 'Insect', 'Inside', 'Leg', 'Living', 'Flower', 'Inside', '2019-03-08 11:16:45.17495+02', '2019-03-08 11:16:47.274997+02');
+INSERT INTO public.question VALUES (350, 9, 0, '虫', 'Insect', 'Insect', 'Power', 'Rice field', 'King', 'Eight', 'Flower', 'Rice field', '2019-03-19 11:12:48.124251+02', '2019-03-19 11:13:26.307301+02');
+INSERT INTO public.question VALUES (351, 9, 1, '小', 'Small', 'Small', 'Left', 'Power', 'Insect', 'Eye', 'Eight', 'Left', '2019-03-19 11:13:33.772428+02', '2019-03-19 11:13:46.489876+02');
+INSERT INTO public.question VALUES (352, 9, 2, '青', 'Blue', 'Blue', 'Flower', 'Left', 'Small', 'Insect', 'Eye', 'Blue', '2019-03-19 11:13:49.356373+02', '2019-03-19 11:14:02.571583+02');
+INSERT INTO public.question VALUES (353, 9, 3, '八', 'Eight', 'Living', 'Eye', 'Flower', 'Blue', 'Small', 'Eight', 'Living', '2019-03-19 11:14:03.622769+02', '2019-03-19 11:14:15.973238+02');
+INSERT INTO public.question VALUES (354, 9, 4, '力', 'Power', 'King', 'Blue', 'Eight', 'Seven', 'Living', 'Power', 'King', '2019-03-19 11:14:20.339703+02', '2019-03-19 11:14:27.656114+02');
+INSERT INTO public.question VALUES (355, 9, 5, '林', 'Forest', 'Forest', 'Eight', 'Living', 'Insect', 'Eye', 'Left', 'Forest', '2019-03-19 11:14:29.906714+02', '2019-03-19 11:14:34.223371+02');
+INSERT INTO public.question VALUES (356, 9, 6, '木', 'Tree', 'Living', 'Forest', 'Insect', 'Rice field', 'Tree', 'Power', 'Living', '2019-03-19 11:14:35.27348+02', '2019-03-19 11:14:42.756596+02');
+INSERT INTO public.question VALUES (357, 9, 7, '花', 'Flower', 'Flower', 'Shellfish', 'Seven', 'Eight', 'Eye', 'Two', 'Shellfish', '2019-03-19 11:14:45.023345+02', '2019-03-19 11:15:00.856025+02');
+INSERT INTO public.question VALUES (358, 9, 8, '八', 'Eight', 'Two', 'Eight', 'Left', 'Blue', 'Power', 'Seven', 'Blue', '2019-03-19 11:15:02.890226+02', '2019-03-19 11:15:11.689223+02');
+INSERT INTO public.question VALUES (359, 9, 9, '力', 'Power', 'Shellfish', 'Six', 'Power', 'Leg', 'Inside', 'Eight', 'Power', '2019-03-19 11:15:15.13949+02', '2019-03-19 11:15:28.855913+02');
+INSERT INTO public.question VALUES (360, 9, 10, '目', 'Eye', 'Leg', 'Rice field', 'Left', 'Character', 'Seven', 'Eye', 'Character', '2019-03-19 11:15:29.9063+02', '2019-03-19 11:15:39.506242+02');
+INSERT INTO public.question VALUES (361, 9, 11, '字', 'Character', 'Six', 'Character', 'Living', 'Forest', 'Leg', 'Flower', 'Flower', '2019-03-19 11:15:42.472738+02', '2019-03-19 11:15:48.823593+02');
+INSERT INTO public.question VALUES (362, 9, 12, '二', 'Two', 'Two', 'Eye', 'Six', 'Eight', 'Rice field', 'Blue', 'Two', '2019-03-19 11:15:51.073128+02', '2019-03-19 11:15:54.589921+02');
+INSERT INTO public.question VALUES (363, 9, 13, '字', 'Character', 'Inside', 'Blue', 'King', 'Eight', 'Power', 'Character', 'Character', '2019-03-19 11:15:55.639803+02', '2019-03-19 11:16:03.140307+02');
+INSERT INTO public.question VALUES (364, 9, 14, '中', 'Inside', 'Inside', 'Small', 'Six', 'Character', 'King', 'Forest', 'King', '2019-03-19 11:16:04.172578+02', '2019-03-19 11:16:11.090291+02');
+INSERT INTO public.question VALUES (365, 9, 15, '二', 'Two', 'Six', 'Eye', 'Left', 'Inside', 'Living', 'Two', 'Two', '2019-03-19 11:16:12.906543+02', '2019-03-19 11:16:15.223411+02');
+INSERT INTO public.question VALUES (366, 9, 16, '林', 'Forest', 'Flower', 'Rice field', 'Character', 'Left', 'Insect', 'Forest', 'Forest', '2019-03-19 11:16:16.273264+02', '2019-03-19 11:16:32.22228+02');
+INSERT INTO public.question VALUES (367, 9, 17, '七', 'Seven', 'Seven', 'Inside', 'Power', 'Six', 'King', 'Rice field', 'Seven', '2019-03-19 11:16:33.273151+02', '2019-03-19 11:16:41.473277+02');
+INSERT INTO public.question VALUES (368, 9, 18, '六', 'Six', 'Six', 'Living', 'Eight', 'Tree', 'Inside', 'Forest', 'Living', '2019-03-19 11:16:42.505163+02', '2019-03-19 11:16:47.923366+02');
+INSERT INTO public.question VALUES (369, 9, 19, '力', 'Power', 'King', 'Eight', 'Power', 'Character', 'Small', 'Insect', 'Power', '2019-03-19 11:16:49.55695+02', '2019-03-19 11:16:51.640295+02');
+INSERT INTO public.question VALUES (370, 9, 20, '林', 'Forest', 'Insect', 'Blue', 'Character', 'Eight', 'Flower', 'Forest', 'Forest', '2019-03-19 11:16:52.67242+02', '2019-03-19 11:16:55.489182+02');
+INSERT INTO public.question VALUES (371, 9, 21, '二', 'Two', 'Blue', 'Two', 'Rice field', 'Inside', 'Small', 'Tree', 'Two', '2019-03-19 11:16:56.538944+02', '2019-03-19 11:16:57.873371+02');
+INSERT INTO public.question VALUES (372, 9, 22, '目', 'Eye', 'Six', 'Flower', 'Eye', 'Character', 'Tree', 'Seven', 'Eye', '2019-03-19 11:16:58.905285+02', '2019-03-19 11:17:01.773515+02');
+INSERT INTO public.question VALUES (373, 9, 23, '八', 'Eight', 'Character', 'Eight', 'Rice field', 'Flower', 'Living', 'Leg', 'Eight', '2019-03-19 11:17:02.823595+02', '2019-03-19 11:17:09.822808+02');
+INSERT INTO public.question VALUES (374, 9, 24, '林', 'Forest', 'Forest', 'Six', 'Tree', 'Seven', 'King', 'Blue', 'Forest', '2019-03-19 11:17:10.872881+02', '2019-03-19 11:17:12.905801+02');
+INSERT INTO public.question VALUES (375, 9, 25, '生', 'Living', 'Shellfish', 'Flower', 'Six', 'Two', 'Eye', 'Living', 'Shellfish', '2019-03-19 11:17:13.956323+02', '2019-03-19 11:17:18.55694+02');
+INSERT INTO public.question VALUES (376, 9, 26, '八', 'Eight', 'Rice field', 'Eight', 'Insect', 'Living', 'Shellfish', 'Inside', 'Eight', '2019-03-19 11:17:25.823627+02', '2019-03-19 11:17:28.056946+02');
+INSERT INTO public.question VALUES (377, 9, 27, '七', 'Seven', 'Left', 'Rice field', 'Blue', 'Flower', 'Seven', 'Leg', 'Seven', '2019-03-19 11:17:29.106174+02', '2019-03-19 11:17:35.623636+02');
+INSERT INTO public.question VALUES (378, 9, 28, '田', 'Rice field', 'Forest', 'Inside', 'King', 'Six', 'Shellfish', 'Rice field', 'Inside', '2019-03-19 11:17:36.689321+02', '2019-03-19 11:17:42.206875+02');
+INSERT INTO public.question VALUES (379, 9, 29, '字', 'Character', 'Forest', 'Tree', 'Blue', 'Power', 'Character', 'Inside', 'Blue', '2019-03-19 11:17:44.039373+02', '2019-03-19 11:17:54.640646+02');
+INSERT INTO public.question VALUES (380, 9, 30, '木', 'Tree', 'Small', 'Living', 'Character', 'Six', 'Eye', 'Tree', 'Tree', '2019-03-19 11:17:56.722378+02', '2019-03-19 11:17:59.272479+02');
+INSERT INTO public.question VALUES (381, 9, 31, '田', 'Rice field', 'Character', 'Small', 'Blue', 'Tree', 'Rice field', 'Shellfish', 'Rice field', '2019-03-19 11:18:00.323177+02', '2019-03-19 11:18:01.689878+02');
+INSERT INTO public.question VALUES (382, 9, 32, '林', 'Forest', 'Inside', 'Forest', 'Six', 'Character', 'Living', 'Power', 'Forest', '2019-03-19 11:18:02.740066+02', '2019-03-19 11:18:04.455927+02');
+INSERT INTO public.question VALUES (383, 9, 33, '生', 'Living', 'Seven', 'Leg', 'Shellfish', 'Living', 'Forest', 'Eye', 'Living', '2019-03-19 11:18:05.506932+02', '2019-03-19 11:18:11.806995+02');
+INSERT INTO public.question VALUES (384, 9, 34, '中', 'Inside', 'Six', 'Eight', 'Eye', 'Forest', 'Tree', 'Inside', 'Six', '2019-03-19 11:18:12.857004+02', '2019-03-19 11:18:20.790315+02');
+INSERT INTO public.question VALUES (385, 9, 35, '貝', 'Shellfish', 'King', 'Living', 'Rice field', 'Character', 'Shellfish', 'Power', 'Shellfish', '2019-03-19 11:18:22.523966+02', '2019-03-19 11:18:27.923377+02');
+INSERT INTO public.question VALUES (386, 9, 36, '小', 'Small', 'Seven', 'Leg', 'Blue', 'Tree', 'Rice field', 'Small', 'Small', '2019-03-19 11:18:28.973755+02', '2019-03-19 11:18:32.140022+02');
+INSERT INTO public.question VALUES (387, 9, 37, '字', 'Character', 'Six', 'Character', 'Small', 'Living', 'Flower', 'Shellfish', 'Character', '2019-03-19 11:18:33.173623+02', '2019-03-19 11:18:37.007064+02');
+INSERT INTO public.question VALUES (388, 9, 38, '力', 'Power', 'Power', 'Six', 'King', 'Two', 'Blue', 'Eight', 'Blue', '2019-03-19 11:18:38.056334+02', '2019-03-19 11:18:48.039275+02');
+INSERT INTO public.question VALUES (389, 9, 39, '青', 'Blue', 'Blue', 'Two', 'Rice field', 'Forest', 'Power', 'Seven', 'Blue', '2019-03-19 11:18:49.523231+02', '2019-03-19 11:18:59.090509+02');
+INSERT INTO public.question VALUES (390, 9, 40, '木', 'Tree', 'Six', 'Seven', 'Inside', 'Living', 'Rice field', 'Tree', 'Tree', '2019-03-19 11:19:00.14005+02', '2019-03-19 11:19:02.790325+02');
+INSERT INTO public.question VALUES (391, 9, 41, '力', 'Power', 'King', 'Rice field', 'Seven', 'Power', 'Tree', 'Six', 'Power', '2019-03-19 11:19:03.84052+02', '2019-03-19 11:19:09.390641+02');
+INSERT INTO public.question VALUES (392, 9, 42, '目', 'Eye', 'Rice field', 'Six', 'Small', 'Eye', 'Blue', 'King', 'Eye', '2019-03-19 11:19:10.440326+02', '2019-03-19 11:19:13.539729+02');
+INSERT INTO public.question VALUES (393, 9, 43, '生', 'Living', 'Insect', 'Living', 'Forest', 'Character', 'Rice field', 'Tree', 'Living', '2019-03-19 11:19:14.572895+02', '2019-03-19 11:19:17.456919+02');
+INSERT INTO public.question VALUES (394, 9, 44, '七', 'Seven', 'Seven', 'Two', 'Leg', 'Blue', 'Eye', 'Tree', 'Seven', '2019-03-19 11:19:18.505994+02', '2019-03-19 11:19:24.990368+02');
+INSERT INTO public.question VALUES (395, 9, 45, '七', 'Seven', 'Six', 'Insect', 'Seven', 'Rice field', 'Forest', 'Inside', 'Seven', '2019-03-19 11:19:26.040386+02', '2019-03-19 11:19:29.18832+02');
+INSERT INTO public.question VALUES (396, 9, 46, '字', 'Character', 'Eye', 'Two', 'Character', 'Flower', 'Tree', 'Forest', 'Character', '2019-03-19 11:19:30.240329+02', '2019-03-19 11:19:35.389346+02');
+INSERT INTO public.question VALUES (397, 9, 47, '木', 'Tree', 'Six', 'Rice field', 'Tree', 'Seven', 'Living', 'Shellfish', 'Tree', '2019-03-19 11:19:36.438629+02', '2019-03-19 11:19:38.390401+02');
+INSERT INTO public.question VALUES (398, 9, 48, '小', 'Small', 'Forest', 'King', 'Rice field', 'Small', 'Insect', 'Shellfish', 'Small', '2019-03-19 11:19:39.438504+02', '2019-03-19 11:19:42.689933+02');
+INSERT INTO public.question VALUES (399, 9, 49, '力', 'Power', 'Insect', 'Shellfish', 'Power', 'Rice field', 'Inside', 'Left', 'Power', '2019-03-19 11:19:43.739548+02', '2019-03-19 11:19:46.073131+02');
+INSERT INTO public.question VALUES (400, 9, 50, '字', 'Character', 'Two', 'Character', 'Shellfish', 'Leg', 'Inside', 'Six', 'Character', '2019-03-19 11:19:47.122107+02', '2019-03-19 11:19:48.872986+02');
+INSERT INTO public.question VALUES (401, 9, 51, '林', 'Forest', 'Flower', 'Left', 'Eight', 'Forest', 'Character', 'Six', 'Forest', '2019-03-19 11:19:49.922995+02', '2019-03-19 11:19:51.839383+02');
+INSERT INTO public.question VALUES (402, 9, 52, '王', 'King', 'Character', 'King', 'Leg', 'Left', 'Seven', 'Insect', 'King', '2019-03-19 11:19:52.872888+02', '2019-03-19 11:19:58.356235+02');
+INSERT INTO public.question VALUES (403, 9, 53, '左', 'Left', 'Shellfish', 'Left', 'Eye', 'Blue', 'Character', 'Insect', 'Left', '2019-03-19 11:19:59.406434+02', '2019-03-19 11:20:06.739757+02');
+INSERT INTO public.question VALUES (404, 9, 54, '力', 'Power', 'Power', 'Shellfish', 'Leg', 'Two', 'Living', 'Forest', 'Power', '2019-03-19 11:20:07.773515+02', '2019-03-19 11:20:09.406436+02');
+INSERT INTO public.question VALUES (405, 9, 55, '田', 'Rice field', 'Blue', 'Two', 'Rice field', 'Six', 'Flower', 'Character', 'Rice field', '2019-03-19 11:20:10.45689+02', '2019-03-19 11:20:12.856236+02');
+INSERT INTO public.question VALUES (406, 9, 56, '中', 'Inside', 'Blue', 'Small', 'Inside', 'Two', 'Flower', 'Left', 'Inside', '2019-03-19 11:20:13.906994+02', '2019-03-19 11:20:22.523557+02');
+INSERT INTO public.question VALUES (407, 9, 57, '二', 'Two', 'Two', 'Power', 'Eight', 'Flower', 'Inside', 'Seven', 'Two', '2019-03-19 11:20:23.573491+02', '2019-03-19 11:20:25.473+02');
+INSERT INTO public.question VALUES (408, 9, 58, '林', 'Forest', 'Forest', 'Living', 'Leg', 'Small', 'Blue', 'Insect', 'Forest', '2019-03-19 11:20:26.522411+02', '2019-03-19 11:20:28.355017+02');
+INSERT INTO public.question VALUES (409, 9, 59, '青', 'Blue', 'Insect', 'Shellfish', 'Blue', 'Forest', 'Rice field', 'Character', 'Blue', '2019-03-19 11:20:29.406303+02', '2019-03-19 11:20:35.639587+02');
+INSERT INTO public.question VALUES (410, 9, 60, '八', 'Eight', 'Six', 'Seven', 'Left', 'Eight', 'Flower', 'Power', 'Six', '2019-03-19 11:20:36.673325+02', '2019-03-19 11:20:46.388483+02');
+INSERT INTO public.question VALUES (411, 9, 61, '二', 'Two', 'Living', 'Insect', 'Blue', 'Two', 'Seven', 'Eight', 'Two', '2019-03-19 11:20:48.789149+02', '2019-03-19 11:20:50.739128+02');
+INSERT INTO public.question VALUES (412, 9, 62, '田', 'Rice field', 'Inside', 'Tree', 'Left', 'Character', 'Rice field', 'Living', 'Rice field', '2019-03-19 11:20:51.772734+02', '2019-03-19 11:20:53.472582+02');
+INSERT INTO public.question VALUES (413, 9, 63, '八', 'Eight', 'Eye', 'Living', 'Blue', 'Left', 'Six', 'Eight', 'Eight', '2019-03-19 11:20:54.523041+02', '2019-03-19 11:20:57.856813+02');
+INSERT INTO public.question VALUES (414, 9, 64, '中', 'Inside', 'Two', 'Shellfish', 'Left', 'Insect', 'Blue', 'Inside', 'Inside', '2019-03-19 11:20:58.905573+02', '2019-03-19 11:21:03.655283+02');
+INSERT INTO public.question VALUES (415, 9, 65, '中', 'Inside', 'Small', 'Character', 'Inside', 'Tree', 'Power', 'Forest', 'Inside', '2019-03-19 11:21:04.705205+02', '2019-03-19 11:21:08.205924+02');
+INSERT INTO public.question VALUES (416, 9, 66, '貝', 'Shellfish', 'Leg', 'Living', 'King', 'Two', 'Shellfish', 'Power', 'Shellfish', '2019-03-19 11:21:09.256683+02', '2019-03-19 11:21:11.25649+02');
+INSERT INTO public.question VALUES (417, 9, 67, '小', 'Small', 'Eight', 'Flower', 'Forest', 'Small', 'King', 'Character', 'Small', '2019-03-19 11:21:12.305805+02', '2019-03-19 11:21:16.05578+02');
+INSERT INTO public.question VALUES (418, 9, 68, '生', 'Living', 'Left', 'Six', 'Small', 'Shellfish', 'Living', 'Rice field', 'Living', '2019-03-19 11:21:17.106592+02', '2019-03-19 11:21:19.522945+02');
+INSERT INTO public.question VALUES (419, 9, 69, '足', 'Leg', 'Rice field', 'Forest', 'Six', 'Leg', 'Eye', 'Living', 'Leg', '2019-03-19 11:21:20.573633+02', '2019-03-19 11:21:24.089981+02');
+INSERT INTO public.question VALUES (420, 9, 70, '力', 'Power', 'Rice field', 'Blue', 'Power', 'Character', 'Left', 'Living', 'Power', '2019-03-19 11:21:25.138985+02', '2019-03-19 11:21:27.990102+02');
+INSERT INTO public.question VALUES (421, 9, 71, '田', 'Rice field', 'Power', 'Living', 'King', 'Rice field', 'Eight', 'Two', 'Rice field', '2019-03-19 11:21:29.022609+02', '2019-03-19 11:21:31.006573+02');
+INSERT INTO public.question VALUES (422, 9, 72, '田', 'Rice field', 'Eye', 'Blue', 'Leg', 'Insect', 'Forest', 'Rice field', 'Rice field', '2019-03-19 11:21:32.039052+02', '2019-03-19 11:21:34.222482+02');
+INSERT INTO public.question VALUES (423, 9, 73, '木', 'Tree', 'Blue', 'Seven', 'Tree', 'Forest', 'Leg', 'Eight', 'Tree', '2019-03-19 11:21:35.273153+02', '2019-03-19 11:21:37.205251+02');
+INSERT INTO public.question VALUES (424, 9, 74, '左', 'Left', 'Left', 'Six', 'Power', 'Shellfish', 'Seven', 'Eight', 'Left', '2019-03-19 11:21:38.238538+02', '2019-03-19 11:21:47.957053+02');
+INSERT INTO public.question VALUES (425, 9, 75, '花', 'Flower', 'Inside', 'Flower', 'Shellfish', 'Small', 'Insect', 'Power', 'Insect', '2019-03-19 11:21:49.006979+02', '2019-03-19 11:21:55.457404+02');
+INSERT INTO public.question VALUES (426, 9, 76, '王', 'King', 'King', 'Power', 'Seven', 'Eight', 'Shellfish', 'Living', 'King', '2019-03-19 11:21:57.956779+02', '2019-03-19 11:22:08.407031+02');
+INSERT INTO public.question VALUES (427, 9, 77, '小', 'Small', 'King', 'Two', 'Rice field', 'Seven', 'Small', 'Leg', 'Small', '2019-03-19 11:22:09.456681+02', '2019-03-19 11:22:13.740423+02');
+INSERT INTO public.question VALUES (428, 9, 78, '小', 'Small', 'Two', 'Inside', 'Rice field', 'Eight', 'Insect', 'Small', 'Small', '2019-03-19 11:22:14.773633+02', '2019-03-19 11:22:16.957049+02');
+INSERT INTO public.question VALUES (429, 9, 79, '花', 'Flower', 'Character', 'Rice field', 'Flower', 'Eight', 'Seven', 'Living', 'Flower', '2019-03-19 11:22:18.007477+02', '2019-03-19 11:22:25.156633+02');
+INSERT INTO public.question VALUES (430, 9, 80, '王', 'King', 'Character', 'King', 'Power', 'Two', 'Six', 'Left', 'King', '2019-03-19 11:22:26.205932+02', '2019-03-19 11:22:30.973657+02');
+INSERT INTO public.question VALUES (431, 9, 81, '中', 'Inside', 'Two', 'Rice field', 'Forest', 'Inside', 'Leg', 'Small', 'Inside', '2019-03-19 11:22:32.023088+02', '2019-03-19 11:22:36.107098+02');
+INSERT INTO public.question VALUES (432, 9, 82, '字', 'Character', 'Forest', 'Character', 'Two', 'Eye', 'Leg', 'Power', 'Character', '2019-03-19 11:22:37.138955+02', '2019-03-19 11:22:45.023636+02');
+INSERT INTO public.question VALUES (433, 9, 83, '七', 'Seven', 'Forest', 'Tree', 'Six', 'Seven', 'Character', 'Eight', 'Seven', '2019-03-19 11:22:46.072654+02', '2019-03-19 11:22:56.939996+02');
+INSERT INTO public.question VALUES (434, 9, 84, '林', 'Forest', 'Leg', 'Character', 'Tree', 'Forest', 'King', 'Six', 'Forest', '2019-03-19 11:22:57.989588+02', '2019-03-19 11:22:59.807009+02');
+INSERT INTO public.question VALUES (435, 9, 85, '字', 'Character', 'Left', 'Character', 'Shellfish', 'Flower', 'Insect', 'Six', 'Character', '2019-03-19 11:23:00.856657+02', '2019-03-19 11:23:02.589472+02');
+INSERT INTO public.question VALUES (436, 9, 86, '貝', 'Shellfish', 'Flower', 'Insect', 'Character', 'Shellfish', 'Six', 'Blue', 'Shellfish', '2019-03-19 11:23:03.639598+02', '2019-03-19 11:23:06.040118+02');
+INSERT INTO public.question VALUES (437, 9, 87, '王', 'King', 'Eight', 'Character', 'Blue', 'Insect', 'King', 'Two', 'King', '2019-03-19 11:23:07.073169+02', '2019-03-19 11:23:09.090036+02');
+INSERT INTO public.question VALUES (438, 9, 88, '中', 'Inside', 'Small', 'Left', 'Rice field', 'Power', 'Character', 'Inside', 'Inside', '2019-03-19 11:23:10.140102+02', '2019-03-19 11:23:12.439992+02');
+INSERT INTO public.question VALUES (439, 9, 89, '虫', 'Insect', 'Insect', 'Character', 'Two', 'Eye', 'Inside', 'Six', 'Insect', '2019-03-19 11:23:13.472681+02', '2019-03-19 11:23:16.639392+02');
+INSERT INTO public.question VALUES (440, 9, 90, '力', 'Power', 'Inside', 'Flower', 'Blue', 'Two', 'Eye', 'Power', 'Blue', '2019-03-19 11:23:17.673631+02', '2019-03-19 11:23:25.540335+02');
+INSERT INTO public.question VALUES (441, 9, 91, '生', 'Living', 'Character', 'Six', 'Leg', 'Insect', 'Flower', 'Living', 'Living', '2019-03-19 11:23:27.340462+02', '2019-03-19 11:23:30.790398+02');
+INSERT INTO public.question VALUES (442, 9, 92, '木', 'Tree', 'Power', 'Tree', 'Inside', 'Living', 'Two', 'Left', 'Tree', '2019-03-19 11:23:31.840478+02', '2019-03-19 11:23:33.40566+02');
+INSERT INTO public.question VALUES (443, 9, 93, '八', 'Eight', 'King', 'Eye', 'Two', 'Living', 'Power', 'Eight', 'Eight', '2019-03-19 11:23:34.438651+02', '2019-03-19 11:23:40.489607+02');
+INSERT INTO public.question VALUES (444, 9, 94, '字', 'Character', 'Power', 'Seven', 'Leg', 'Blue', 'Rice field', 'Character', 'Character', '2019-03-19 11:23:41.539954+02', '2019-03-19 11:23:43.272766+02');
+INSERT INTO public.question VALUES (445, 9, 95, '左', 'Left', 'Rice field', 'Character', 'Living', 'Tree', 'Flower', 'Left', 'Left', '2019-03-19 11:23:44.323043+02', '2019-03-19 11:23:49.440434+02');
+INSERT INTO public.question VALUES (446, 9, 96, '虫', 'Insect', 'Insect', 'Shellfish', 'Flower', 'Eight', 'Living', 'Forest', 'Insect', '2019-03-19 11:23:50.473016+02', '2019-03-19 11:23:53.056507+02');
+INSERT INTO public.question VALUES (447, 9, 97, '小', 'Small', 'Character', 'Living', 'King', 'Power', 'Small', 'Forest', 'Small', '2019-03-19 11:23:54.106973+02', '2019-03-19 11:23:56.623778+02');
+INSERT INTO public.question VALUES (448, 9, 98, '木', 'Tree', 'Inside', 'Six', 'Eye', 'Character', 'Tree', 'Seven', 'Tree', '2019-03-19 11:23:57.673756+02', '2019-03-19 11:23:59.190376+02');
+INSERT INTO public.question VALUES (449, 9, 99, '虫', 'Insect', 'Character', 'Six', 'Eye', 'Blue', 'Inside', 'Insect', 'Insect', '2019-03-19 11:24:00.23931+02', '2019-03-19 11:24:03.723325+02');
 
 
 --
@@ -328,20 +428,21 @@ INSERT INTO public.question VALUES (349, 8, 99, '中', 'Inside', 'King', 'Insect
 INSERT INTO public."user" VALUES (6, '2019-03-08 10:12:54.477201+02');
 INSERT INTO public."user" VALUES (7, '2019-03-08 10:45:34.382527+02');
 INSERT INTO public."user" VALUES (8, '2019-03-08 11:09:00.25473+02');
+INSERT INTO public."user" VALUES (9, '2019-03-19 11:12:48.089448+02');
 
 
 --
 -- Name: question_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.question_id_seq', 349, true);
+SELECT pg_catalog.setval('public.question_id_seq', 449, true);
 
 
 --
 -- Name: user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.user_id_seq', 8, true);
+SELECT pg_catalog.setval('public.user_id_seq', 9, true);
 
 
 --
