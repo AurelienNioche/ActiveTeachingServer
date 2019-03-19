@@ -12,11 +12,11 @@ application = get_wsgi_application()
 from task.models import Kanji, Parameter, PredefinedQuestion
 
 from task.parameters import n_possible_replies
-from operations_on_db import AskUser
+from utils import AskUser
 
 
 @AskUser
-def main(n_kanji=10, grade=1):
+def create_predefined_questions(n_kanji=10, grade=1):
 
     PredefinedQuestion.objects.all().delete()
 
@@ -78,4 +78,4 @@ def main(n_kanji=10, grade=1):
 
 
 if __name__ == "__main__":
-    main()
+    create_predefined_questions(n_kanji=20)

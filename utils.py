@@ -40,7 +40,7 @@ class AskUser:
     def __init__(self, f):
         self.f = f
 
-    def __call__(self):
+    def __call__(self, **kwargs):
 
         while True:
             r = input("Are you sure you want to operate this change?")
@@ -51,6 +51,6 @@ class AskUser:
                 break
             else:
                 print("Your response have to be 'y' or 'n'!")
-        self.f()
+        self.f(**kwargs)
         print("Done!")
 
