@@ -67,7 +67,7 @@ Using the Django command
 
 Dump data for backing up in an already existing db
 
-    pg_dump --data-only  --table question --table user ActiveTeaching --inserts > data/data_only.sql
+    pg_dump --data-only  --table question --table user ActiveTeaching --inserts > data/user_and_question_tables.sql
 
 
 Remove the db
