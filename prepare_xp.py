@@ -10,15 +10,14 @@ application = get_wsgi_application()
 # Your application specific imports
 from task.models import Parameter, PredefinedQuestion
 
+import numpy as np
+
 from utils import AskUser
 from create_predefined_question import create_predefined_questions
 
 
-N_KANJI = 20
-
-
 @AskUser
-def prepare_xp():
+def prepare_xp(n_kanji=20):
 
     # Turn off test mode
     p_test = Parameter.objects.get(name='test')
@@ -34,11 +33,16 @@ def prepare_xp():
 
         t_max = Parameter.objects.get(name='t_max').value
 
-        if len(PredefinedQuestion.objects.all()) != t_max:
-            print(f"Creating predefined questions with {N_KANJI} different kanji for {t_max} time steps...")
-            create_predefined_questions(n_kanji=N_KANJI)
+        pq_entries = PredefinedQuestion.objects.all()
 
-        print(f"Predefined questions with {N_KANJI} different kanji for {t_max} time steps will be used.")
+        if len(pq_entries) != t_max:
+            print(f"Creating predefined questions with {n_kanji} different kanji for {t_max} time steps...")
+            create_predefined_questions(n_kanji=n_kanji)
+
+        else:
+            n_kanji = len(np.unique([pq.question for pq in pq_entries]))
+
+        print(f"Predefined questions with {n_kanji} different kanji for {t_max} time steps will be used.")
 
 
 if __name__ == "__main__":

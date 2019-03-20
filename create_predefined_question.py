@@ -78,4 +78,4 @@ def create_predefined_questions(n_kanji=10, grade=1):
 
 
 if __name__ == "__main__":
-    create_predefined_questions(n_kanji=20)
+    create_predefined_questions(n_kanji=30)
