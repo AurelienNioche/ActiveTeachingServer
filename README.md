@@ -80,4 +80,5 @@ Remove the db
 ### Kanji database
    
    Coming from Tamaoka, K., Makioka, S., Sanders, S. & Verdonschot, R.G. (2017). 
-www.kanjidatabase.com: a new interactive online database for psychological and linguistic research on Japanese kanji and their compound words. Psychological Research, 81, 696-708.
+www.kanjidatabase.com: a new interactive online database for psychological and linguistic research on Japanese kanji 
+and their compound words. Psychological Research, 81, 696-708.
