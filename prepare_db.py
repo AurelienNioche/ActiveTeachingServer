@@ -13,7 +13,7 @@ application = get_wsgi_application()
 from task.models import Parameter
 from teaching_material.models import Kanji
 
-from operations_on_db import AskUser
+from utils import AskUser
 
 
 def has_numbers(string):
