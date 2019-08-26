@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'teaching_material.apps.TeachingMaterialConfig',
     'task.apps.TaskConfig',
     'channels',
     'django.contrib.admin',

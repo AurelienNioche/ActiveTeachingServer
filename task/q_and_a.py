@@ -1,9 +1,11 @@
 import numpy as np
 from datetime import datetime
 
-from . models import Kanji, User, Question, Parameter, PredefinedQuestion
+from . models import User, Question
 
-from . parameters import n_possible_replies
+from task.fixed_parameters import n_possible_replies
+import teaching_material.selection
+
 from utils import Atomic
 
 USER_DEFAULT_ID = -1
@@ -13,14 +15,19 @@ USER_TEST_ID = -2
 def get_question(reply):
 
     # Get task parameters
-    is_test = Parameter.objects.get(name='test').value == 1
-    t_max = Parameter.objects.get(name='t_max').value
-    use_predefined_question = Parameter.objects.get(name='use_predefined_question').value == 1
+    register_replies = reply['registerReplies']
+    t_max = reply['nIteration']
+    teacher_name = reply['teacher']
+    user_id = reply['userId']
+    t = reply['t']
 
-    if reply['userId'] == USER_DEFAULT_ID:
+    first_call = reply['userId'] == USER_DEFAULT_ID
 
-        if not is_test:
+    if first_call:
+
+        if register_replies:
             user_id = _register_user()
+
         else:
             user_id = USER_TEST_ID
 
@@ -28,11 +35,8 @@ def get_question(reply):
 
     else:
 
-        if not is_test:
-            user_id, t = _register_response(reply)
-        else:
-            user_id = USER_TEST_ID
-            t = reply['t']
+        if register_replies:
+            _register_question(reply)
 
         t += 1
 
@@ -42,29 +46,9 @@ def get_question(reply):
             't': -1
         }
 
-    if use_predefined_question:
-        q, correct_answer, correct_answer_idx, possible_replies = _load_predefined_question(t)
-
-    else:
-        q, correct_answer, correct_answer_idx, possible_replies = _prepare_new_question()
-
-    # Register new question
-    if not is_test:
-        _register_question(user_id=user_id, t=t, question=q, correct_answer=correct_answer,
-                           possible_replies=possible_replies)
-
-    # Return dic for JSON reply to client
-    question_dic = {
-        'userId': user_id,
-        't': t,
-        'tMax': t_max,
-        'question': q,
-        'correctAnswer': correct_answer,
-        'correctAnswerIdx': correct_answer_idx,
-        'possibleReplies': possible_replies
-    }
-
-    return question_dic
+    return \
+        _new_question(user_id=user_id, t=t,
+                      t_max=t_max, teacher_name=teacher_name)
 
 
 def _convert_to_time(string_time):
@@ -72,55 +56,38 @@ def _convert_to_time(string_time):
     return datetime.strptime(string_time, '%Y-%m-%d %H:%M:%S.%f')
 
 
-def _register_response(reply):
+def _new_question(user_id, t, t_max, teacher_name):
 
-    user_id = reply['userId']
-    t = reply['t']
+    # Get historic
+    entries_question = Question.objects.filter(user_id=user_id).order_by('t')
 
-    question = Question.objects.get(user_id=user_id, t=t)
-    question.reply = reply['reply']
-    question.time_display = _convert_to_time(reply['timeDisplay'])
-    question.time_reply = _convert_to_time(reply['timeReply'])
-    question.save(force_update=True)
+    index_hist_question = np.zeros(t+1, dtype=int)
+    index_hist_replies = np.zeros(t+1, dtype=int)
+    index_hist_success = np.zeros(t+1, dtype=bool)
+    for i, e in enumerate(entries_question):
+        index_hist_question[i] = e.question
+        index_hist_replies[i] = e.reply
+        index_hist_success[i] = e.success
 
-    return user_id, t
+    questions, meanings = teaching_material.selection.get()
 
-
-def _prepare_new_question():
-
-    k = list(Kanji.objects.all())
-
-    while True:
-        idx = np.random.choice(np.arange(len(k)), size=6, replace=False)
-
-        possible_replies = [k[idx[i]].meaning for i in range(6)]
-        print(possible_replies)
-        if len(np.unique(possible_replies)) == len(possible_replies):
-            break
-
-    question = k[idx[0]].kanji
-    correct_answer = k[idx[0]].meaning
-
-    np.random.shuffle(possible_replies)
-
-    correct_answer_idx = possible_replies.index(correct_answer)
-
-    return question, correct_answer, correct_answer_idx, possible_replies
-
-
-def _load_predefined_question(t):
-
-    question_entry = PredefinedQuestion.objects.get(t=t)
-
-    question = question_entry.question
-    correct_answer = question_entry.correct_answer
-    possible_replies = [
-        getattr(question_entry, f'possible_reply_{i}') for i in range(n_possible_replies)
-    ]
-
-    correct_answer_idx = possible_replies.index(correct_answer)
-
-    return question, correct_answer, correct_answer_idx, possible_replies
+    # question = k[q_index_question].kanji
+    # correct_answer = k[index_question].meaning
+    #
+    # possible_replies = [k[i].meaning for i in index_poss_replies]
+    #
+    # correct_answer_idx = possible_replies.index(correct_answer)
+    #
+    # # Return dic for JSON reply to client
+    # question_dic = {
+    #     'userId': user_id,
+    #     't': t,
+    #     'tMax': t_max,
+    #     'question': q,
+    #     'possibleReplies': possible_replies,
+    #     'idxCorrectAnswer': correct_answer_idx,
+    #     'idxPossibleReplies':
+    # }
 
 
 @Atomic
@@ -135,22 +102,46 @@ def _register_user():
     u.save()
     return u.id
 
-
 @Atomic
-def _register_question(user_id, t, question, correct_answer, possible_replies):
+def _register_question(reply):
 
-    """
-    Creates a new user and returns its instance
-    """
+    user_id = reply['userId']
+    t = reply['t']
+    success = reply['success']
+    question = reply['question']
+    reply__ = reply['reply']
+    time_display = _convert_to_time(reply['timeDisplay'])
+    time_reply = _convert_to_time(reply['timeReply'])
 
     q = Question()
-    q.user_id = user_id
-    q.t = t
-    q.question = question
-    q.correct_answer = correct_answer
-
+    question = Question(
+        user_id=user_id,
+        t=t,
+        question=question,
+        reply=reply__,
+        success=success,
+        time_display=time_display,
+        time_reply=time_reply
+    )
     for i in range(n_possible_replies):
-        setattr(q, f'possible_reply_{i}', possible_replies[i])
+        setattr(q, f'possible_reply_{i}', reply[f'possible_reply_{i}'])
 
-    q.save()
-    return q.id
+    question.save()
+
+    return user_id, t
+
+
+
+# def _load_predefined_question(t):
+#
+#     question_entry = PredefinedQuestion.objects.get(t=t)
+#
+#     question = question_entry.question
+#     correct_answer = question_entry.correct_answer
+#     possible_replies = [
+#         getattr(question_entry, f'possible_reply_{i}') for i in range(n_possible_replies)
+#     ]
+#
+#     correct_answer_idx = possible_replies.index(correct_answer)
+#
+#     return question, correct_answer, correct_answer_idx, possible_replies

@@ -9,7 +9,8 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 # Your application specific imports
-from task.models import Kanji, Parameter, PredefinedQuestion
+from task.models import Parameter, PredefinedQuestion
+from teaching_material.models import Kanji
 
 from task.parameters import n_possible_replies
 from utils import AskUser

@@ -10,7 +10,8 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 # Your application specific imports
-from task.models import Kanji, Parameter
+from task.models import Parameter
+from teaching_material.models import Kanji
 
 from operations_on_db import AskUser
 
