@@ -16,8 +16,7 @@ class UserAdmin(admin.ModelAdmin):
 class QuestionAdmin(admin.ModelAdmin):
     list_display = (
         "user_id", "t", "question", "reply", "success",
-        "time_display", "time_reply") \
-        + tuple(f"possible_reply_{i}" for i in range(N_POSSIBLE_REPLIES))
+        "time_display", "time_reply", "possible_replies")
 
 
 admin.site.register(User, UserAdmin)

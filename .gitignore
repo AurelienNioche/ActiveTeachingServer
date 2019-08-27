@@ -110,3 +110,4 @@ task/migrations/
 templates/
 /teaching_material/migrations/
 /user_data/migrations/
+/teacher/migrations/

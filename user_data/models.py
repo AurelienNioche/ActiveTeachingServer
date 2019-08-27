@@ -1,7 +1,9 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 
 # Create your models here.
 from django.utils.timezone import now
+import numpy as np
 
 
 class Question(models.Model):
@@ -9,12 +11,7 @@ class Question(models.Model):
     user_id = models.IntegerField(default=-1)
     t = models.IntegerField(default=-1)
     question = models.IntegerField(default=-1)
-    possible_reply_0 = models.IntegerField(default=-1)
-    possible_reply_1 = models.IntegerField(default=-1)
-    possible_reply_2 = models.IntegerField(default=-1)
-    possible_reply_3 = models.IntegerField(default=-1)
-    possible_reply_4 = models.IntegerField(default=-1)
-    possible_reply_5 = models.IntegerField(default=-1)
+    possible_replies = ArrayField(models.IntegerField(), default=list)
     reply = models.IntegerField(default=-1)
     success = models.BooleanField()
     time_display = models.DateTimeField(default=now)

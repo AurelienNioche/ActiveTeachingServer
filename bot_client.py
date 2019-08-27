@@ -1,10 +1,7 @@
 # import requests
 import json
+import numpy as np
 
-try:
-    import thread
-except ImportError:
-    import _thread as thread
 import time
 
 import websocket
@@ -13,33 +10,39 @@ websocket.enableTrace(False)
 
 def on_message(ws, message):
 
-    def run(*args):
-        while True:
-
-            if message['t'] != -1:
-
-                to_send = {
-                    'userId': message['userId'],
-                    't': message['t'] + 1,
-                    'reply': "Bouh",
-                    'timeDisplay': "2019-01-21 00:02:21.029309",
-                    'timeReply': "2019-01-21 00:02:22.159123",
-                }
-
-                time.sleep(1)
-                print(f"I'm sending {to_send}")
-                ws.send(json.dumps(to_send))
-
-            else:
-                break
-
     print(f"I received: {message}")
+    message = json.loads(message)
 
-    thread.start_new_thread(run, ())
+    if message['t'] == -1:
+        exit(0)
+
+    id_reply = int(np.random.choice(message['idPossibleReplies']))
+    success = id_reply == message['idCorrectAnswer']
+
+    to_send = {
+        'userId': message['userId'],
+        'nIteration': message['nIteration'],
+        'registerReplies': message['registerReplies'],
+        'teacher': 'leitner',
+        't': message['t'],
+        'idCorrectAnswer': message['idCorrectAnswer'],
+        'idPossibleReplies': message['idPossibleReplies'],
+        'idReply': id_reply,
+        'success': success,
+        'timeDisplay': "2019-01-21 00:02:21.029309",
+        'timeReply': "2019-01-21 00:02:22.159123",
+    }
+
+    time.sleep(1)
+    print(f"I'm sending {to_send}")
+    ws.send(json.dumps(to_send))
+
+    # thread.start_new_thread(run, ())
 
 
 def on_error(ws, error):
-    print(f"I got error: {error}")
+    if error != 0:
+        print(f"I got error: {error}")
 
 
 def on_close(ws):
@@ -50,8 +53,11 @@ def on_open(ws):
 
     to_send = {
         'userId': -1,
+        'nIteration': 10,
+        'registerReplies': True,
+        'teacher': 'leitner',
         't': -1,
-        'reply': "<empty>",
+        'idReply': -1,
         'timeDisplay': "<empty>",
         'timeReply': "<empty>",
     }

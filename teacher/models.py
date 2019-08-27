@@ -1,37 +1,73 @@
+from django.db import models
+from django.contrib.postgres.fields import ArrayField
+
+# Create your models here.
 import numpy as np
 
-from teacher.metaclass import GenericTeacher
+
+class GenericTeacher:
+
+    def ask(cls,
+            t=None,
+            hist_success=None,
+            hist_question=None,
+            task_param=None,
+            student_param=None,
+            student_model=None,
+            questions=None,
+            replies=None,
+            n_iteration=None):
+
+        return \
+            cls._get_next_node(
+                t=t,
+                questions=questions,
+                replies=replies,
+                n_iteration=n_iteration,
+                hist_success=hist_success,
+                hist_question=hist_question,
+                task_param=task_param,
+                student_param=student_param,
+                student_model=student_model)
+
+    def _get_next_node(cls, **kwargs):
+        raise NotImplementedError(f"{type(cls).__name__} is a meta-class."
+                                  "This method need to be overridden")
+
+    @staticmethod
+    def get_possible_replies(correct_reply, replies, n_possible_replies):
+
+        # Select randomly possible replies, including the correct one
+        all_replies = list(replies)
+        all_replies.remove(correct_reply)
+
+        possible_replies = \
+            [correct_reply, ] + list(np.random.choice(
+                all_replies, size=n_possible_replies-1, replace=False))
+        possible_replies = np.array(possible_replies)
+        np.random.shuffle(possible_replies)
+        return possible_replies
 
 
-class Leitner(GenericTeacher):
+class Leitner(models.Model, GenericTeacher):
 
-    def __init__(self, delay_factor=2, **kwargs):
-        """
-        :param normalize_similarity: bool.
-            Normalized description of
-            semantic and graphic connections between items
-        :param delay_factor:
-        :param verbose:
-            displays each question asked and replies at each
-            iteration
-        :var self.taboo:
-            integer value in range(0 to n_items). Index of the item
-            shown in previous iteration.
-        :var self.learning_progress:
-            array of size n_item representing the box
-            number of i^th item at i^th index.
-        :var self.wait_time_arr:
-            array of size n_item representing the waiting time
-            of i^th item at i^th index.
-        """
+    user_id = models.IntegerField(default=-1)
+    delay_factor = models.IntegerField(default=2)
+    n_item = models.IntegerField(default=-1)
+    taboo = models.IntegerField(default=-1)
 
-        super().__init__(**kwargs)
+    # array of size n_item representing the box
+    #             number of i^th item at i^th index.
+    learning_progress = ArrayField(models.IntegerField(), default=list)
 
-        self.delay_factor = delay_factor
-        self.learning_progress = np.zeros(self.n_item)
-        self.wait_time_arr = np.zeros(self.n_item)
+    #  array of size n_item representing the waiting time
+    #             of i^th item at i^th index.
+    wait_time_arr = ArrayField(models.IntegerField(), default=list)
 
-        self.taboo = None
+    class Meta:
+
+        db_table = 'leitner'
+        app_label = 'teacher'
 
     def modify_sets(self, hist_success, t):
         """
@@ -43,13 +79,10 @@ class Leitner(GenericTeacher):
             * Move an item to the next box for a successful reply by learner
             * Move an item to the previous box for a failure.
         """
-        taboo = self.taboo
-        prev_box = self.learning_progress[taboo]
-        if hist_success[t-1]:
-            self.learning_progress[taboo] += 1
-        else:
-            if prev_box > 0:
-                self.learning_progress[taboo] -= 1
+        success = hist_success[t-1]
+        move = [-1, 1][success]
+
+        self.learning_progress[self.taboo] += move
 
     def update_wait_time(self):
         """
@@ -64,8 +97,7 @@ class Leitner(GenericTeacher):
                 self.wait_time_arr[i] += 1
             else:
                 taboo_box = self.learning_progress[self.taboo]
-                self.wait_time_arr[self.taboo] = -(taboo_box *
-                                                   self.delay_factor)
+                self.wait_time_arr[self.taboo] = -(taboo_box * self.delay_factor)
 
     def find_due_items(self):
         """
@@ -86,15 +118,15 @@ class Leitner(GenericTeacher):
         """
         :param due_items: array that contains items that are due to be shown
         :param hist_item: historic of presented items
-        :var seen_due_items: integer array with size of due_items
-                * Contains the items that have been seen
-                    at least once and are due to be shown.
         :return: * seen_due_items: as before
                 * count: the count of the number of items in seen__due_items
 
         Finds the items that are seen and are due to be shown.
         """
 
+        # integer array with size of due_items
+        #                 * Contains the items that have been seen
+        #                     at least once and are due to be shown.
         seen_due_items = np.intersect1d(hist_item, due_items)
         count = len(seen_due_items)
 
@@ -148,14 +180,14 @@ class Leitner(GenericTeacher):
         return items_arr
 
     def _get_next_node(self, t,
-                       hist_success, hist_questions,
+                       hist_success, hist_question,
                        questions, replies,
                        **kwargs):
         """
-        :return: integer (index of the question to ask)
 
         Every item is associated with:
-            * A waiting time i.e the time since it was last shown to the learner.
+            * A waiting time i.e the time since it was
+            last shown to the learner.
                 -- maintained in variable wait_time_arr
             * A box that decides the frequency of repeating an item.
                 -- maintained in variable learning_progress
@@ -167,12 +199,17 @@ class Leitner(GenericTeacher):
 
         """
         if t == 0:
+            print(self.n_item)
+            # Initialize the arrays
+            self.learning_progress = [0 for _ in range(self.n_item)]
+            self.wait_time_arr = [0 for _ in range(self.n_item)]
+
             # No past memory, so a random question shown from learning set
             idx_question = np.random.randint(0, self.n_item)
 
         else:
-
-            hist_item = [questions.index(i) for i in hist_questions]
+            questions = list(questions)
+            hist_item = [questions.index(i) for i in hist_question]
 
             self.modify_sets(hist_success=hist_success, t=t)
             self.update_wait_time()
@@ -197,4 +234,4 @@ class Leitner(GenericTeacher):
                 idx_question = least_box_items[0]
 
         self.taboo = idx_question
-        return questions[idx_question]
+        return idx_question, questions[idx_question]

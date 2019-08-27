@@ -31,12 +31,12 @@ def total_number_of_items():
     return Kanji.objects.count()
 
 
-def get_string_representation(id_question, id_reply, id_possible_replies):
+def get_string_representation(id_question, id_possible_replies):
 
-    return \
-        kanji[__id__ == id_question][0], \
-        meaning[__id__ == id_reply][0], \
-        meaning[__id__ == id_possible_replies]
+    question = kanji[__id__ == id_question][0]
+    possible_replies = [meaning[np.where(__id__ == i)[0][0]]
+                        for i in id_possible_replies]
+    return question, possible_replies
 
 
 def get_id():

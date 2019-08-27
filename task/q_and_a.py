@@ -6,7 +6,7 @@ from user_data.models import Question, User
 from task.fixed_parameters import N_POSSIBLE_REPLIES
 import teaching_material.selection
 
-from teacher.leitner import Leitner
+from teacher.models import Leitner
 
 from utils import Atomic
 
@@ -25,22 +25,7 @@ def get_question(reply):
 
     first_call = reply['userId'] == USER_DEFAULT_ID
 
-    if first_call:
-
-        if register_replies:
-            user_id = _register_user()
-
-        else:
-            user_id = USER_TEST_ID
-
-        t = 0
-
-    else:
-
-        if register_replies:
-            _register_question(reply)
-
-        t += 1
+    assert teacher_name == 'leitner', 'Only Leitner teacher is implemented!'
 
     # Check for t_max
     if t == t_max:
@@ -48,9 +33,58 @@ def get_question(reply):
             't': -1
         }
 
-    return \
-        _new_question(user_id=user_id, t=t,
-                      t_max=t_max, teacher_name=teacher_name)
+    if first_call:
+        if register_replies:
+            user_id = _register_user()
+        else:
+            user_id = USER_TEST_ID
+        t = 0
+
+    else:
+        if register_replies:
+            pass
+            # _register_question(reply)
+        t += 1
+
+    id_questions, id_replies = teaching_material.selection.get_id()
+
+    if register_replies:
+        id_question, id_reply = \
+            _new_question(user_id=user_id, t=t,
+                          id_questions=id_questions,
+                          id_replies=id_replies
+                          )
+
+    else:
+        id_question, id_reply = \
+            _random_question(id_questions=id_questions,
+                             id_replies=id_replies)
+
+    id_possible_replies = \
+        Leitner.get_possible_replies(
+            correct_reply=id_reply,
+            replies=id_replies,
+            n_possible_replies=N_POSSIBLE_REPLIES)
+
+    question, possible_replies = \
+        teaching_material.selection.get_string_representation(
+            id_question=id_question,
+            id_possible_replies=id_possible_replies
+        )
+
+    to_return = {
+        'userId': int(user_id),
+        't': int(t),
+        'nIteration': int(t_max),
+        'registerReplies': register_replies,
+        'question': question,
+        'possibleReplies': possible_replies,
+        'idQuestion': int(id_question),
+        'idCorrectAnswer': int(id_reply),
+        'idPossibleReplies': [int(i) for i in id_possible_replies],
+    }
+    print("Ready to send!")
+    return to_return
 
 
 def _convert_to_time(string_time):
@@ -58,42 +92,50 @@ def _convert_to_time(string_time):
     return datetime.strptime(string_time, '%Y-%m-%d %H:%M:%S.%f')
 
 
-def _new_question(user_id, t, t_max, teacher_name):
+def _random_question(id_questions, id_replies):
+    idx = np.random.randint(len(id_questions))
+    id_question, id_reply = id_questions[idx], id_replies[idx]
+    return id_question, id_reply
 
-    # Get historic
-    entries_question = Question.objects.filter(user_id=user_id).order_by('t')
 
-    hist_question = np.zeros(t+1, dtype=int)
-    hist_replies = np.zeros(t+1, dtype=int)
-    hist_success = np.zeros(t+1, dtype=bool)
-    for i, e in enumerate(entries_question):
-        hist_question[i] = e.question
-        hist_replies[i] = e.reply
-        hist_success[i] = e.success
+def _new_question(user_id, t, id_questions, id_replies):
 
-    questions, meanings = teaching_material.selection.get_id()
+    if t == 0:
+        # Create teacher
+        teacher_id, teacher = _create_teacher(user_id=user_id,
+                                              n_item=len(id_questions))
+        question_idx, question_id = teacher.ask(t=t, questions=id_questions)
+        teacher.save()
 
-    if teacher_name == "Leitner":
-        teacher = Leitner()
-        teacher.ask(t, hist_success=hist_success, h)
+    else:
 
-    # question = k[q_index_question].kanji
-    # correct_answer = k[index_question].meaning
-    #
-    # possible_replies = [k[i].meaning for i in index_poss_replies]
-    #
-    # correct_answer_idx = possible_replies.index(correct_answer)
-    #
-    # # Return dic for JSON reply to client
-    # question_dic = {
-    #     'userId': user_id,
-    #     't': t,
-    #     'tMax': t_max,
-    #     'question': q,
-    #     'possibleReplies': possible_replies,
-    #     'idxCorrectAnswer': correct_answer_idx,
-    #     'idxPossibleReplies':
-    # }
+        # Get historic
+        entries_question = Question.objects.filter(user_id=user_id).order_by('t')
+
+        hist_question = np.zeros(t+1, dtype=int)
+        hist_success = np.zeros(t+1, dtype=bool)
+        for i, e in enumerate(entries_question):
+            hist_question[i] = e.question
+            hist_success[i] = e.success
+
+        # Get teacher
+        teacher = Leitner.objects.get(user_id=user_id)
+        question_idx, question_id = teacher.ask(
+            t=t,
+            hist_success=hist_success,
+            hist_question=hist_question,
+            questions=id_questions)
+        teacher.save()
+
+    return question_id, id_replies[question_idx]
+
+
+@Atomic
+def _create_teacher(user_id, n_item):
+
+    teacher = Leitner(user_id=user_id, n_item=n_item)
+    teacher.save()
+    return teacher.id, teacher
 
 
 @Atomic
@@ -115,24 +157,21 @@ def _register_question(reply):
     user_id = reply['userId']
     t = reply['t']
     success = reply['success']
-    question = reply['idQuestion']
-    reply__ = reply['idReply']
+    id_question = reply['idQuestion']
+    id_reply = reply['idReply']
+    id_possible_replies = reply[f'idPossibleReplies']
     time_display = _convert_to_time(reply['timeDisplay'])
     time_reply = _convert_to_time(reply['timeReply'])
 
-    q = Question()
     question = Question(
         user_id=user_id,
         t=t,
-        question=question,
-        reply=reply__,
+        question=id_question,
+        reply=id_reply,
         success=success,
         time_display=time_display,
-        time_reply=time_reply
+        time_reply=time_reply,
+        possible_replies=id_possible_replies
     )
-    for i in range(N_POSSIBLE_REPLIES):
-        setattr(q, f'possible_reply_{i}', reply[f'idPossibleReplies'[i]])
-
     question.save()
 
-    return user_id, t
