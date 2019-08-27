@@ -10,7 +10,6 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 # Your application specific imports
-from task.models import Parameter
 from teaching_material.models import Kanji
 
 from utils import AskUser
@@ -23,7 +22,7 @@ def has_numbers(string):
 
 def split(meanings):
 
-    m = meanings.split(";")[0].split(",")[0] # .split('(')[0]
+    m = meanings.split(";")[0].split(",")[0]  # .split('(')[0]
 
     if not has_numbers(m):
         m = m.split('.')[0]
@@ -97,43 +96,12 @@ def fill_kanji_table():
     # os.system('psql ActiveTeaching < data/kanji_content.sql')
 
 
-def add_default_parameters(t_max=100, use_predefined_question=0, test=0):
-
-    try:
-        p1 = Parameter()
-        p1.name = "t_max"
-        p1.value = t_max
-        p1.save()
-
-        p2 = Parameter()
-        p2.name = "use_predefined_question"
-        p2.value = use_predefined_question
-        p2.save()
-
-        p3 = Parameter()
-        p3.name = "test"
-        p3.value = test
-        p3.save()
-
-        print("Parameters have been set to the following values:\n")
-        for p in (p1, p2, p3):
-            print(f'{p.name}: {p.value}\n')
-
-    except (django.db.IntegrityError,
-            django.db.OperationalError,
-            django.db.utils.OperationalError,
-            psycopg2.IntegrityError,
-            psycopg2.OperationalError):
-        print("Parameters seem to have already been set.")
-
-
 def main():
 
     print("I will fill the kanji table and add default parameters.")
     print('Warning: Filling the kanji table will erase actual content if any.')
 
     fill_kanji_table()
-    add_default_parameters()
 
     # # Get common significations
     # get_common_significations()

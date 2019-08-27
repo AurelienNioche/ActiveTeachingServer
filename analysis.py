@@ -8,7 +8,7 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 # Your application specific imports
-from task.models import User, Question
+from user_data.models import Question, User
 
 
 def main():

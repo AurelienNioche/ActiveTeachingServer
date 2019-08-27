@@ -3,15 +3,11 @@ import numpy as np
 
 class GenericTeacher:
 
-    def __init__(self, n_item, verbose=False):
-
-        self.n_item = n_item
-        self.verbose = verbose
-
-    def ask(self,
+    @classmethod
+    def ask(cls,
             t=None,
             hist_success=None,
-            hist_item=None,
+            hist_questions=None,
             task_param=None,
             student_param=None,
             student_model=None,
@@ -19,13 +15,13 @@ class GenericTeacher:
             n_iteration=None,
             n_possible_replies=None):
 
-        item = \
-            self._get_next_node(
+        question = \
+            cls._get_next_node(
                 t=t,
                 n_item=n_item,
                 n_iteration=n_iteration,
                 hist_success=hist_success,
-                hist_item=hist_item,
+                hist_questions=hist_questions,
                 task_param=task_param,
                 student_param=student_param,
                 student_model=student_model)
@@ -37,12 +33,13 @@ class GenericTeacher:
         else:
             return item
 
-    def _get_next_node(self, **kwargs):
-        raise NotImplementedError(f"{type(self).__name__} is a meta-class."
+    @classmethod
+    def _get_next_node(cls, **kwargs):
+        raise NotImplementedError(f"{type(cls).__name__} is a meta-class."
                                   "This method need to be overridden")
 
     @staticmethod
-    def _get_possible_replies(item, n_item, n_possible_replies):
+    def _get_possible_replies(question, n_item, n_possible_replies):
 
         # Select randomly possible replies, including the correct one
         all_replies = list(range(n_item))

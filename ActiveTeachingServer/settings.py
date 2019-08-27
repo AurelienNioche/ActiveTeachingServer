@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'user_data.apps.UserDataConfig',
     'teaching_material.apps.TeachingMaterialConfig',
     'task.apps.TaskConfig',
     'channels',

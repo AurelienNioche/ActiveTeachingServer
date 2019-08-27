@@ -109,3 +109,4 @@ task/migrations/
 /settings/migrations/
 templates/
 /teaching_material/migrations/
+/user_data/migrations/

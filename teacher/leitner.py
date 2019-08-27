@@ -147,7 +147,10 @@ class Leitner(GenericTeacher):
 
         return items_arr
 
-    def _get_next_node(self, t, hist_success, hist_item, **kwargs):
+    def _get_next_node(self, t,
+                       hist_success, hist_questions,
+                       questions, replies,
+                       **kwargs):
         """
         :return: integer (index of the question to ask)
 
@@ -165,31 +168,33 @@ class Leitner(GenericTeacher):
         """
         if t == 0:
             # No past memory, so a random question shown from learning set
-            random_question = np.random.randint(0, self.n_item)
-            self.taboo = random_question
-            return int(random_question)
+            idx_question = np.random.randint(0, self.n_item)
 
-        self.modify_sets(hist_success=hist_success, t=t)
-        self.update_wait_time()
-
-        # Criteria 1, get due items
-        due_items = self.find_due_items()
-
-        # preference for seen item
-        seen_due_items, count = self.find_due_seen_items(
-            due_items=due_items, hist_item=hist_item)
-
-        # items with maximum waiting time
-        max_overdue_items = self.find_max_waiting(seen_due_items[:count])
-
-        # pick item in lowest box
-        least_box_items = self.pick_least_box(max_overdue_items)
-
-        if len(least_box_items) > 1:
-            pick_question_index = np.random.randint(len(least_box_items))
-            new_question = least_box_items[pick_question_index]
         else:
-            new_question = least_box_items[0]
 
-        self.taboo = new_question
-        return new_question
+            hist_item = [questions.index(i) for i in hist_questions]
+
+            self.modify_sets(hist_success=hist_success, t=t)
+            self.update_wait_time()
+
+            # Criteria 1, get due items
+            due_items = self.find_due_items()
+
+            # preference for seen item
+            seen_due_items, count = self.find_due_seen_items(
+                due_items=due_items, hist_item=hist_item)
+
+            # items with maximum waiting time
+            max_overdue_items = self.find_max_waiting(seen_due_items[:count])
+
+            # pick item in lowest box
+            least_box_items = self.pick_least_box(max_overdue_items)
+
+            if len(least_box_items) > 1:
+                pick_question_index = np.random.randint(len(least_box_items))
+                idx_question = least_box_items[pick_question_index]
+            else:
+                idx_question = least_box_items[0]
+
+        self.taboo = idx_question
+        return questions[idx_question]

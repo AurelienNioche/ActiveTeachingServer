@@ -139,4 +139,4 @@ class Kanji(models.Model):
     class Meta:
 
         db_table = 'kanji'
-        app_label = 'task'
+        app_label = 'teaching_material'

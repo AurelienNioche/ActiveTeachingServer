@@ -1,33 +1,6 @@
 from django.contrib import admin
 
 # Register your models here.
-from . models import User, Question
-from teaching_material.models import Kanji
 
-from settings.models import BoolParameter
-from settings.fixed_parameters import n_possible_replies
-
-
-class UserAdmin(admin.ModelAdmin):
-    list_display = (
-        "id", "registration_time")
-    # "username", "gender", "age", "mother_tongue", "other_language",
-
-
-class QuestionAdmin(admin.ModelAdmin):
-    list_display = (
-        "user_id", "t", "question", "correct_answer", "reply", "time_display", "time_reply") \
-        + tuple(f"possible_reply_{i}" for i in range(n_possible_replies))
-
-
-class KanjiAdmin(admin.ModelAdmin):
-    list_display = (
-        "id", "kanji", "meaning", "translation_of_on", "translation_of_kun", "grade")
-    # , "reading_within_joyo", "reading_beyond_joyo")
-
-
-admin.site.register(User, UserAdmin)
-admin.site.register(Question, QuestionAdmin)
-admin.site.register(Kanji, KanjiAdmin)
 
 
