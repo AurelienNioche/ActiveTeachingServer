@@ -64,7 +64,7 @@ Load sql backup
     python3 prepare_db.py
     
    
-## Run 
+## Run
 
 Run Django server using the Django command
 
