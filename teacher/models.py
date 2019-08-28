@@ -7,7 +7,7 @@ import numpy as np
 
 class GenericTeacher:
 
-    def ask(cls,
+    def ask(self,
             t=None,
             hist_success=None,
             hist_question=None,
@@ -19,7 +19,7 @@ class GenericTeacher:
             n_iteration=None):
 
         return \
-            cls._get_next_node(
+            self._get_next_node(
                 t=t,
                 questions=questions,
                 replies=replies,
@@ -30,8 +30,8 @@ class GenericTeacher:
                 student_param=student_param,
                 student_model=student_model)
 
-    def _get_next_node(cls, **kwargs):
-        raise NotImplementedError(f"{type(cls).__name__} is a meta-class."
+    def _get_next_node(self, **kwargs):
+        raise NotImplementedError(f"{type(self).__name__} is a meta-class."
                                   "This method need to be overridden")
 
     @staticmethod
@@ -58,11 +58,11 @@ class Leitner(models.Model, GenericTeacher):
 
     # array of size n_item representing the box
     #             number of i^th item at i^th index.
-    learning_progress = ArrayField(models.IntegerField(), default=list)
+    box = ArrayField(models.IntegerField(), default=list)
 
     #  array of size n_item representing the waiting time
     #             of i^th item at i^th index.
-    wait_time_arr = ArrayField(models.IntegerField(), default=list)
+    waiting_time = ArrayField(models.IntegerField(), default=list)
 
     class Meta:
 
@@ -80,9 +80,10 @@ class Leitner(models.Model, GenericTeacher):
             * Move an item to the previous box for a failure.
         """
         success = hist_success[t-1]
-        move = [-1, 1][success]
-
-        self.learning_progress[self.taboo] += move
+        if success:
+            self.box[self.taboo] += 1
+        elif self.box[self.taboo] >= 1:
+            self.box[self.taboo] -= 1
 
     def update_wait_time(self):
         """
@@ -94,10 +95,10 @@ class Leitner(models.Model, GenericTeacher):
 
         for i in range(self.n_item):
             if i != self.taboo:
-                self.wait_time_arr[i] += 1
+                self.waiting_time[i] += 1
             else:
-                taboo_box = self.learning_progress[self.taboo]
-                self.wait_time_arr[self.taboo] = \
+                taboo_box = self.box[self.taboo]
+                self.waiting_time[self.taboo] = \
                     -(taboo_box * self.delay_factor)
 
     def find_due_items(self):
@@ -107,7 +108,7 @@ class Leitner(models.Model, GenericTeacher):
 
         Suppose there exist no due item then pick all items except taboo.
         """
-        result = np.where(np.asarray(self.wait_time_arr) > 0)
+        result = np.where(np.asarray(self.waiting_time) > 0)
         arr = result[0]
         if len(arr) == 0:
             complete_arr = np.arange(self.n_item)
@@ -149,7 +150,7 @@ class Leitner(models.Model, GenericTeacher):
         max_wait = float('-inf')
         arr = None
         for i in range(len(items_arr)):
-            wait_time_item = self.wait_time_arr[items_arr[i]]
+            wait_time_item = self.waiting_time[items_arr[i]]
             if max_wait < wait_time_item:
                 arr = [items_arr[i]]
                 max_wait = wait_time_item
@@ -170,7 +171,7 @@ class Leitner(models.Model, GenericTeacher):
         items_arr = []
         min_box = float('inf')
         for item in max_overdue_items:
-            box = self.learning_progress[item]
+            box = self.box[item]
             if box < min_box:
                 items_arr = [item]
                 min_box = box
@@ -202,8 +203,8 @@ class Leitner(models.Model, GenericTeacher):
         if t == 0:
             print(self.n_item)
             # Initialize the arrays
-            self.learning_progress = [0 for _ in range(self.n_item)]
-            self.wait_time_arr = [0 for _ in range(self.n_item)]
+            self.box = [0 for _ in range(self.n_item)]
+            self.waiting_time = [0 for _ in range(self.n_item)]
 
             # No past memory, so a random question shown from learning set
             idx_question = np.random.randint(0, self.n_item)
