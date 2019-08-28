@@ -147,6 +147,9 @@ def summarize(p_recall,
         ax.set_ylim((-0.01, 1.01))
         ax.set_yticks((0, 0.5, 1))
 
+    else:
+        ax.set_ylim((-0.01, np.max(mean) + 0.01))
+
     if ax is None:
         save_fig(fig_name=fig_name)
 
