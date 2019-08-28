@@ -59,7 +59,7 @@ Create superuser in order to have access to admin interface
     
 #### Import Kanji data
     
-Import kanji data in db
+Load sql backup
     
     python3 prepare_db.py
     
