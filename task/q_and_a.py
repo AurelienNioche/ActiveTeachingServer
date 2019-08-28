@@ -48,16 +48,17 @@ def get_question(reply):
     id_questions, id_replies = teaching_material.selection.get_id()
 
     if register_replies:
-        id_question, id_reply = \
+        id_question = \
             _new_question(user_id=user_id, t=t,
-                          id_questions=id_questions,
-                          id_replies=id_replies
+                          id_questions=id_questions
                           )
 
     else:
-        id_question, id_reply = \
+        id_question = \
             _random_question(id_questions=id_questions,
                              id_replies=id_replies)
+
+    id_reply = id_replies[id_question]
 
     id_possible_replies = \
         Leitner.get_possible_replies(
@@ -91,19 +92,18 @@ def _convert_to_time(string_time):
     return datetime.strptime(string_time, '%Y-%m-%d %H:%M:%S.%f')
 
 
-def _random_question(id_questions, id_replies):
-    idx = np.random.randint(len(id_questions))
-    id_question, id_reply = id_questions[idx], id_replies[idx]
-    return id_question, id_reply
+def _random_question(id_questions):
+    id_question = np.random.randint(len(id_questions))
+    return id_question
 
 
-def _new_question(user_id, t, id_questions, id_replies):
+def _new_question(user_id, t, id_questions):
 
     if t == 0:
         # Create teacher
         teacher_id, teacher = _create_teacher(user_id=user_id,
                                               n_item=len(id_questions))
-        question_idx, question_id = teacher.ask(t=t, questions=id_questions)
+        question_id = teacher.ask(t=t, questions=id_questions)
         teacher.save()
 
     else:
@@ -122,14 +122,14 @@ def _new_question(user_id, t, id_questions, id_replies):
 
         # Get teacher
         teacher = Leitner.objects.get(user_id=user_id)
-        question_idx, question_id = teacher.ask(
+        question_id = teacher.ask(
             t=t,
             hist_success=hist_success,
             hist_question=hist_question,
             questions=id_questions)
         teacher.save()
 
-    return question_id, id_replies[question_idx]
+    return question_id
 
 
 @Atomic

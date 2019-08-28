@@ -1,9 +1,13 @@
 from django.db import models
 
+
 # Create your models here.
 class Kanji(models.Model):
 
     id = models.IntegerField(primary_key=True)
+
+    index = models.IntegerField(default=-1)
+
     kanji = models.CharField(db_column='Kanji', max_length=255, blank=True, null=True)  # Field name made lowercase.
     meaning = models.CharField(max_length=2555, blank=True, null=True)
 

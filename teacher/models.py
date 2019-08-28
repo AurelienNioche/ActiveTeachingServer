@@ -38,7 +38,7 @@ class GenericTeacher:
     def get_possible_replies(correct_reply, replies, n_possible_replies):
 
         # Select randomly possible replies, including the correct one
-        all_replies = list(replies)
+        all_replies = list(np.unique(replies))
         all_replies.remove(correct_reply)
 
         possible_replies = \
@@ -210,8 +210,6 @@ class Leitner(models.Model, GenericTeacher):
             idx_question = np.random.randint(0, self.n_item)
 
         else:
-            questions = list(questions)
-            hist_item = [questions.index(i) for i in hist_question]
 
             self.modify_sets(hist_success=hist_success, t=t)
             self.update_wait_time()
@@ -221,7 +219,7 @@ class Leitner(models.Model, GenericTeacher):
 
             # preference for seen item
             seen_due_items, count = self.find_due_seen_items(
-                due_items=due_items, hist_item=hist_item)
+                due_items=due_items, hist_item=hist_question)
 
             # items with maximum waiting time
             max_overdue_items = self.find_max_waiting(seen_due_items[:count])
@@ -236,4 +234,4 @@ class Leitner(models.Model, GenericTeacher):
                 idx_question = least_box_items[0]
 
         self.taboo = idx_question
-        return idx_question, questions[idx_question]
+        return idx_question

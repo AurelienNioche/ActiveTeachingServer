@@ -96,6 +96,14 @@ def fill_kanji_table():
     # os.system('psql ActiveTeaching < data/kanji_content.sql')
 
 
+def create_index():
+
+    entries = Kanji.objects.all().order_by('grade')
+    for i, e in enumerate(entries):
+        e.index = i
+        e.save()
+
+
 def main():
 
     print("I will fill the kanji table and add default parameters.")
@@ -109,5 +117,5 @@ def main():
 
 if __name__ == "__main__":
 
-    main()
+    create_index()
     # User.objects.all().delete()

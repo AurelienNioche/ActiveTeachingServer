@@ -2,26 +2,22 @@ import numpy as np
 
 from teaching_material.models import Kanji
 
-__id__, strokes = \
-    np.array(Kanji.objects.values_list('id', 'strokes').order_by('id')).T
+
 kanji, meaning = \
-    np.array(Kanji.objects.values_list('kanji', 'meaning')
-                          .order_by('id')).T
+    np.array(
+        Kanji.objects.values_list('kanji', 'meaning').order_by('index')
+    ).T
 
 unique_meaning, ___idx___, __inverse__ = np.unique(meaning,
                                                    return_index=True,
                                                    return_inverse=True)
 
-id_kanji = __id__
-id_meaning = __id__[___idx___][__inverse__]
+id_kanji = np.arange(len(kanji))
+id_meaning = id_kanji[___idx___][__inverse__]
 
-# str_questions = np.zeros(n, dtype=str)
-# str_replies = np.zeros(n, dtype=str)
-#
-# [e.kanji for e in entries]
-# str_replies = [e.meaning for e in entries]
-#
-# id_questions = [e.id for e in entries]
+# assert len(id_kanji) == len(id_meaning)
+# for i in range(len(id_kanji)):
+#     assert meaning[id_meaning[i]] == meaning[i]
 
 print(kanji)
 print(meaning)
@@ -33,9 +29,8 @@ def total_number_of_items():
 
 def get_string_representation(id_question, id_possible_replies):
 
-    question = kanji[__id__ == id_question][0]
-    possible_replies = [meaning[np.where(__id__ == i)[0][0]]
-                        for i in id_possible_replies]
+    question = kanji[id_question]
+    possible_replies = [meaning[i] for i in id_possible_replies]
     return question, possible_replies
 
 
