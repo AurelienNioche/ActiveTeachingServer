@@ -31,7 +31,12 @@ def main():
     assert entries_question.count() > 0, \
         f"Are sure that user {user_id} exists?"
 
-    n_iteration = 10   # entries_question.count()
+    n_iteration = entries_question.count()
+
+    agent = ActR(
+        n_iteration=n_iteration,
+        param={"d": 0.5, "tau": 0.01, "s": 0.06}
+    )
 
     hist_question = np.zeros(n_iteration, dtype=int)
     hist_success = np.zeros(n_iteration, dtype=bool)
@@ -47,14 +52,7 @@ def main():
         seen[question, t:] = True
         print("t", t, "n_seen", np.sum(seen[:, t]))
 
-    print(seen)
-    print('hist question', hist_question)
-    print('hist success', hist_success)
-
-    agent = ActR(
-        n_iteration=1000,
-        param={"d": 0.5, "tau": 0.01, "s": 0.06}
-    )
+        agent.learn(item=question)
 
     p_recall_hist = p_recall_over_time_after_learning(
         agent=agent, n_iteration=n_iteration, n_item=n_item,
@@ -64,6 +62,7 @@ def main():
         p_recall=p_recall_hist,
         seen=seen,
         successes=hist_success,
+        normalize=False,
     )
 
 
