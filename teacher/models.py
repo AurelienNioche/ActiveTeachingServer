@@ -53,6 +53,7 @@ class Leitner(models.Model, GenericTeacher):
 
     user_id = models.IntegerField(default=-1)
     delay_factor = models.IntegerField(default=2)
+    box_min = models.IntegerField(default=1)
     n_item = models.IntegerField(default=-1)
     taboo = models.IntegerField(default=-1)
 
@@ -82,7 +83,7 @@ class Leitner(models.Model, GenericTeacher):
         success = hist_success[t-1]
         if success:
             self.box[self.taboo] += 1
-        elif self.box[self.taboo] >= 1:
+        elif self.box[self.taboo] > self.box_min:
             self.box[self.taboo] -= 1
 
     def update_wait_time(self):
@@ -97,9 +98,8 @@ class Leitner(models.Model, GenericTeacher):
             if i != self.taboo:
                 self.waiting_time[i] += 1
             else:
-                taboo_box = self.box[self.taboo]
-                self.waiting_time[self.taboo] = \
-                    -(taboo_box * self.delay_factor)
+                self.waiting_time[self.taboo] \
+                    = - self.delay_factor**self.box[self.taboo]
 
     def find_due_items(self):
         """
@@ -108,12 +108,11 @@ class Leitner(models.Model, GenericTeacher):
 
         Suppose there exist no due item then pick all items except taboo.
         """
-        result = np.where(np.asarray(self.waiting_time) > 0)
-        arr = result[0]
-        if len(arr) == 0:
+        due_items = np.where(np.asarray(self.waiting_time) > 0)[0]
+        if len(due_items) == 0:
             complete_arr = np.arange(self.n_item)
-            arr = np.delete(complete_arr, self.taboo)
-        return arr
+            due_items = np.delete(complete_arr, self.taboo)
+        return due_items
 
     @staticmethod
     def find_due_seen_items(due_items, hist_item):

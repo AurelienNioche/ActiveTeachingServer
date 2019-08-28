@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy.stats
+# import scipy.stats
 
 from plot.tools.generic import save_fig
 
@@ -149,7 +149,8 @@ def summarize(p_recall, fig_name='memory_trace_summarize.pdf',
 
 
 def summarize_over_seen(
-        p_recall, seen, fig_name='memory_trace_summarize_over_seen.pdf',
+        p_recall, seen,
+        fig_name='memory_trace_summarize_over_seen.pdf',
         p_recall_time=None,
         font_size=12, label_size=8,
         line_width=1,

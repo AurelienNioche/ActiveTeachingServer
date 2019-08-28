@@ -30,7 +30,7 @@ def backup_user_data():
         f'{DB_NAME} ' \
         f'--inserts ' \
         f'--clean ' \
-        f'> {BKP_FILE}.sql'
+        f'> {BKP_FILE}'
 
     print(f"Run command '{command}'")
     os.system(command)
