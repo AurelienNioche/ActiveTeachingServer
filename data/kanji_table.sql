@@ -16,6 +16,92 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+ALTER TABLE ONLY public.kanji DROP CONSTRAINT kanji_pkey;
+DROP TABLE public.kanji;
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: kanji; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.kanji (
+    id integer NOT NULL,
+    "Kanji" character varying(255),
+    meaning character varying(2555),
+    "Strokes" integer,
+    "Grade" integer,
+    "Kanji Classification" character varying(255),
+    "JLPT-test" character varying(255),
+    "Name of Radical" character varying(255),
+    "Radical Freq." integer,
+    "Reading within Joyo" character varying(255),
+    "Reading beyond Joyo" character varying(255),
+    "# of On" integer,
+    "On within Joyo" character varying(255),
+    "Kanji ID in Nelson" integer,
+    "# of Meanings of On" integer,
+    "Translation of On" text,
+    "# of Kun within Joyo with inflections" integer,
+    "# of Kun within Joyo without inflections" integer,
+    "Kun within Joyo" character varying(255),
+    "# of Meanings of Kun" integer,
+    "Translation of Kun" text,
+    "Year of Inclusion" integer,
+    "Kanji Frequency with Proper Nouns" integer,
+    "Acc. Freq. On with Proper Nouns" integer,
+    "Acc. Freq. Kun with Proper Nouns" integer,
+    "On Ratio with Proper Nouns" numeric(4,3),
+    "Acc. Freq. On beyond Joyo with Proper Nouns" integer,
+    "Acc. Freq. Kun beyond Joyo with Proper Nouns" integer,
+    "Acc. On Ratio beyond Joyo with Proper Nouns" numeric(4,3),
+    "Kanji Frequency without Proper Nouns" integer,
+    "Acc. Freq. On without Proper Nouns" integer,
+    "Acc. Freq. Kun without Proper Nouns" integer,
+    "On Ratio without Proper Nouns" numeric(1000,999),
+    "Acc. Freq. On beyond Joyo without Proper Nouns" integer,
+    "Acc. Freq. Kun beyond Joyo without Proper Nouns" integer,
+    "On Ratio beyond Joyo without Proper Nouns" numeric(4,3),
+    "Left Kanji Prod." integer,
+    "Right Kanji Prod." integer,
+    "Acc. Freq. Left Prod." integer,
+    "Acc. Freq. Right Prod." integer,
+    "Symmetry" character varying(255),
+    "Left Entropy" numeric(10,9),
+    "Right Entropy" numeric(10,9),
+    "Left1sound" character varying(255),
+    "Left1freq" integer,
+    "Left2sound" character varying(255),
+    "Left2freq" integer,
+    "Left3sound" character varying(255),
+    "Left3freq" integer,
+    "Left4sound" character varying(255),
+    "Left4freq" integer,
+    "Left5sound" character varying(255),
+    "Left5freq" integer,
+    "Left6sound" character varying(255),
+    "Left6freq" integer,
+    "Right1sound" character varying(255),
+    "Right1freq" integer,
+    "Right2sound" character varying(255),
+    "Right2freq" integer,
+    "Right3sound" character varying(255),
+    "Right3freq" integer,
+    "Right4sound" character varying(255),
+    "Right4freq" integer,
+    "Right5sound" character varying(255),
+    "Right5freq" integer,
+    "Right6sound" character varying(255),
+    "Right6freq" integer,
+    "Right7sound" character varying(255),
+    "Right7freq" integer,
+    index integer NOT NULL
+);
+
+
+ALTER TABLE public.kanji OWNER TO postgres;
+
 --
 -- Data for Name: kanji; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2156,6 +2242,14 @@ INSERT INTO public.kanji VALUES (1426, '鎮', 'Town', 18, 7, '形声 Phonetic', 
 INSERT INTO public.kanji VALUES (1620, '廃', 'Waste', 12, 7, '形声 Phonetic', '1', 'Madare', 17, 'ハイ、すた-れる、すた-る', '', 1, 'hai', 1630, 3, 'obsolescence; cessation; discarding', 2, 1, 'suta(reru), suta(ru)', 5, 'become useless, get out of date, die out; be abolished; decline (in prosperity) ', 1981, 53869, 53625, 216, 0.996, 0, 0, 0.996, 53867, 53625, 216, 0.996000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, 0, 0, 0.996, 9, 32, 8446, 41705, 'R', 2.075523907, 2.263533405, 'hai', 41, '', 0, '', 0, '', 0, '', 0, '', 0, 'pai', 6, 'hai', 1, '', 0, '', 0, '', 0, '', 0, '', 0, 1898);
 INSERT INTO public.kanji VALUES (1674, '煩', 'Troubles', 13, 7, '会意 Com. Ideographic', '1', 'Hi, Hihen, Renga', 26, 'ハン、[ボン]、わずら-う、わずら-わす', '', 2, 'han, [bon]', 3454, 2, 'worry, trouble', 2, 1, 'wazura(u), wazura(wasu)', 9, 'be ill; worry, be afflicted, be in pain, be troubled. trouble, keep (someone) busy, disturb, annoy ', 1981, 868, 658, 207, 0.761, 0, 0, 0.761, 868, 658, 207, 0.761000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, 0, 0, 0.761, 0, 5, 0, 567, 'R', 0.000000000, 1.420986749, 'han', 436, 'bon', 131, '', 0, '', 0, '', 0, '', 0, '', 0, '', 0, '', 0, '', 0, '', 0, '', 0, '', 0, 1929);
 INSERT INTO public.kanji VALUES (1765, '伏', 'Surrender', 6, 7, '会意 Com. Ideographic', '1', 'Hito, Ninben, Hitoyane', 104, 'フク、ふ-せる、ふ-す', '', 1, 'fuku', 139, 3, 'bend down, bow down, lie prostrate ', 2, 1, 'fu(seru), fu(su)', 9, 'bend down, bow down, lie prostrate. turn over, lay face down; cover; lay (pipes), lay (an ambush); hide ', 1981, 12862, 4858, 7921, 0.380, 0, 0, 0.380, 7413, 4855, 2485, 0.661000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, 0, 0, 0.661, 10, 7, 2226, 1339, 'S', 1.503324883, 1.645138033, 'huku', 1, 'hu', 16, '', 0, '', 0, '', 0, '', 0, 'puku', 1, 'huku', 751, 'bu', 124, 'buku', 6, '', 0, '', 0, '', 0, 1977);
+
+
+--
+-- Name: kanji kanji_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.kanji
+    ADD CONSTRAINT kanji_pkey PRIMARY KEY (id);
 
 
 --

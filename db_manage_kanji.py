@@ -1,6 +1,4 @@
 import os
-import django.db.utils
-import psycopg2
 
 # Django specific settings
 os.environ.setdefault("DJANGO_SETTINGS_MODULE",
@@ -97,7 +95,7 @@ def fill_single_meaning_column():
 @AskUser
 def fill_kanji_table():
 
-    Kanji.objects.all().delete()
+    # Kanji.objects.all().delete()
     os.system(f'psql {DB_NAME} < {BKP_FILE}')
     # os.system('psql ActiveTeaching < data/kanji_content.sql')
 
@@ -105,14 +103,17 @@ def fill_kanji_table():
 @AskUser
 def backup_kanji_table():
 
-    os.system(
-        f'pg_dump '
-        f'--data-only  '
-        f'--table {Kanji._meta.db_table} '
-        f'ActiveTeaching '
-        f'--inserts '
+    command = \
+        f'pg_dump ' \
+        f'ActiveTeaching ' \
+        f'--table {Kanji._meta.db_table} ' \
+        f'--inserts ' \
+        f'--clean ' \
         f'> {BKP_FILE}'
-    )
+
+    print(command)
+
+    os.system(command)
 
 
 def create_index():
@@ -136,5 +137,5 @@ def main():
 
 if __name__ == "__main__":
 
-    main()
+    fill_kanji_table()
 

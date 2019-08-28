@@ -46,7 +46,7 @@ Create user and db
 
 Move to the directory containing this script
 
-    cd <path to the_parent folder>/ActiveTeachingServer
+    cd <path to the parent folder>/ActiveTeachingServer
 
 Prepare the DB (make migrations and migrate)
 

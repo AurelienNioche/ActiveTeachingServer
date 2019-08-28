@@ -6,7 +6,8 @@ from . models import Kanji
 # Register your models here.
 class KanjiAdmin(admin.ModelAdmin):
     list_display = (
-        "id", "kanji", "meaning", "translation_of_on", "translation_of_kun",
+        "id", "index", "kanji", "meaning",
+        "translation_of_on", "translation_of_kun",
         "grade", "strokes")
     # , "reading_within_joyo", "reading_beyond_joyo")
 
