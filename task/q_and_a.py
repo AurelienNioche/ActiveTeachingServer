@@ -109,7 +109,8 @@ def _new_question(user_id, t, id_questions):
     else:
 
         # Get historic
-        entries_question = Question.objects.filter(user_id=user_id).order_by('t')
+        entries_question = \
+            Question.objects.filter(user_id=user_id).order_by('t')
 
         hist_question = np.zeros(t, dtype=int)
         hist_success = np.zeros(t, dtype=bool)

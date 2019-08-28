@@ -96,8 +96,9 @@ def fill_single_meaning_column():
 def fill_kanji_table():
 
     # Kanji.objects.all().delete()
-    os.system(f'psql {DB_NAME} < {BKP_FILE}')
-    # os.system('psql ActiveTeaching < data/kanji_content.sql')
+    command = f'psql {DB_NAME} < {BKP_FILE}'
+    print(f"Run command '{command}'")
+    os.system(command)
 
 
 @AskUser
@@ -111,8 +112,7 @@ def backup_kanji_table():
         f'--clean ' \
         f'> {BKP_FILE}'
 
-    print(command)
-
+    print(f"Run command '{command}'")
     os.system(command)
 
 
@@ -124,18 +124,7 @@ def create_index():
         e.save()
 
 
-def main():
-
-    print("I will fill the kanji table and add default parameters.")
-    print('Warning: Filling the kanji table will erase actual content if any.')
-
-    fill_kanji_table()
-
-    # # Get common significations
-    # get_common_significations()
-
-
 if __name__ == "__main__":
 
-    fill_kanji_table()
+    backup_kanji_table()
 

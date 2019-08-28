@@ -31,9 +31,9 @@ class User(models.Model):
     # mother_tongue = models.TextField(blank=True, null=True)
     # other_language = models.TextField(blank=True, null=True)
     # t = models.IntegerField(blank=True, null=True, default=0)
-    teacher = models.CharField(max_length=255,
-                               blank=True, null=True,
-                               default='<empty>')
+    # teacher = models.CharField(max_length=255,
+    #                            blank=True, null=True,
+    #                            default='<empty>')
     registration_time = models.DateTimeField(default=now)
 
     class Meta:

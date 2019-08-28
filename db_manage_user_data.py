@@ -20,15 +20,20 @@ DB_NAME = DATABASES['default']['NAME']
 
 
 def backup_user_data():
-    os.system(
-        'pg_dump '
-        '--data-only  '
-        f'--table {Question._meta.db_table} '
-        f'--table {User._meta.db_table} '
-        f'--table {Leitner._meta.db_table} '
-        f'{DB_NAME} '
-        '--inserts '
-        f'> {BKP_FILE}.sql')
+
+    command = \
+        'pg_dump ' \
+        '--data-only  ' \
+        f'--table {Question._meta.db_table} ' \
+        f'--table {User._meta.db_table} ' \
+        f'--table {Leitner._meta.db_table} ' \
+        f'{DB_NAME} ' \
+        f'--inserts ' \
+        f'--clean ' \
+        f'> {BKP_FILE}.sql'
+
+    print(f"Run command '{command}'")
+    os.system(command)
 
 
 @AskUser
@@ -40,11 +45,10 @@ def _delete_user_data():
 
 @AskUser
 def _load_user_data():
-    Question.objects.all().delete()
-    User.objects.all().delete()
-    Leitner.objects.all().delete()
 
-    os.system(f'psql {DB_NAME} < {BKP_FILE}')
+    command = f'psql {DB_NAME} < {BKP_FILE}'
+    print(f"Run command '{command}'")
+    os.system(command)
 
 
 def load_user_data():
