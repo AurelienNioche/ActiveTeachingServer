@@ -136,5 +136,5 @@ def main():
 
 if __name__ == "__main__":
 
-    backup_kanji_table()
-    # User.objects.all().delete()
+    main()
+
