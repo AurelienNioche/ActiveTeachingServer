@@ -21,12 +21,15 @@ from teaching_material.models import Kanji
 
 def main():
 
-    user_id = 52
+    user_id = 60
 
     n_item = len(Kanji.objects.all())
 
     # Get historic
     entries_question = Question.objects.filter(user_id=user_id).order_by('t')
+
+    assert entries_question.count() > 0, \
+        f"Are sure that user {user_id} exists?"
 
     n_iteration = 10   # entries_question.count()
 
@@ -34,10 +37,14 @@ def main():
     hist_success = np.zeros(n_iteration, dtype=bool)
     seen = np.zeros((n_item, n_iteration), dtype=bool)
     for t in range(n_iteration):
-        hist_question[t] = entries_question[t].question
-        hist_success[t] = entries_question[t].success
 
-        seen[entries_question[t], t:] = True
+        question = entries_question[t].question
+        success = entries_question[t].success
+
+        hist_question[t] = question
+        hist_success[t] = success
+
+        seen[question, t:] = True
         print("t", t, "n_seen", np.sum(seen[:, t]))
 
     print(seen)

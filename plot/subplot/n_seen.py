@@ -39,19 +39,19 @@ def curve(seen, fig_name=None,
 
     # y-axis
     ax.set_ylabel('$N_{seen}$', fontsize=font_size)
-    ax.set_ylim((-0.01, 1.01))
 
-    if np.max(seen) <= 1:  # Scale is normalized
+    if normalize:  # Scale is normalized
+        ax.set_ylim((-0.01, 1.01))
         ax.set_yticks((0, 0.5, 1))
     # ax.yaxis.set_major_locator(MaxNLocator(integer=True))
 
-    # Horizontal lines
-    ax.axhline(0.5, linewidth=0.5, linestyle='dotted',
-               color='black', alpha=0.5)
-    ax.axhline(0.25, linewidth=0.5, linestyle='dotted',
-               color='black', alpha=0.5)
-    ax.axhline(0.75, linewidth=0.5, linestyle='dotted',
-               color='black', alpha=0.5)
+        # Horizontal lines
+        ax.axhline(0.5, linewidth=0.5, linestyle='dotted',
+                   color='black', alpha=0.5)
+        ax.axhline(0.25, linewidth=0.5, linestyle='dotted',
+                   color='black', alpha=0.5)
+        ax.axhline(0.75, linewidth=0.5, linestyle='dotted',
+                   color='black', alpha=0.5)
 
     if fig_name is not None:
         save_fig(fig_name=fig_name)

@@ -45,7 +45,7 @@ class ActR(Learner):
             # Time counter
             self.t = 0
             # History of presentation
-            self.hist = np.full(self.n_iteration, -99)
+            self.hist = np.full(self.n_iteration+1, -99)
         else:
             self.hist = hist
             self.t = t
@@ -238,13 +238,17 @@ class ActR(Learner):
 
     def learn(self, item, time=None, time_index=None):
 
-        if time_index is not None:
-            self.hist[time_index] = item
+        increment_t = 0
+
+        if time_index is None:
+            time_index = self.t
+            increment_t = 1
+
+        if time is not None:
             self.times[time_index] = time
-        else:
-            self.hist[self.t] = item
-            self.times[self.t] = time
-            self.t += 1
+
+        self.hist[time_index] = item
+        self.t += increment_t
 
     def unlearn(self, time_index=None):
 

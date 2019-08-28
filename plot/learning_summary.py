@@ -63,4 +63,4 @@ def summary(
         window=window
     )
 
-    save_fig(f"simulation_{extension}.pdf")
+    save_fig(f"simulation{extension}.pdf")

@@ -23,6 +23,8 @@ class ActRSocket(MySocket, ActR):
     def decide(self, id_possible_replies, id_question, id_correct_answer):
 
         recall = self.recall(item=id_question)
+
+        self.learn(item=id_question)
         if recall:
             return id_correct_answer
         else:
