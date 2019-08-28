@@ -72,6 +72,28 @@ Run Django server using the Django command
 
 ## Extra information
 
+#### Kanji table modifications
+
+To load table changes run:
+
+    prepare_db.py
+
+To save the table from db_manage_kanji.py run:
+
+    backup_kanji_table()
+
+
+#### User data modifications
+
+To save the data from db_manage_user_data.py run:
+
+    backup_user_data()
+
+To *delete* the data from db_manage_user_data.py run:
+ 
+    delete_user_data()
+
+
 #### Manipulations of DB
 
 Remove the db
