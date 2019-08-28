@@ -97,7 +97,8 @@ class Leitner(models.Model, GenericTeacher):
                 self.wait_time_arr[i] += 1
             else:
                 taboo_box = self.learning_progress[self.taboo]
-                self.wait_time_arr[self.taboo] = -(taboo_box * self.delay_factor)
+                self.wait_time_arr[self.taboo] = \
+                    -(taboo_box * self.delay_factor)
 
     def find_due_items(self):
         """
@@ -106,7 +107,7 @@ class Leitner(models.Model, GenericTeacher):
 
         Suppose there exist no due item then pick all items except taboo.
         """
-        result = np.where(self.wait_time_arr > 0)
+        result = np.where(np.asarray(self.wait_time_arr) > 0)
         arr = result[0]
         if len(arr) == 0:
             complete_arr = np.arange(self.n_item)

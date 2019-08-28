@@ -18,6 +18,9 @@ def on_message(ws, message):
 
     id_reply = int(np.random.choice(message['idPossibleReplies']))
     success = id_reply == message['idCorrectAnswer']
+    print("I got question", message["idQuestion"])
+    print("I replied", id_reply)
+    print(f"It was{' not ' if not success else ' '}a success")
 
     to_send = {
         'userId': message['userId'],
@@ -25,6 +28,7 @@ def on_message(ws, message):
         'registerReplies': message['registerReplies'],
         'teacher': 'leitner',
         't': message['t'],
+        'idQuestion': message["idQuestion"],
         'idCorrectAnswer': message['idCorrectAnswer'],
         'idPossibleReplies': message['idPossibleReplies'],
         'idReply': id_reply,
@@ -35,13 +39,14 @@ def on_message(ws, message):
 
     time.sleep(1)
     print(f"I'm sending {to_send}")
+    print('\n')
     ws.send(json.dumps(to_send))
 
     # thread.start_new_thread(run, ())
 
 
 def on_error(ws, error):
-    if error != 0:
+    if str(error) != '0':
         print(f"I got error: {error}")
 
 

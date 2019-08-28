@@ -42,8 +42,7 @@ def get_question(reply):
 
     else:
         if register_replies:
-            pass
-            # _register_question(reply)
+            _register_question(reply)
         t += 1
 
     id_questions, id_replies = teaching_material.selection.get_id()
@@ -112,11 +111,14 @@ def _new_question(user_id, t, id_questions, id_replies):
         # Get historic
         entries_question = Question.objects.filter(user_id=user_id).order_by('t')
 
-        hist_question = np.zeros(t+1, dtype=int)
-        hist_success = np.zeros(t+1, dtype=bool)
+        hist_question = np.zeros(t, dtype=int)
+        hist_success = np.zeros(t, dtype=bool)
         for i, e in enumerate(entries_question):
             hist_question[i] = e.question
             hist_success[i] = e.success
+
+        print('hist question', hist_question)
+        print('hist success', hist_success)
 
         # Get teacher
         teacher = Leitner.objects.get(user_id=user_id)
@@ -151,7 +153,6 @@ def _register_user():
     return u.id
 
 
-@Atomic
 def _register_question(reply):
 
     user_id = reply['userId']
