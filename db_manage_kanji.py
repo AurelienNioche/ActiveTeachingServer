@@ -3,7 +3,8 @@ import django.db.utils
 import psycopg2
 
 # Django specific settings
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ActiveTeachingServer.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE",
+                      "ActiveTeachingServer.settings")
 # Ensure settings are read
 from django.core.wsgi import get_wsgi_application
 
@@ -11,8 +12,12 @@ application = get_wsgi_application()
 
 # Your application specific imports
 from teaching_material.models import Kanji
+from ActiveTeachingServer.settings import DATABASES
 
 from utils import AskUser
+
+BKP_FILE = os.path.join("data", "kanji_table.sql")
+DB_NAME = DATABASES['default']['NAME']
 
 
 def has_numbers(string):
@@ -77,7 +82,8 @@ def fill_single_meaning_column():
 
         print(e.id)
 
-        m = extract_single_meaning(km=e.translation_of_kun, on=e.translation_of_on)
+        m = extract_single_meaning(km=e.translation_of_kun,
+                                   on=e.translation_of_on)
 
         # import googletrans
         # tr = googletrans.Translator()
@@ -92,8 +98,21 @@ def fill_single_meaning_column():
 def fill_kanji_table():
 
     Kanji.objects.all().delete()
-    os.system('psql ActiveTeaching < data/kanji_table.sql')
+    os.system(f'psql {DB_NAME} < {BKP_FILE}')
     # os.system('psql ActiveTeaching < data/kanji_content.sql')
+
+
+@AskUser
+def backup_kanji_table():
+
+    os.system(
+        f'pg_dump '
+        f'--data-only  '
+        f'--table {Kanji._meta.db_table} '
+        f'ActiveTeaching '
+        f'--inserts '
+        f'> {BKP_FILE}'
+    )
 
 
 def create_index():
@@ -117,5 +136,5 @@ def main():
 
 if __name__ == "__main__":
 
-    create_index()
+    backup_kanji_table()
     # User.objects.all().delete()

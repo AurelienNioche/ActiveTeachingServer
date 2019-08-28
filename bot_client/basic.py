@@ -22,9 +22,9 @@ class MySocket(websocket.WebSocketApp):
 
         self.n_iteration = n_iteration
 
-    def decide(self, possible_replies, **kwargs):
+    def decide(self, id_possible_replies, id_question, id_correct_answer):
 
-        return int(np.random.choice(possible_replies))
+        return np.random.choice(id_possible_replies)
 
     def on_message(self, message):
 
@@ -35,8 +35,17 @@ class MySocket(websocket.WebSocketApp):
             print("Done!")
             exit(0)
 
-        id_reply = self.decide(possible_replies=message['idPossibleReplies'])
-        success = id_reply == message['idCorrectAnswer']
+        id_possible_replies = message['idPossibleReplies']
+        id_correct_answer = message['idCorrectAnswer']
+        id_question = message['idQuestion']
+
+        id_reply = int(self.decide(
+            id_possible_replies=id_possible_replies,
+            id_question=id_question,
+            id_correct_answer=id_correct_answer,
+        ))
+
+        success = id_reply == id_correct_answer
         print("I got question", message["idQuestion"])
         print("I replied", id_reply)
         print(f"It was{' not ' if not success else ' '}a success")
@@ -47,9 +56,9 @@ class MySocket(websocket.WebSocketApp):
             'registerReplies': message['registerReplies'],
             'teacher': 'leitner',
             't': message['t'],
-            'idQuestion': message["idQuestion"],
-            'idCorrectAnswer': message['idCorrectAnswer'],
-            'idPossibleReplies': message['idPossibleReplies'],
+            'idQuestion': id_question,
+            'idCorrectAnswer': id_correct_answer,
+            'idPossibleReplies': id_possible_replies,
             'idReply': id_reply,
             'success': success,
             'timeDisplay': "2019-01-21 00:02:21.029309",
