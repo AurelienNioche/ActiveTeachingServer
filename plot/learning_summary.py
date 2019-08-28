@@ -8,6 +8,7 @@ from . tools.generic import save_fig
 def summary(
         p_recall, seen, successes,
         font_size=10, label_size=8, line_width=1,
+        normalize=True,
         extension='',
         window=np.inf
 ):
@@ -19,6 +20,7 @@ def summary(
     ax1 = axes[0]
     memory_trace.summarize(
         p_recall=p_recall,
+        normalize=normalize,
         ax=ax1,
         font_size=font_size,
         label_size=label_size,
@@ -38,6 +40,7 @@ def summary(
     ax3 = axes[2]
     n_learnt.curve(
         p_recall=p_recall,
+        normalize=normalize,
         ax=ax3,
         font_size=font_size,
         label_size=label_size,
@@ -47,6 +50,7 @@ def summary(
     ax4 = axes[3]
     n_seen.curve(
         seen=seen,
+        normalize=normalize,
         ax=ax4,
         font_size=font_size,
         label_size=label_size,

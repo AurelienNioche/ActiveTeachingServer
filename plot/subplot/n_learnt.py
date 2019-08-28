@@ -1,11 +1,12 @@
 import matplotlib.pyplot as plt
-# from matplotlib.ticker import MaxNLocator
+from matplotlib.ticker import MaxNLocator
 import numpy as np
 
 from plot.tools.generic import save_fig
 
 
 def curve(p_recall,
+          normalize,
           font_size=12, line_width=2,
           label_size=8, threshold=0.95,
           color='C0',
@@ -21,15 +22,10 @@ def curve(p_recall,
 
     learnt = p_recall[:] > threshold
     n_learnt = np.sum(learnt, axis=0)
-    y = n_learnt / n_item
+    y = n_learnt
 
-    # Horizontal lines
-    ax.axhline(0.5, linewidth=0.5, linestyle='dotted',
-               color='black', alpha=0.5)
-    ax.axhline(0.25, linewidth=0.5, linestyle='dotted',
-               color='black', alpha=0.5)
-    ax.axhline(0.75, linewidth=0.5, linestyle='dotted',
-               color='black', alpha=0.5)
+    if normalize:
+        y /= n_item
 
     # Plot
     ax.plot(y, color=color, linewidth=line_width)
@@ -48,9 +44,20 @@ def curve(p_recall,
 
     # y-axis
     ax.set_ylabel(f'N | $p_{{recall}} > {threshold}$', fontsize=font_size)
-    ax.set_ylim((-0.01, 1.01))
-    ax.set_yticks((0, 0.5, 1))
-    # ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+
+    if normalize:
+        # Horizontal lines
+        ax.axhline(0.5, linewidth=0.5, linestyle='dotted',
+                   color='black', alpha=0.5)
+        ax.axhline(0.25, linewidth=0.5, linestyle='dotted',
+                   color='black', alpha=0.5)
+        ax.axhline(0.75, linewidth=0.5, linestyle='dotted',
+                   color='black', alpha=0.5)
+
+        ax.set_ylim((-0.01, 1.01))
+        ax.set_yticks((0, 0.5, 1))
+    else:
+        ax.yaxis.set_major_locator(MaxNLocator(integer=True))
 
     if fig_name is not None:
         save_fig(fig_name=fig_name)

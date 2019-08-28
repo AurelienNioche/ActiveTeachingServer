@@ -69,7 +69,9 @@ def plot(p_recall_value,
         save_fig(fig_name_idx)
 
 
-def summarize(p_recall, fig_name='memory_trace_summarize.pdf',
+def summarize(p_recall,
+              normalize=True,
+              fig_name='memory_trace_summarize.pdf',
               p_recall_time=None,
               font_size=12,
               label_size=8,
@@ -99,14 +101,6 @@ def summarize(p_recall, fig_name='memory_trace_summarize.pdf',
 
     # for t in range(n_iteration):
     #     print(t, y[t], y1[t], y2[t])
-
-    # Horizontal lines
-    ax.axhline(0.5, linewidth=0.5, linestyle='dotted',
-               color='black', alpha=0.5)
-    ax.axhline(0.25, linewidth=0.5, linestyle='dotted',
-               color='black', alpha=0.5)
-    ax.axhline(0.75, linewidth=0.5, linestyle='dotted',
-               color='black', alpha=0.5)
 
     # Plot mean
     ax.plot(x, y, lw=line_width)
@@ -140,9 +134,21 @@ def summarize(p_recall, fig_name='memory_trace_summarize.pdf',
                    int(n_iteration * 0.75),
                    n_iteration))
 
-    # y-axis
-    ax.set_ylim((-0.01, 1.01))
-    ax.set_yticks((0, 0.5, 1))
+    if normalize:
+        # Horizontal lines
+        ax.axhline(0.5, linewidth=0.5, linestyle='dotted',
+                   color='black', alpha=0.5)
+        ax.axhline(0.25, linewidth=0.5, linestyle='dotted',
+                   color='black', alpha=0.5)
+        ax.axhline(0.75, linewidth=0.5, linestyle='dotted',
+                   color='black', alpha=0.5)
+
+        # y-axis
+        ax.set_ylim((-0.01, 1.01))
+        ax.set_yticks((0, 0.5, 1))
+
+    else:
+        ax.set_ylim((-0.01, np.max(mean) + 0.01))
 
     if ax is None:
         save_fig(fig_name=fig_name)

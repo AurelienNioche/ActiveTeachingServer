@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-# from matplotlib.ticker import MaxNLocator
+from matplotlib.ticker import MaxNLocator
 
 from plot.tools.generic import save_fig
 
@@ -43,7 +43,6 @@ def curve(seen, fig_name=None,
     if normalize:  # Scale is normalized
         ax.set_ylim((-0.01, 1.01))
         ax.set_yticks((0, 0.5, 1))
-    # ax.yaxis.set_major_locator(MaxNLocator(integer=True))
 
         # Horizontal lines
         ax.axhline(0.5, linewidth=0.5, linestyle='dotted',
@@ -52,6 +51,9 @@ def curve(seen, fig_name=None,
                    color='black', alpha=0.5)
         ax.axhline(0.75, linewidth=0.5, linestyle='dotted',
                    color='black', alpha=0.5)
+
+    else:
+        ax.yaxis.set_major_locator(MaxNLocator(integer=True))
 
     if fig_name is not None:
         save_fig(fig_name=fig_name)
