@@ -3,13 +3,13 @@
 Server part for the Active Teaching project.
 
 
-## Prerequisites
+## Dependencies
 
-### Python
+#### Python
 
     brew install python3
 
-### Python libraries
+#### Python libraries
 
 * django
 * psycopg2-binary (interaction with postgreSQL)
@@ -19,7 +19,7 @@ Server part for the Active Teaching project.
     
     pip3 install django psycopg2-binary channels websocket-client
     
-### PostgreSQL
+#### PostgreSQL
 
 Install postgresql (all commands are given considering the application running under MacOs)
 
@@ -33,13 +33,16 @@ OR if you don't want/need a background service:
 
     pg_ctl -D /usr/local/var/postgres start
 
+## Configuration
+
+#### PostgreSQL
+
 Create user and db
 
     createuser postgres
     createdb ActiveTeaching --owner postgres
 
-
-### Initialize Django
+#### Django
 
 Prepare the DB (make migrations and migrate)
 
@@ -50,34 +53,31 @@ Create superuser in order to have access to admin interface
 
     python3 manage.py createsuperuser
     
-### Import Kanji data
+#### Import Kanji data
     
 Import kanji data in db
     
     python3 prepare_db.py
     
    
-### Run Django server
-   
-Using the Django command
+## Run 
+
+Run Django server using the Django command
 
     python3 manage.py runserver
-    
-## Manipulations of DB
 
-Dump data for backing up in an already existing db
+## Extra information
 
-    pg_dump --data-only  --table question --table user ActiveTeaching --inserts > data/user_and_question_tables.sql
-
+#### Manipulations of DB
 
 Remove the db
     
     dropdb ActiveTeaching 
 
     
-## Sources
+#### Sources
 
-### Kanji database
+*  Kanji database
    
    Coming from Tamaoka, K., Makioka, S., Sanders, S. & Verdonschot, R.G. (2017). 
 www.kanjidatabase.com: a new interactive online database for psychological and linguistic research on Japanese kanji 
