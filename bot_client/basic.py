@@ -10,6 +10,7 @@ import websocket
 class MySocket(websocket.WebSocketApp):
 
     def __init__(self, url="ws://localhost:8000/",
+                 waiting_time=1,
                  n_iteration=10,
                  **kwargs):
         super().__init__(
@@ -21,6 +22,7 @@ class MySocket(websocket.WebSocketApp):
             **kwargs)
 
         self.n_iteration = n_iteration
+        self.waiting_time = waiting_time
 
     def decide(self, id_possible_replies, id_question, id_correct_answer):
 
@@ -65,7 +67,7 @@ class MySocket(websocket.WebSocketApp):
             'timeReply': "2019-01-21 00:02:22.159123",
         }
 
-        time.sleep(1)
+        time.sleep(self.waiting_time)
         print(f"I'm sending {to_send}")
         print('\n')
         self.send(json.dumps(to_send))

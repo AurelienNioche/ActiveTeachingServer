@@ -5,6 +5,7 @@ from bot_client.act_r import ActRSocket
 
 websocket.enableTrace(True)
 
+
 def run_random():
 
     ws = MySocket()
@@ -13,7 +14,9 @@ def run_random():
 
 def run_act_r():
 
-    ws = ActRSocket(param={"d": 0.5, "tau": 0.01, "s": 0.06})
+    ws = ActRSocket(waiting_time=0,
+                    n_iteration=1000,
+                    param={"d": 0.5, "tau": 0.01, "s": 0.06})
     ws.run_forever()
 
 

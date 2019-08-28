@@ -44,6 +44,10 @@ Create user and db
 
 #### Django
 
+Move to the directory containing this script
+
+    cd <path to the_parent folder>/ActiveTeachingServer
+
 Prepare the DB (make migrations and migrate)
 
     python3 manage.py makemigrations

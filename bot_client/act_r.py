@@ -10,11 +10,12 @@ class ActRSocket(MySocket, ActR):
             self,
             param,
             n_iteration=10,
+            waiting_time=1,
             hist=None,
             t=None,
             n_possible_replies=None):
 
-        MySocket.__init__(self)
+        MySocket.__init__(self, waiting_time=waiting_time)
         ActR.__init__(self, n_possible_replies=n_possible_replies,
                       n_iteration=n_iteration,
                       param=param, hist=hist, t=t)
