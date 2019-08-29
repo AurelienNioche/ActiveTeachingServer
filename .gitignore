@@ -103,12 +103,18 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+# Pycharm
 .idea/
 
-task/migrations/
-/settings/migrations/
+# Django migrations
+core/migrations/*
+/teaching_material/migrations/*
+/user_data/migrations/*
+/teacher/migrations/*
+!*/*/__init__.py
+
+# Templates
 templates/
-/teaching_material/migrations/
-/user_data/migrations/
-/teacher/migrations/
-/fig/
+
+# Figures
+/analysis/fig/*

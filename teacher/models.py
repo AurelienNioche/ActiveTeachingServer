@@ -34,20 +34,6 @@ class GenericTeacher:
         raise NotImplementedError(f"{type(self).__name__} is a meta-class."
                                   "This method need to be overridden")
 
-    @staticmethod
-    def get_possible_replies(correct_reply, replies, n_possible_replies):
-
-        # Select randomly possible replies, including the correct one
-        all_replies = list(np.unique(replies))
-        all_replies.remove(correct_reply)
-
-        possible_replies = \
-            [correct_reply, ] + list(np.random.choice(
-                all_replies, size=n_possible_replies-1, replace=False))
-        possible_replies = np.array(possible_replies)
-        np.random.shuffle(possible_replies)
-        return possible_replies
-
 
 class Leitner(models.Model, GenericTeacher):
 

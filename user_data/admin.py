@@ -4,7 +4,7 @@ from django.contrib import admin
 from user_data.models import Question, User
 from teaching_material.models import Kanji
 
-from task.fixed_parameters import N_POSSIBLE_REPLIES
+from core.fixed_parameters import N_POSSIBLE_REPLIES
 
 
 class UserAdmin(admin.ModelAdmin):

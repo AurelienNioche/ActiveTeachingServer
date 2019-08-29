@@ -12,6 +12,7 @@ class MySocket(websocket.WebSocketApp):
     def __init__(self, url="ws://localhost:8000/",
                  waiting_time=1,
                  n_iteration=10,
+                 register_replies=True,
                  **kwargs):
         super().__init__(
             url,
@@ -23,6 +24,7 @@ class MySocket(websocket.WebSocketApp):
 
         self.n_iteration = n_iteration
         self.waiting_time = waiting_time
+        self.register_replies = register_replies
 
     def decide(self, id_possible_replies, id_question, id_correct_answer):
 
@@ -86,7 +88,7 @@ class MySocket(websocket.WebSocketApp):
         to_send = {
             'userId': -1,
             'nIteration': self.n_iteration,
-            'registerReplies': True,
+            'registerReplies': self.register_replies,
             'teacher': 'leitner',
             't': -1,
             'idReply': -1,

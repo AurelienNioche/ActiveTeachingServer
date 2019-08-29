@@ -59,10 +59,15 @@ Create superuser in order to have access to admin interface
     
 #### Import Kanji data
     
-Load sql backup
+Load sql backup of the kanji table
     
-    python3 prepare_db.py
+    python3 db_prepare.py
     
+#### Import user data
+
+Load sql backup of the tables containing user data
+
+    python3 db_load_user_data.py
    
 ## Run
 
@@ -74,24 +79,23 @@ Run Django server using the Django command
 
 #### Kanji table modifications
 
-To load table changes run:
+To make a backup from the kanji table, run:
 
-    prepare_db.py
+    python3 db_backup_kanji_table
 
-To save the table from db_manage_kanji.py run:
+To load kanji table from the backup, run:
 
-    backup_kanji_table()
-
+    python 3 db_prepare.py
 
 #### User data modifications
 
-To save the data from db_manage_user_data.py run:
+To make a backup of the user data, run:
 
-    backup_user_data()
+    python3 db_backup_user_data.py
 
-To *delete* the data from db_manage_user_data.py run:
+To *delete* the user data on the db and load the ones from the backup, run:
  
-    delete_user_data()
+    python3 db_load_user_data.py
 
 
 #### Manipulations of DB

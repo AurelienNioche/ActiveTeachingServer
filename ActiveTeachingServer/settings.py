@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     'teacher.apps.TeacherConfig',
     'user_data.apps.UserDataConfig',
     'teaching_material.apps.TeachingMaterialConfig',
-    'task.apps.TaskConfig',
+    'core.apps.TaskConfig',
     'channels',
     'django.contrib.admin',
     'django.contrib.auth',

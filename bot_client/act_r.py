@@ -1,6 +1,6 @@
 import numpy as np
 
-from . artificial_learner.act_r import ActR
+from . learning_model.act_r.act_r import ActR
 from . basic import MySocket
 
 

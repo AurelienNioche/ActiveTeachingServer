@@ -8,7 +8,7 @@ websocket.enableTrace(True)
 
 def run_random():
 
-    ws = MySocket()
+    ws = MySocket(register_replies=False)
     ws.run_forever()
 
 
@@ -22,7 +22,7 @@ def run_act_r():
 
 def main():
 
-    run_act_r()
+    run_random()
 
 
 if __name__ == "__main__":
