@@ -19,8 +19,8 @@ id_meaning = id_kanji[___idx___][__inverse__]
 # for i in range(len(id_kanji)):
 #     assert meaning[id_meaning[i]] == meaning[i]
 
-print(kanji)
-print(meaning)
+# print(kanji)
+# print(meaning)
 
 
 def total_number_of_items():

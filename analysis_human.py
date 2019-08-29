@@ -4,8 +4,10 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE",
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
-from user_data.models import Question, User
-from teaching_material.selection import kanji
+import pickle
+
+from user_data.models import User
+# from teaching_material.selection import kanji
 
 import analysis.tools.history
 import analysis.plot.human
@@ -16,28 +18,36 @@ from bot_client.learning_model.act_r.act_r import ActR
 from core.fixed_parameters import N_POSSIBLE_REPLIES
 
 
+BKP_FOLDER = os.path.join("analysis", "data")
+os.makedirs(BKP_FOLDER, exist_ok=True)
+
+
 def main():
 
-    users = [User.objects.get(id=60,), ]  # User.objects.all().order_by('id')
+    users = User.objects.all().order_by('id')
+    n_user = users.count()
+    # n_item = len(kanji)
 
-    n_item = len(kanji)
-
-    for user in users:
+    for i, user in enumerate(users):
 
         user_id = user.id
 
-        print(f"User {user_id}")
-        print("*" * 4)
+        print("-"*16)
+        print(f"User {user_id} ({i}/{n_user})")
+        print("-" * 16)
+        print()
 
         hist_question, hist_success, seen = \
             analysis.tools.history.get(user_id=user_id)
 
-        n_iteration = len(hist_question)
+        print(f"N iteration: {len(hist_question)}.\n")
         analysis.plot.human.plot(
             seen=seen,
-            successes=hist_success
+            successes=hist_success,
+            extension=f'_u{user_id}'
         )
 
+        print("Running fit...", end=' ', flush=True)
         de = DifferentialEvolution(model=ActR)
 
         r = de.evaluate(
@@ -45,7 +55,14 @@ def main():
             hist_success=hist_success,
             task_param={'n_possible_replies': N_POSSIBLE_REPLIES}
         )
-        print(r["best_param"], r["best_value"])
+
+        print("Done.\n")
+
+        pickle.dump(r, open(os.path.join(BKP_FOLDER, f'fit_u{user_id}.p'),
+                            'wb'))
+        print(f'Best param: {r["best_param"]}, '
+              f'Best value: {r["best_value"]}')
+        print()
 
 
 if __name__ == "__main__":
