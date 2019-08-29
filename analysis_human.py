@@ -5,6 +5,7 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 import pickle
+import numpy as np
 
 from user_data.models import User
 # from teaching_material.selection import kanji
@@ -36,11 +37,17 @@ def main():
         print(f"User {user_id} ({i}/{n_user})")
         print("-" * 16)
         print()
+        print("Importing data...", end=' ', flush=True)
 
         hist_question, hist_success, seen = \
             analysis.tools.history.get(user_id=user_id)
+        print("Done.\n")
 
-        print(f"N iteration: {len(hist_question)}.\n")
+        print(f"N iteration: {len(hist_question)}.")
+        print(f"N kanji seen: {len(np.unique(hist_question))}.")
+        print(f"Average success rate: {np.mean(hist_success)*100:.2f}%.")
+        print()
+
         analysis.plot.human.plot(
             seen=seen,
             successes=hist_success,
@@ -61,7 +68,7 @@ def main():
         pickle.dump(r, open(os.path.join(BKP_FOLDER, f'fit_u{user_id}.p'),
                             'wb'))
         print(f'Best param: {r["best_param"]}, '
-              f'Best value: {r["best_value"]}')
+              f'Best value: {r["best_value"]:.2f}')
         print()
 
 
