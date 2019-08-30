@@ -118,3 +118,4 @@ templates/
 
 # Figures
 /analysis/fig/*
+/data/word2vec/GoogleNews-vectors-negative300.bin

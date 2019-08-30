@@ -1,7 +1,6 @@
 import numpy as np
 import scipy.optimize
 
-from . objective import objective
 from . abstract_class import Fit
 
 
@@ -27,7 +26,7 @@ class DifferentialEvolution(Fit):
         return res.success
 
 
-class ScipyOptimize(Fit):
+class Minimize(Fit):
 
     def __init__(self, **kwargs):
         super().__init__(method='scipy', **kwargs)

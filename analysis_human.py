@@ -12,18 +12,30 @@ from user_data.models import User
 
 import analysis.tools.history
 import analysis.plot.human
-from analysis.fit.fit import DifferentialEvolution
+from analysis.fit.scipy import DifferentialEvolution, Minimize
+from analysis.fit.pygpgo import PyGPGO
 
 from bot_client.learning_model.act_r.act_r import ActR
-
+from teaching_material.selection import kanji, meaning
 from core.fixed_parameters import N_POSSIBLE_REPLIES
-
+import analysis.similarity.graphic.measure
+import analysis.similarity.semantic.measure
 
 BKP_FOLDER = os.path.join("analysis", "data")
 os.makedirs(BKP_FOLDER, exist_ok=True)
 
 
 def main():
+
+    # Get similarity
+    print("Computing the graphic connection...")
+    graphic_connection = \
+        analysis.similarity.graphic.measure.get(kanji_list=kanji)
+
+    semantic_connection = \
+        analysis.similarity.semantic.measure.get(word_list=meaning)
+
+    fit_class = Minimize   # DifferentialEvolution or PyGPO
 
     users = User.objects.all().order_by('id')
     n_user = users.count()
@@ -55,7 +67,7 @@ def main():
         )
 
         print("Running fit...", end=' ', flush=True)
-        de = DifferentialEvolution(model=ActR)
+        de = fit_class(model=ActR)
 
         r = de.evaluate(
             hist_question=hist_question,
