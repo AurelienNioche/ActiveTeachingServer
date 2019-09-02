@@ -17,13 +17,13 @@ def objective(model,
     for t in range(n_iteration):
         item = hist_question[t]
         p_r = agent.p_recall(item=item)
-        p_choose_correct = p_r + p_random
+        p_choose_correct = min(1, p_r + p_random)
 
         s = hist_success[t]
 
         diff[t] = (s - p_choose_correct)
 
-        agent.learn(item)
+        agent.learn(item=item)
 
     diff = np.power(diff, 2)
     value = np.sum(diff)

@@ -72,7 +72,8 @@ class ActR(Learner):
         # + noise
         return b
 
-    def _base_level_learning_activation(self, i, time=None,
+    def _base_level_learning_activation(self, i,
+                                        time=None,
                                         time_index=None):
         """
         The base-level activation measures
