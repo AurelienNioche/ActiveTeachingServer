@@ -50,7 +50,7 @@ Move to the directory containing this script
 
 Prepare the DB (make migrations and migrate)
 
-    python3 manage.py makemigrations teacher user_data teaching_material task channels admin auth contenttypes sessions messages staticfiles
+    python3 manage.py makemigrations teacher user_data teaching_material task core channels admin auth contenttypes sessions messages staticfiles
     python3 manage.py migrate
 
 Create superuser in order to have access to admin interface
