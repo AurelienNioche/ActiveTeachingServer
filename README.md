@@ -16,10 +16,15 @@ Server part for the Active Teaching project.
 * channels (for websockets)
 * websocket-client (only for using the 'bot_client.py' script)
 
-    
     pip3 install django psycopg2-binary channels websocket-client
-    
+
+You may need extra libraries for GNU/Linux:
+* channels - http://aur.archlinux.org/packages/python-django-channels
+* daphne - http://aur.archlinux.org/packages/daphne
+
 #### PostgreSQL
+
+##### MacOs
 
 Install postgresql (all commands are given considering the application running under MacOs)
 
@@ -33,20 +38,53 @@ OR if you don't want/need a background service:
 
     pg_ctl -D /usr/local/var/postgres start
 
-For GNU/Linux systemd-based distributions follow the ArchWiki until postgresql.service is enabled. The command to start the service is:
+
+##### GNU/Linux
+
+Check the ArchWiki (https://wiki.archlinux.org/index.php/PostgreSQL). In short:
+
+Install the "postgresql" package. It will also create a system user called postgres.
+
+*Make sure you run commands starting with "$" as your normal user and those starting by "[postgres]" as postgres (use "sudo -iu postgres" and "exit" to swap between the two)*
+
+Switch to the PostgreSQL user:
+
+    $ sudo -iu postgres
+
+Initialize the database:
+
+    [postgres]$ initdb -D /var/lib/postgres/data
+
+Start the "postgresql.service":
 
     $ systemctl start unit
-    
-This does not enable the service (use "$ systemctl enable unit" for that)
+
+(Optional) Enable the "postgresql.service":
+
+    $ systemctl enable unit
+
 
 ## Configuration
 
 #### PostgreSQL
 
+##### MacOS
+
 Create user and db
 
     createuser postgres
     createdb ActiveTeaching --owner postgres
+
+##### GNU/Linux
+
+Add a new database user (WARNING: to make your life easier, use the same name as your computer user).
+After typing the command, follow the instructions, where role is the user name: 
+
+    [postgres]$ createuser --interactive
+
+Create the database:
+
+    $ createdb myDatabaseName
 
 #### Django
 
@@ -56,7 +94,7 @@ Move to the directory containing this script
 
 Prepare the DB (make migrations and migrate)
 
-    python3 manage.py makemigrations teacher user_data teaching_material task core channels admin auth contenttypes sessions messages staticfiles
+    python3 manage.py makemigrations teacher user_data teaching_material core channels admin auth contenttypes sessions messages staticfiles
     python3 manage.py migrate
 
 Create superuser in order to have access to admin interface
