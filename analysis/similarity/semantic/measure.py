@@ -47,12 +47,12 @@ def get(word_list, normalize_similarity=True):
 
         data, loaded_word_list, loaded_normalize = \
             pickle.load(open(BKP_FILE, 'rb'))
-        if loaded_word_list == word_list \
+        if (loaded_word_list == np.array(word_list)).all() \
                 and loaded_normalize == normalize_similarity:
             return data
 
     data = _compute(word_list=word_list, normalize_similarity=True)
-    pickle.dump(data, word_list, normalize_similarity, open(BKP_FILE, 'wb'))
+    pickle.dump((data, word_list, normalize_similarity), open(BKP_FILE, 'wb'))
 
 
 def demo(word_list=None):

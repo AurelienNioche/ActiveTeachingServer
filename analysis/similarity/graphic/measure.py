@@ -58,7 +58,7 @@ def get(kanji_list, normalize_similarity=True):
 
         data, loaded_kanji_list, loaded_normalize = \
             pickle.load(open(BKP_FILE, 'rb'))
-        if loaded_kanji_list == kanji_list \
+        if (loaded_kanji_list == np.array(kanji_list)).all() \
                 and loaded_normalize == normalize_similarity:
             return data
 

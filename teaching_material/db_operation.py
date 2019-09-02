@@ -4,7 +4,7 @@ from ActiveTeachingServer.settings import DATABASES
 from teaching_material.models import Kanji
 from tools.utils import AskUser
 
-BKP_FILE = os.path.join("data", "kanji_table.sql")
+
 DB_NAME = DATABASES['default']['NAME']
 
 
@@ -91,7 +91,7 @@ def create_index():
 
 
 @AskUser
-def backup_kanji_table():
+def backup_kanji_table(bkp_file=os.path.join("data", "kanji_table.sql")):
 
     command = \
         f'pg_dump ' \
@@ -99,16 +99,16 @@ def backup_kanji_table():
         f'{DB_NAME} ' \
         f'--inserts ' \
         f'--clean ' \
-        f'> {BKP_FILE}'
+        f'> {bkp_file}'
 
     print(f"Run command '{command}'")
     os.system(command)
 
 
 @AskUser
-def fill_kanji_table():
+def fill_kanji_table(bkp_file=os.path.join("data", "kanji_table.sql")):
 
     # Kanji.objects.all().delete()
-    command = f'psql {DB_NAME} < {BKP_FILE}'
+    command = f'psql {DB_NAME} < {bkp_file}'
     print(f"Run command '{command}'")
     os.system(command)

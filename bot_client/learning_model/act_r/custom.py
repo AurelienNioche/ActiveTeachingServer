@@ -1,5 +1,5 @@
 import numpy as np
-from learner.act_r import ActR
+from . act_r import ActR
 # np.seterr(all='raise')
 
 
@@ -9,9 +9,9 @@ class ActRMeaning(ActR):
     bounds = ('d', 0.01, 0.99), \
              ('tau', 0, 1), \
              ('s', 0.0000001, 1), \
-             ('m', 0.0, 0.1)
+             ('m', 0.0, 0.2)
 
-    def __init__(self, semantic_connections, param=None, metaclass=False,
+    def __init__(self, semantic_connection, param=None, metaclass=False,
                  **kwargs):
 
         super().__init__(metaclass=True, **kwargs)
@@ -37,8 +37,8 @@ class ActRMeaning(ActR):
 
             self.set_cognitive_parameters(param)
 
-        self.n_item = len(self.semantic_connection)
-        self.items = np.arange(self.n_item)
+            self.n_item = len(self.semantic_connection)
+            self.items = np.arange(self.n_item)
 
     def _get_presentation_effect_i_and_j(self, item, time, time_index):
 
@@ -96,7 +96,7 @@ class ActRMeaning(ActR):
 class ActRGraphic(ActRMeaning):
 
     bounds = ('d', 0.0000001, 1.0), ('tau', -5, 5), ('s', 0.0000001, 1), \
-             ('g', -0.1, 0.1)
+             ('g', 0.0, 0.2)
 
     def __init__(self, graphic_connection, param, **kwargs):
 
@@ -121,6 +121,9 @@ class ActRGraphic(ActRMeaning):
 
         self.graphic_connection = graphic_connection
         self.set_cognitive_parameters(param)
+
+        self.n_item = len(self.graphic_connection)
+        self.items = np.arange(self.n_item)
 
     def init(self):
 

@@ -119,3 +119,7 @@ templates/
 # Figures
 /analysis/fig/*
 /data/word2vec/GoogleNews-vectors-negative300.bin
+analysis/data/
+data/simsearch/pickle/
+data/word2vec/pickle/
+data/word2vec/word_vectors/

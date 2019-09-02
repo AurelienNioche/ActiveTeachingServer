@@ -16,9 +16,9 @@ class ActR(Learner):
             n_possible_replies=None,
             hist=None, t=None,
             param=None, metaclass=False,
-            verbose=False):
+            verbose=False, **kwargs):
 
-        super().__init__()
+        super().__init__(**kwargs)
 
         if not metaclass:
             # Decay parameter
