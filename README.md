@@ -33,7 +33,11 @@ OR if you don't want/need a background service:
 
     pg_ctl -D /usr/local/var/postgres start
 
-For GNU/Linux systemd-based distributions follow the ArchWiki until postgresql.service is enabled.
+For GNU/Linux systemd-based distributions follow the ArchWiki until postgresql.service is enabled. The command to start the service is:
+
+    $ systemctl start unit
+    
+This does not enable the service (use "$ systemctl enable unit" for that)
 
 ## Configuration
 
