@@ -17,10 +17,12 @@ from analysis.fit.pygpgo import PyGPGO
 
 from bot_client.learning_model.act_r.act_r import ActR
 from bot_client.learning_model.act_r.custom import ActRMeaning, ActRGraphic
+from bot_client.learning_model.rl import QLearner
 from teaching_material.selection import kanji, meaning
 from core.fixed_parameters import N_POSSIBLE_REPLIES
 import analysis.similarity.graphic.measure
 import analysis.similarity.semantic.measure
+from analysis.fit.degenerate import Degenerate
 
 BKP_FOLDER = os.path.join("analysis", "data")
 os.makedirs(BKP_FOLDER, exist_ok=True)
@@ -37,11 +39,13 @@ def main():
         analysis.similarity.semantic.measure.get(word_list=meaning)
 
     fit_class = Minimize   # DifferentialEvolution or PyGPO
-    list_model_to_fit = ActRMeaning, ActRGraphic, ActR
+    list_model_to_fit = QLearner,  ActR, ActRMeaning, ActRGraphic
 
-    task_param = {'n_possible_replies': N_POSSIBLE_REPLIES,
-                  'semantic_connection': semantic_connection,
-                  'graphic_connection': graphic_connection}
+    task_param = {
+        'n_possible_replies': N_POSSIBLE_REPLIES,
+        'n_item': len(semantic_connection),
+        'semantic_connection': semantic_connection,
+        'graphic_connection': graphic_connection}
 
     users = User.objects.all().order_by('id')
     n_user = users.count()
@@ -72,18 +76,26 @@ def main():
             extension=f'_u{user_id}'
         )
 
+        print('Degenerate model with only success:')
+        f = Degenerate()
+        r = f.evaluate(
+            hist_question=hist_question,
+            hist_success=hist_success,
+            task_param=task_param)
+        print(f'Best value: {r["best_value"]:.2f}.\n')
+
         for model_to_fit in list_model_to_fit:
             print(f"Running fit {model_to_fit.__name__}...",
                   end=' ', flush=True)
-            de = fit_class(model=model_to_fit)
+            f = fit_class(model=model_to_fit)
 
-            r = de.evaluate(
+            r = f.evaluate(
                 hist_question=hist_question,
                 hist_success=hist_success,
                 task_param=task_param
             )
 
-            print("Done.\n")
+            print("Done.")
 
             pickle.dump(r,
                         open(os.path.join(
@@ -91,7 +103,7 @@ def main():
                             f'fit_u{user_id}_{model_to_fit.__name__}.p'),
                             'wb'))
             print(f'Best param: {r["best_param"]}, '
-                  f'Best value: {r["best_value"]:.2f}')
+                  f'best value: {r["best_value"]:.2f}.')
             print()
 
 

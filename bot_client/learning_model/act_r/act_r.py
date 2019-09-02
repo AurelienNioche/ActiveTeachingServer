@@ -72,7 +72,8 @@ class ActR(Learner):
         # + noise
         return b
 
-    def _base_level_learning_activation(self, i, time=None,
+    def _base_level_learning_activation(self, i,
+                                        time=None,
                                         time_index=None):
         """
         The base-level activation measures
@@ -177,66 +178,6 @@ class ActR(Learner):
             print(f"t={self.t}, a_i: {a:.3f}, p_r: {p_retrieve:.3f}")
         return p_retrieve
 
-    def _p_choice(self, item, reply, possible_replies=None,
-                  time=None, time_index=None):
-
-        success = item == reply
-
-        p_recall = self.p_recall(item,
-                                 time=time,
-                                 time_index=time_index)
-
-        # If number of possible replies is defined
-        if self.n_possible_replies:
-            p_correct = self.p_random + p_recall*(1 - self.p_random)
-
-            if success:
-                p_choice = p_correct
-
-            else:
-                p_choice = (1-p_correct) / (self.n_possible_replies - 1)
-
-        else:
-            p_correct = self.p_random + p_recall * (1 - self.p_random)
-
-            if success:
-                p_choice = p_correct
-
-            else:
-                p_choice = (1 - p_correct)
-
-        return p_choice
-
-    def _p_correct(self, item, reply, possible_replies=None,
-                   time=None, time_index=None):
-
-        p_correct = self._p_choice(item=item, reply=item,
-                                   time=time, time_index=time_index)
-
-        correct = item == reply
-        if correct:
-            return p_correct
-
-        else:
-            return 1-p_correct
-
-    def decide(self, item, possible_replies, time=None,
-               time_index=None):
-
-        p_r = self.p_recall(item,
-                            time=time,
-                            time_index=time_index)
-        r = np.random.random()
-
-        if p_r > r:
-            reply = item
-        else:
-            reply = np.random.choice(possible_replies)
-
-        if self.verbose:
-            print(f't={self.t}: question {item}, reply {reply}')
-        return reply
-
     def learn(self, item, time=None, time_index=None):
 
         increment_t = 0
@@ -262,3 +203,46 @@ class ActR(Learner):
 
             self.hist[self.t] = -99
             self.times[self.t] = -1
+
+    # def _p_choice(self, item, reply, possible_replies=None,
+    #               time=None, time_index=None):
+    #
+    #     success = item == reply
+    #
+    #     p_recall = self.p_recall(item,
+    #                              time=time,
+    #                              time_index=time_index)
+    #
+    #     # If number of possible replies is defined
+    #     if self.n_possible_replies:
+    #         p_correct = self.p_random + p_recall*(1 - self.p_random)
+    #
+    #         if success:
+    #             p_choice = p_correct
+    #
+    #         else:
+    #             p_choice = (1-p_correct) / (self.n_possible_replies - 1)
+    #
+    #     else:
+    #         p_correct = self.p_random + p_recall * (1 - self.p_random)
+    #
+    #         if success:
+    #             p_choice = p_correct
+    #
+    #         else:
+    #             p_choice = (1 - p_correct)
+    #
+    #     return p_choice
+    #
+    # def _p_correct(self, item, reply, possible_replies=None,
+    #                time=None, time_index=None):
+    #
+    #     p_correct = self._p_choice(item=item, reply=item,
+    #                                time=time, time_index=time_index)
+    #
+    #     correct = item == reply
+    #     if correct:
+    #         return p_correct
+    #
+    #     else:
+    #         return 1-p_correct

@@ -22,7 +22,7 @@ class ActRSocket(MySocket, ActR):
 
     def decide(self, id_possible_replies, id_question, id_correct_answer):
 
-        recall = self.recall(item=id_question)
+        recall = self.p_recall(item=id_question) > np.random.random()
 
         self.learn(item=id_question)
         if recall:
