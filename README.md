@@ -19,8 +19,11 @@ Server part for the Active Teaching project.
     pip3 install django psycopg2-binary channels websocket-client
 
 You may need extra libraries for GNU/Linux:
+* theano - http://aur.archlinux.org/packages/python-theano (pyGPGO dependency)
+* pyGPGO - pip install pyGPGO --user
 * channels - http://aur.archlinux.org/packages/python-django-channels
 * daphne - http://aur.archlinux.org/packages/daphne
+* gensim - http://aur.archlinux.org/packages/python-gensim
 
 #### PostgreSQL
 
