@@ -24,6 +24,7 @@ You may need extra libraries for GNU/Linux:
 * channels - http://aur.archlinux.org/packages/python-django-channels
 * daphne - http://aur.archlinux.org/packages/daphne
 * gensim - http://aur.archlinux.org/packages/python-gensim
+* websocket - pip install websocket --user
 
 #### PostgreSQL
 
