@@ -48,7 +48,7 @@ Check the ArchWiki (https://wiki.archlinux.org/index.php/PostgreSQL). In short:
 
 Install the "postgresql" package. It will also create a system user called postgres.
 
-*Make sure you run commands starting with "$" as your normal user and those starting by "[postgres]" as postgres (use "sudo -iu postgres" and "exit" to swap between the two)*
+*Make sure you run commands starting with "$" as your normal/super user and those starting by "[postgres]" as postgres (use "sudo -iu postgres" and "exit" to swap between the two)*
 
 Switch to the PostgreSQL user:
 
