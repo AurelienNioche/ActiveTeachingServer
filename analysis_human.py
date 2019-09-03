@@ -7,10 +7,11 @@ application = get_wsgi_application()
 import pickle
 import numpy as np
 
-from user_data.models import User
+# from user_data.models import User
 # from teaching_material.selection import kanji
 
 import analysis.tools.history
+import analysis.tools.users
 import analysis.plot.human
 from analysis.fit.scipy import Minimize # DifferentialEvolution
 # from analysis.fit.pygpgo import PyGPGO
@@ -24,8 +25,8 @@ import analysis.similarity.graphic.measure
 import analysis.similarity.semantic.measure
 from analysis.fit.degenerate import Degenerate
 
-BKP_FOLDER = os.path.join("data", "Pilot20190902", "pickle")
-BKP_FILE = os.path.join(BKP_FOLDER, "user.p")
+
+BKP_FOLDER = os.path.join("data", "Pilot20190902", "pickle", "fit")
 os.makedirs(BKP_FOLDER, exist_ok=True)
 
 
@@ -48,18 +49,11 @@ def main():
         'semantic_connection': semantic_connection,
         'graphic_connection': graphic_connection}
 
-    if os.path.exists(BKP_FILE):
-        users = pickle.load(open(BKP_FILE, 'rb'))
-    else:
-        users = User.objects.all().order_by('id')
-        pickle.dump(users, open(BKP_FILE, 'wb'))
-
-    n_user = users.count()
+    list_user_id = analysis.tools.users.get()
+    n_user = len(list_user_id)
     # n_item = len(kanji)
 
-    for i, user in enumerate(users):
-
-        user_id = user.id
+    for i, user_id in enumerate(list_user_id):
 
         print("-"*16)
         print(f"User {user_id} ({i}/{n_user})")
