@@ -19,6 +19,7 @@ from analysis.fit.scipy import Minimize # DifferentialEvolution
 from bot_client.learning_model.act_r.act_r import ActR
 from bot_client.learning_model.act_r.custom import ActRMeaning, ActRGraphic
 from bot_client.learning_model.rl import QLearner
+from bot_client.learning_model.hopfield_network.carlos_hopfield import Hopfield
 from teaching_material.selection import kanji, meaning
 from core.fixed_parameters import N_POSSIBLE_REPLIES
 import analysis.similarity.graphic.measure
@@ -41,7 +42,7 @@ def main():
         analysis.similarity.semantic.measure.get(word_list=meaning)
 
     fit_class = Minimize   # DifferentialEvolution or PyGPO
-    list_model_to_fit = QLearner,  ActR, ActRMeaning, ActRGraphic
+    list_model_to_fit = Hopfield,  # QLearner,  ActR, ActRMeaning, ActRGraphic
 
     task_param = {
         'n_possible_replies': N_POSSIBLE_REPLIES,
