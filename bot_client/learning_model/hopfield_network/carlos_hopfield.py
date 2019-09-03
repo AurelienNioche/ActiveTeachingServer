@@ -11,7 +11,7 @@ import bot_client.learning_model.hopfield_network.hopfield_tools as \
     hopfield_tools
 
 
-class Network(Learner):
+class Hopfield(Learner):
     """
     Pattern consists of multiple binary vectors representing both the item and
     its different characteristics that can be recalled.
@@ -20,10 +20,7 @@ class Network(Learner):
     """
 
     version = 1.0
-    bounds = ('p', 1, 16), \
-             ('f', 0.01, 0.99), \
-             ('inverted_fraction', 0.01, 0.99), \
-             ('learning_rate', 10**-7, 0.99), \
+    bounds = ('learning_rate', 10**-7, 0.99), \
              ('forgetting_rate', 10**-7, 0.99),
 
     def __init__(self, num_neurons=1000, p=16, f=0.1, inverted_fraction=0.3,
@@ -359,7 +356,7 @@ def main(force=False):
 
         np.random.seed(123)
 
-        network = Network(
+        network = Hopfield(
             num_neurons=80,
             f=0.55,
             p=2,
