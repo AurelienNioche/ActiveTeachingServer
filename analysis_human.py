@@ -24,7 +24,8 @@ import analysis.similarity.graphic.measure
 import analysis.similarity.semantic.measure
 from analysis.fit.degenerate import Degenerate
 
-BKP_FOLDER = os.path.join("analysis", "data")
+BKP_FOLDER = os.path.join("data", "Pilot20190902", "pickle")
+BKP_FILE = os.path.join(BKP_FOLDER, "user.p")
 os.makedirs(BKP_FOLDER, exist_ok=True)
 
 
@@ -47,7 +48,12 @@ def main():
         'semantic_connection': semantic_connection,
         'graphic_connection': graphic_connection}
 
-    users = User.objects.all().order_by('id')
+    if os.path.exists(BKP_FILE):
+        users = pickle.load(open(BKP_FILE, 'rb'))
+    else:
+        users = User.objects.all().order_by('id')
+        pickle.dump(users, open(BKP_FILE, 'wb'))
+
     n_user = users.count()
     # n_item = len(kanji)
 
@@ -105,6 +111,12 @@ def main():
             print(f'Best param: {r["best_param"]}, '
                   f'best value: {r["best_value"]:.2f}.')
             print()
+
+
+def pickle_user():
+    if os.path.exists(BKP_FILE):
+        data, loaded_kanji_list, loaded_normalize = \
+            pickle.load(open(BKP_FILE, 'rb'))
 
 
 if __name__ == "__main__":
