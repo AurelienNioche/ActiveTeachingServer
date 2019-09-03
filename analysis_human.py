@@ -12,8 +12,8 @@ from user_data.models import User
 
 import analysis.tools.history
 import analysis.plot.human
-from analysis.fit.scipy import DifferentialEvolution, Minimize
-from analysis.fit.pygpgo import PyGPGO
+from analysis.fit.scipy import Minimize # DifferentialEvolution
+# from analysis.fit.pygpgo import PyGPGO
 
 from bot_client.learning_model.act_r.act_r import ActR
 from bot_client.learning_model.act_r.custom import ActRMeaning, ActRGraphic
@@ -111,12 +111,6 @@ def main():
             print(f'Best param: {r["best_param"]}, '
                   f'best value: {r["best_value"]:.2f}.')
             print()
-
-
-def pickle_user():
-    if os.path.exists(BKP_FILE):
-        data, loaded_kanji_list, loaded_normalize = \
-            pickle.load(open(BKP_FILE, 'rb'))
 
 
 if __name__ == "__main__":

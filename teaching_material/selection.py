@@ -2,18 +2,23 @@ import numpy as np
 
 from teaching_material.models import Kanji
 
+try:
+    kanji, meaning = \
+        np.array(
+            Kanji.objects.values_list('kanji', 'meaning').order_by('index')
+        ).T
 
-kanji, meaning = \
-    np.array(
-        Kanji.objects.values_list('kanji', 'meaning').order_by('index')
-    ).T
+    unique_meaning, ___idx___, __inverse__ = np.unique(meaning,
+                                                       return_index=True,
+                                                       return_inverse=True)
 
-unique_meaning, ___idx___, __inverse__ = np.unique(meaning,
-                                                   return_index=True,
-                                                   return_inverse=True)
+    id_kanji = np.arange(len(kanji))
+    id_meaning = id_kanji[___idx___][__inverse__]
 
-id_kanji = np.arange(len(kanji))
-id_meaning = id_kanji[___idx___][__inverse__]
+except:
+    print("Cannot load the database content")
+    kanji = None
+    meaning = None
 
 # assert len(id_kanji) == len(id_meaning)
 # for i in range(len(id_kanji)):
