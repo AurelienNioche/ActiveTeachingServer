@@ -28,7 +28,10 @@ class Network(Learner):
 
     def __init__(self, num_neurons=1000, p=16, f=0.1, inverted_fraction=0.3,
                  noise_variance=65, noise_modulation=0.05, first_p=0,
-                 learning_rate=0.3, forgetting_rate=0.1):
+                 learning_rate=0.3, forgetting_rate=0.1, **kwargs):
+
+        super().__init__(**kwargs)
+
         self.num_neurons = num_neurons
         self.p = p
         self.f = f
@@ -206,7 +209,7 @@ class Network(Learner):
         tot = 1
 
         # np.sum(self.currents - self.last_currents) != 0:
-        while (self.currents[-1] != self.currents[-2]).all() or tot < 2:
+        while (self.currents[-1, :] != self.currents[-2, :]).all() or tot < 2:
             self.update_all_neurons()
             self._compute_patterns_evolution()
             tot += 1
@@ -236,11 +239,14 @@ class Network(Learner):
         After choosing, compare the chosen pattern with the correct pattern
         to retrieve the probability of recall.
         """
-        assert item is not None or n_pattern is not None
+        assert (item is not None and n_pattern is None) \
+               or (n_pattern is not None and item is None)
         if item is not None:
             bin_item = hopfield_tools.binarize_item(item, self.num_neurons)
-        if n_pattern is not None:
+        elif n_pattern is not None:
             bin_item = self.patterns[n_pattern]
+        else:
+            raise Exception
 
         # self.currents = np.vstack((self.currents, bin_item))
         # self.update_all_neurons()
@@ -307,10 +313,10 @@ class Network(Learner):
         #       f"node weight updates.\n")
         pass
 
-    def forget(self):
+    def forget(self, constant=10000000):
         self.next_weights = \
             (self.weights + hopfield_tools.gaussian_noise(self.noise_variance)
-             * self.noise_modulation * 10000000) \
+             * self.noise_modulation * constant) \
             * self.forgetting_rate
 
         self.update_weights(self.next_weights)
@@ -354,14 +360,14 @@ def main(force=False):
         np.random.seed(123)
 
         network = Network(
-                            num_neurons=80,
-                            f=0.55,
-                            p=2,
-                            first_p=0,
-                            inverted_fraction=0.5,
-                            learning_rate=0.1,
-                            forgetting_rate=0.1
-                         )
+            num_neurons=80,
+            f=0.55,
+            p=2,
+            first_p=0,
+            inverted_fraction=0.5,
+            learning_rate=0.1,
+            forgetting_rate=0.1
+        )
 
         ##########################
         # #### TESTING AREA #### #
