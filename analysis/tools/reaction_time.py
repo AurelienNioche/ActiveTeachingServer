@@ -16,7 +16,7 @@ def get(user_id):
     hist_reaction_time = np.zeros(n_iteration, dtype=int)
     for t in range(n_iteration):
 
-        reaction_time = int(
+        hist_reaction_time[t] = int(
             (entries[t].time_reply -
              entries[t].time_display).total_seconds() * 10 ** 3
         )
