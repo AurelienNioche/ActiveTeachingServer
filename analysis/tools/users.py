@@ -8,9 +8,9 @@ BKP_FILE = os.path.join(BKP_FOLDER, "user.p")
 os.makedirs(BKP_FOLDER, exist_ok=True)
 
 
-def get():
+def get(force=False):
 
-    if os.path.exists(BKP_FILE):
+    if not force and os.path.exists(BKP_FILE):
         user_id = pickle.load(open(BKP_FILE, 'rb'))
     else:
         user_id = [u.id for u in User.objects.all().order_by('id')]

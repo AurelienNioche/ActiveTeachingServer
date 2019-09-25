@@ -42,7 +42,7 @@ def main():
         analysis.similarity.semantic.measure.get(word_list=meaning)
 
     fit_class = Minimize   # DifferentialEvolution or PyGPO
-    list_model_to_fit = Hopfield,  # QLearner,  ActR, ActRMeaning, ActRGraphic
+    list_model_to_fit = QLearner,  ActR, ActRMeaning, ActRGraphic
 
     task_param = {
         'n_possible_replies': N_POSSIBLE_REPLIES,
@@ -50,7 +50,10 @@ def main():
         'semantic_connection': semantic_connection,
         'graphic_connection': graphic_connection}
 
-    list_user_id = analysis.tools.users.get()
+    list_user_id = analysis.tools.users.get(force=True)
+
+    # list_user_id = [list_user_id[-1], ]
+
     n_user = len(list_user_id)
     # n_item = len(kanji)
 
