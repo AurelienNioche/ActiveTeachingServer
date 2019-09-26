@@ -6,10 +6,7 @@ from . act_r import ActR
 class ActRMeaning(ActR):
 
     version = 3.1
-    bounds = ('d', 0.01, 0.99), \
-             ('tau', 0, 1), \
-             ('s', 0.0000001, 1), \
-             ('m', 0.0, 5.0)
+    bounds = ActR.bounds + (('m', 0.0, 5.0), )
 
     def __init__(self, semantic_connection, param=None, metaclass=False,
                  **kwargs):
@@ -95,8 +92,7 @@ class ActRMeaning(ActR):
 
 class ActRGraphic(ActRMeaning):
 
-    bounds = ('d', 0.0000001, 1.0), ('tau', -5, 5), ('s', 0.0000001, 1), \
-             ('g', 0.0, 5.0)
+    bounds = ActR.bounds + (('g', 0.0, 5.0), )
 
     def __init__(self, graphic_connection, param, **kwargs):
 

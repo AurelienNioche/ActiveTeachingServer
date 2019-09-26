@@ -7,8 +7,8 @@ class ActR(Learner):
 
     version = 2.2
     bounds = ('d', 0.001, 1.0), \
-             ('tau', 0, 1), \
-             ('s', 0.001, 1)
+             ('tau', -20, 10), \
+             ('s', 0.001, 5)
 
     def __init__(
             self,
