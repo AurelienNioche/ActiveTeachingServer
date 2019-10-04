@@ -80,32 +80,50 @@ def main():
             extension=f'_u{user_id}'
         )
 
-        print('Degenerate model with only success:')
-        f = Degenerate()
-        r = f.evaluate(
-            hist_question=hist_question,
-            hist_success=hist_success,
-            task_param=task_param)
-        print(f'Best value: {r["best_value"]:.2f}.\n')
+        bkp_file = os.path.join(
+            BKP_FOLDER,
+            f'fit_u{user_id}_degenerate.p')
 
-        for model_to_fit in list_model_to_fit:
-            print(f"Running fit {model_to_fit.__name__}...",
-                  end=' ', flush=True)
-            f = fit_class(model=model_to_fit)
+        if not os.path.exists(bkp_file):
 
+            f = Degenerate()
             r = f.evaluate(
                 hist_question=hist_question,
                 hist_success=hist_success,
-                task_param=task_param
-            )
+                task_param=task_param)
+            pickle.dump(r, open(bkp_file, 'wb'))
+        else:
+            r = pickle.load(open(bkp_file, 'rb'))
 
-            print("Done.")
+        print('Degenerate model with only success:')
+        print(f'Best value: {r["best_value"]:.2f}.\n')
 
-            pickle.dump(r,
-                        open(os.path.join(
-                            BKP_FOLDER,
-                            f'fit_u{user_id}_{model_to_fit.__name__}.p'),
-                            'wb'))
+        for model_to_fit in list_model_to_fit:
+
+            bkp_file = os.path.join(
+                BKP_FOLDER,
+                f'fit_u{user_id}_{model_to_fit.__name__}.p')
+
+            if not os.path.exists(bkp_file):
+                print(f"Running fit {model_to_fit.__name__}...",
+                      end=' ', flush=True)
+                f = fit_class(model=model_to_fit)
+
+                r = f.evaluate(
+                    hist_question=hist_question,
+                    hist_success=hist_success,
+                    task_param=task_param
+                )
+
+                print("Done.")
+
+                pickle.dump(r, open(bkp_file, 'wb'))
+
+            else:
+                print("Loading from pickle file...", end=' ', flush=True)
+                r = pickle.load(open(bkp_file, 'rb'))
+                print("Done")
+
             print(f'Best param: {r["best_param"]}, '
                   f'best value: {r["best_value"]:.2f}.')
             print()
