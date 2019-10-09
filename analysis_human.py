@@ -26,12 +26,16 @@ import analysis.similarity.graphic.measure
 import analysis.similarity.semantic.measure
 from analysis.fit.degenerate import Degenerate
 
+from analysis.fit.tools import bic
+
 
 BKP_FOLDER = os.path.join("data", "Pilot20190902", "pickle", "fit")
 os.makedirs(BKP_FOLDER, exist_ok=True)
 
 
 def main():
+
+    force = True
 
     # Get similarity
     print("Computing the graphic connection...")
@@ -84,7 +88,7 @@ def main():
             BKP_FOLDER,
             f'fit_u{user_id}_degenerate.p')
 
-        if not os.path.exists(bkp_file):
+        if not os.path.exists(bkp_file) or force:
 
             f = Degenerate()
             r = f.evaluate(
@@ -104,7 +108,7 @@ def main():
                 BKP_FOLDER,
                 f'fit_u{user_id}_{model_to_fit.__name__}.p')
 
-            if not os.path.exists(bkp_file):
+            if not os.path.exists(bkp_file) or force:
                 print(f"Running fit {model_to_fit.__name__}...",
                       end=' ', flush=True)
                 f = fit_class(model=model_to_fit)
@@ -124,8 +128,13 @@ def main():
                 r = pickle.load(open(bkp_file, 'rb'))
                 print("Done")
 
+            bic_user = bic(lls=r["best_value"],
+                           k=len(model_to_fit.bounds),
+                           n=len(hist_question))
+
             print(f'Best param: {r["best_param"]}, '
-                  f'best value: {r["best_value"]:.2f}.')
+                  f'best value: {r["best_value"]:.2f}.',
+                  f'BIC: {bic_user}')
             print()
 
 
