@@ -35,7 +35,7 @@ os.makedirs(BKP_FOLDER, exist_ok=True)
 
 def main():
 
-    force = True
+    force = False
 
     # Get similarity
     print("Computing the graphic connection...")
