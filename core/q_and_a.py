@@ -4,7 +4,10 @@ from datetime import datetime
 from user_data.models import Question, User
 
 from core.fixed_parameters import N_POSSIBLE_REPLIES
+
+# --- Need to be changed --- #
 import teaching_material.selection
+# ------------------------ #
 
 from teacher.models import Leitner
 
@@ -20,11 +23,13 @@ def get_question(reply):
     register_replies = reply['registerReplies']
     t_max = reply['nIteration']
     teacher_name = reply['teacher']
+    material = reply['material']
     user_id = reply['userId']
     t = reply['t']
 
     first_call = reply['userId'] == USER_DEFAULT_ID
 
+    assert material == 'japanese', 'Only Japanese material is implemented!'
     assert teacher_name == 'leitner', 'Only Leitner teacher is implemented!'
 
     # Check for t_max
@@ -45,7 +50,9 @@ def get_question(reply):
             _register_question(reply)
         t += 1
 
+    # --- Need to be changed --- #
     id_questions, id_replies = teaching_material.selection.get_id()
+    # --- Need to be changed --- #
 
     hist_question, hist_success = get_historic(user_id=user_id, t=t)
 
@@ -71,11 +78,13 @@ def get_question(reply):
             id_replies=id_replies
         )
 
+    # --- Need to be changed --- #
     question, possible_replies = \
         teaching_material.selection.get_string_representation(
             id_question=id_question,
             id_possible_replies=id_possible_replies
         )
+    # --- Need to be changed --- #
 
     is_new_question = id_question not in hist_question
 
