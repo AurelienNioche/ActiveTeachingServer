@@ -23,7 +23,7 @@ def get_question(reply):
     register_replies = reply['registerReplies']
     t_max = reply['nIteration']
     teacher_name = reply['teacher']
-    material = reply['material']
+    material = reply['material'] # Change this to finnish to use my material
     user_id = reply['userId']
     t = reply['t']
 
