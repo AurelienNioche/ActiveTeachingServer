@@ -6,7 +6,7 @@ from bot_client.learning_model.rl import QLearner
 
 # TEACHING_MATERIAL = "kanji"
 # TEACHING_MATERIAL = "finnish"
-TEACHING_MATERIAL = "japanese"  # "kanji"  # "finnish" # "kanji
+TEACHING_MATERIAL = "japanese"
 
 
 def run_random():
@@ -23,7 +23,11 @@ def run_rl():
 def main():
     # websocket.enableTrace(True)
     run_random()
+<<<<<<< HEAD
 
+=======
+    # run_act_r()
+>>>>>>> fixes
 
 if __name__ == "__main__":
     main()

@@ -19,6 +19,7 @@ USER_TEST_ID = -2
 
 selection_dictionary = {
     "kanji": Kanji,
+    "japanese": Kanji,
     "finnish": Finnish
 }
 

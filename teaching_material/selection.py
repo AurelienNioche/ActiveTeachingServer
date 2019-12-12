@@ -6,12 +6,16 @@ class Selection:
 
         # Retrieve elements from the database
         try:
-            self.values, self.meaning = \
+            values, meaning = \
                 np.array(
+
                     self.model.objects.values_list('value', 'meaning').order_by('index')
                 ).T
         except Exception as e:
-            RuntimeError("Cannot load the database content:" + str(e))
+            raise RuntimeError("Cannot load the database content:" + str(e))
+
+        self.values = values
+        self.meaning = meaning
 
         self.unique_meaning, idx, inverse = np.unique(self.meaning,
                                                  return_index=True,
