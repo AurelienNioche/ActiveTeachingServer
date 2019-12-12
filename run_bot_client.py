@@ -25,7 +25,7 @@ def run_act_r():
 
 
 def main():
-    websocket.enableTrace(False)
+    websocket.enableTrace(True)
     # run_random()
     run_act_r()
 
