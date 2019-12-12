@@ -7,6 +7,10 @@ class Finnish(models.Model):
     word = models.CharField(max_length=100, blank=True, null=True)  # Field name made lowercase.
     meaning = models.CharField(max_length=2555, blank=True, null=True)
 
+    @property
+    def value(self):
+        return self.word
+
     def __str__(self):
         return self.word
 

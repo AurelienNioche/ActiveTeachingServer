@@ -1,44 +1,32 @@
 import numpy as np
 
-from teaching_material.models import Kanji
+class Selection:
+    def __init__(self, model):
+        self.model = model
 
-try:
-    kanji, meaning = \
-        np.array(
-            Kanji.objects.values_list('kanji', 'meaning').order_by('index')
-        ).T
+        # Retrieve elements from the database
+        try:
+            self.values, self.meaning = \
+                np.array(
+                    self.model.objects.values_list('value', 'meaning').order_by('index')
+                ).T
+        except Exception as e:
+            RuntimeError("Cannot load the database content:" + str(e))
 
-    unique_meaning, ___idx___, __inverse__ = np.unique(meaning,
-                                                       return_index=True,
-                                                       return_inverse=True)
+        self.unique_meaning, idx, inverse = np.unique(self.meaning,
+                                                 return_index=True,
+                                                 return_inverse=True)
 
-    id_kanji = np.arange(len(kanji))
-    id_meaning = id_kanji[___idx___][__inverse__]
+        self.id_value = np.arange(len(self.values))
+        self.id_meaning = self.id_value[idx][inverse]
 
-except:
-    print("Cannot load the database content")
-    kanji = None
-    meaning = None
+    def total_number_of_items(self):
+        return self.model.objects.count()
 
-# assert len(id_kanji) == len(id_meaning)
-# for i in range(len(id_kanji)):
-#     assert meaning[id_meaning[i]] == meaning[i]
+    def get_string_representation(self, id_question, id_possible_replies):
+        question = self.values[id_question]
+        possible_replies = [self.meaning[i] for i in id_possible_replies]
+        return question, possible_replies
 
-# print(kanji)
-# print(meaning)
-
-
-def total_number_of_items():
-    return Kanji.objects.count()
-
-
-def get_string_representation(id_question, id_possible_replies):
-
-    question = kanji[id_question]
-    possible_replies = [meaning[i] for i in id_possible_replies]
-    return question, possible_replies
-
-
-def get_id():
-
-    return id_kanji, id_meaning
+    def get_id(self):
+        return self.id_value, self.id_meaning
