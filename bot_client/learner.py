@@ -26,5 +26,3 @@ class LearnerSocket(MySocket):
             return id_correct_answer
         else:
             return np.random.choice(id_possible_replies)
-
-

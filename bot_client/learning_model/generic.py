@@ -12,10 +12,9 @@ class Learner:
 
         self.param = None
 
-    def decide(self, item, possible_replies, time=None, time_index=None):
+    def decide(self, item, possible_replies, time=None):
         p_r = self.p_recall(item,
-                            time=time,
-                            time_index=time_index)
+                            time=time)
         r = np.random.random()
 
         if p_r > r:

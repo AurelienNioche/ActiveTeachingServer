@@ -6,4 +6,4 @@ application = get_wsgi_application()
 
 from user_data.db_operation import backup_user_data
 
-backup_user_data()
+backup_user_data("user_data.sql")

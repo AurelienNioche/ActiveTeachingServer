@@ -124,3 +124,5 @@ data/simsearch/pickle/
 data/word2vec/pickle/
 data/word2vec/word_vectors/
 /data/Pilot20190902/pickle/fit/
+
+logfile
