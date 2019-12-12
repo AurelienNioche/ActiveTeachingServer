@@ -23,11 +23,7 @@ def run_rl():
 def main():
     # websocket.enableTrace(True)
     run_random()
-<<<<<<< HEAD
-
-=======
     # run_act_r()
->>>>>>> fixes
 
 if __name__ == "__main__":
     main()
