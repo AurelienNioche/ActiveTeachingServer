@@ -139,9 +139,8 @@ class Kanji(models.Model):
                                    null=True)  # Field name made lowercase.
     right7freq = models.IntegerField(db_column='Right7freq', blank=True, null=True)  # Field name made lowercase.
 
-    @property
     def value(self):
-        return self.kanji
+        return "kanji"
 
     class Meta:
 

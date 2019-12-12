@@ -8,8 +8,7 @@ class Selection:
         try:
             values, meaning = \
                 np.array(
-
-                    self.model.objects.values_list('value', 'meaning').order_by('index')
+                    self.model.objects.values_list(self.model.value(self.model), 'meaning').order_by('index')
                 ).T
         except Exception as e:
             raise RuntimeError("Cannot load the database content:" + str(e))
