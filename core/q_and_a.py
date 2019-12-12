@@ -1,13 +1,13 @@
 import numpy as np
 from datetime import datetime
+import warnings
 
 from user_data.models import Question, User
 
 from core.fixed_parameters import N_POSSIBLE_REPLIES
 
-# --- Need to be changed --- #
-import teaching_material.selection
-# ------------------------ #
+from teaching_material.selection import Selection
+from teaching_material.models import Finnish, Kanji
 
 from teacher.models import Leitner
 
@@ -17,19 +17,33 @@ USER_DEFAULT_ID = -1
 USER_TEST_ID = -2
 
 
-def get_question(reply):
+selection_dictionary = {
+    "kanji": Kanji,
+    "finnish": Finnish
+}
 
+__SELECTION__ = None
+
+
+def get_question(reply):
+    global __SELECTION__
     # Get task parameters
     register_replies = reply['registerReplies']
     t_max = reply['nIteration']
     teacher_name = reply['teacher']
-    material = reply['material']
+    material = reply['material'] # Change this to finnish to use my material
     user_id = reply['userId']
     t = reply['t']
 
     first_call = reply['userId'] == USER_DEFAULT_ID
+    if __SELECTION__ is None:
+        if material not in selection_dictionary.keys():
+            warnings.warn("Value '" + material + "' not valid. Using default.  "
+                          "(Valid keys:" + str(selection_dictionary.keys()) + ")")
+            material = "kanji"
+        else:
+            __SELECTION__ = Selection(model=selection_dictionary[material])
 
-    assert material == 'japanese', 'Only Japanese material is implemented!'
     assert teacher_name == 'leitner', 'Only Leitner teacher is implemented!'
 
     # Check for t_max
@@ -51,7 +65,7 @@ def get_question(reply):
         t += 1
 
     # --- Need to be changed --- #
-    id_questions, id_replies = teaching_material.selection.get_id()
+    id_questions, id_replies = __SELECTION__.get_id()
     # --- Need to be changed --- #
 
     hist_question, hist_success = get_historic(user_id=user_id, t=t)
@@ -78,13 +92,11 @@ def get_question(reply):
             id_replies=id_replies
         )
 
-    # --- Need to be changed --- #
     question, possible_replies = \
-        teaching_material.selection.get_string_representation(
+        __SELECTION__.get_string_representation(
             id_question=id_question,
             id_possible_replies=id_possible_replies
         )
-    # --- Need to be changed --- #
 
     is_new_question = id_question not in hist_question
 
@@ -104,7 +116,6 @@ def get_question(reply):
 
 
 def _convert_to_time(string_time):
-
     return datetime.strptime(string_time, '%Y-%m-%d %H:%M:%S.%f')
 
 
@@ -115,7 +126,6 @@ def _random_question(id_questions):
 
 def _new_question(user_id, t, id_questions,
                   hist_question, hist_success):
-
     if t == 0:
         # Create teacher
         teacher_id, teacher = _create_teacher(user_id=user_id,
@@ -124,7 +134,6 @@ def _new_question(user_id, t, id_questions,
         teacher.save()
 
     else:
-
         # Get teacher
         teacher = Leitner.objects.get(user_id=user_id)
         question_id = teacher.ask(
@@ -138,7 +147,6 @@ def _new_question(user_id, t, id_questions,
 
 
 def get_possible_replies(id_replies, id_reply, hist_question):
-
     # Get hist of meanings
     hist_meaning = [id_replies[i] for i in hist_question]
 

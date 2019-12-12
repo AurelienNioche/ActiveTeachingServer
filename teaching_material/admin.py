@@ -1,9 +1,9 @@
 from django.contrib import admin
 
-from . models import Kanji
+from teaching_material.models import Kanji, Finnish
 
 
-# Register your models here.
+# Kanji custom admin
 class KanjiAdmin(admin.ModelAdmin):
     list_display = (
         "id", "index", "kanji", "meaning",
@@ -11,5 +11,6 @@ class KanjiAdmin(admin.ModelAdmin):
         "grade", "strokes")
     # , "reading_within_joyo", "reading_beyond_joyo")
 
-
+# Register your models here.
 admin.site.register(Kanji, KanjiAdmin)
+admin.site.register(Finnish)

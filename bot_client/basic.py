@@ -1,9 +1,7 @@
 # import requests
 import json
 import numpy as np
-
 import time
-
 import websocket
 
 
@@ -13,6 +11,7 @@ class MySocket(websocket.WebSocketApp):
                  waiting_time=1,
                  n_iteration=10,
                  register_replies=True,
+                 teaching_material="kanji",
                  **kwargs):
         super().__init__(
             url,
@@ -20,21 +19,19 @@ class MySocket(websocket.WebSocketApp):
             on_error=self.on_error,
             on_close=self.on_close,
             on_open=self.on_open,
-            **kwargs)
-
+            **kwargs
+        )
         self.n_iteration = n_iteration
         self.waiting_time = waiting_time
         self.register_replies = register_replies
+        self.teaching_material = teaching_material
 
     def decide(self, id_possible_replies, id_question, id_correct_answer):
-
         return np.random.choice(id_possible_replies)
 
     def on_message(self, message):
-
-        print(f"I received: {message}")
+        print(f"[{self.__class__.__name__}] received: {message}")
         message = json.loads(message)
-
         if message['t'] == -1:
             print("Done!")
             exit(0)
@@ -50,8 +47,8 @@ class MySocket(websocket.WebSocketApp):
         ))
 
         success = id_reply == id_correct_answer
-        print("I got question", message["idQuestion"])
-        print("I replied", id_reply)
+        print(f"[{self.__class__.__name__}] got question", message["idQuestion"])
+        print(f"[{self.__class__.__name__}] replied", id_reply)
         print(f"It was{' not ' if not success else ' '}a success")
 
         to_send = {
@@ -59,7 +56,7 @@ class MySocket(websocket.WebSocketApp):
             'nIteration': message['nIteration'],
             'registerReplies': message['registerReplies'],
             'teacher': 'leitner',
-            'material': 'japanese',
+            'material': self.teaching_material,
             't': message['t'],
             'idQuestion': id_question,
             'idCorrectAnswer': id_correct_answer,
@@ -71,32 +68,30 @@ class MySocket(websocket.WebSocketApp):
         }
 
         time.sleep(self.waiting_time)
-        print(f"I'm sending {to_send}")
-        print('\n')
+        print(f"[{self.__class__.__name__}] sending:", to_send, "\n")
         self.send(json.dumps(to_send))
 
     @classmethod
     def on_error(cls, error):
         if str(error) not in ['0', '']:
-            print(f"I got error: {error}")
+            print(f"[{cls.__name__}] got error: '{error}'")
 
     @classmethod
     def on_close(cls):
-        print("I'm closing")
+        print(f"[{cls.__name__}] closing")
 
     def on_open(self):
-
         to_send = {
             'userId': -1,
             'nIteration': self.n_iteration,
             'registerReplies': self.register_replies,
             'teacher': 'leitner',
-            'material': 'japanese',
+            'material': self.teaching_material,
             't': -1,
             'idReply': -1,
             'timeDisplay': "<empty>",
             'timeReply': "<empty>",
         }
 
-        print(f"I'm sending {to_send}")
+        print(f"[{self.__class__.__name__}] sending:", to_send, "\n")
         self.send(json.dumps(to_send))
