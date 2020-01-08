@@ -35,7 +35,7 @@ class QLearner(Learner):
 
         return self._softmax(self.q[item])
 
-    def learn(self, item, time=None):
+    def learn(self, item, time=None, success=None):
 
         self.q[item] = self._temporal_difference(v=self.q[item])
 

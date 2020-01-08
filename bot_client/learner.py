@@ -20,7 +20,7 @@ class LearnerSocket(MySocket):
 
         recall = self.learner.p_recall(item=id_question) > np.random.random()
 
-        self.learner.learn(item=id_question)
+        self.learner.learn(item=id_question, success=recall)
         if recall:
             return id_correct_answer
         else:

@@ -33,16 +33,16 @@ def objective(model,
 
             lh = p_choose_correct if s else p_random
 
-            # if lh > 0:
-            #     log_likelihood_sum = -np.inf
-            #     break
-            # else:
-            log_likelihood_sum += np.log(lh)
+            if lh == 0:
+                log_likelihood_sum = -np.inf
+                break
+            else:
+                log_likelihood_sum += np.log(lh)
 
         else:
             seen[item] = True
 
-        agent.learn(item=item)
+        agent.learn(item=item, success=hist_success[t])
 
     value = - log_likelihood_sum
     return value

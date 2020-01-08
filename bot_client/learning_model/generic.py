@@ -27,7 +27,7 @@ class Learner:
         #     print(f't={self.t}: question {item}, reply {reply}')
         return reply
 
-    def learn(self, item, time=None):
+    def learn(self, item, time=None, success=None):
         raise NotImplementedError
 
     def unlearn(self):

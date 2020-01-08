@@ -178,7 +178,7 @@ class ActR(Learner):
             print(f"t={self.t}, a_i: {a:.3f}, p_r: {p_retrieve:.3f}")
         return p_retrieve
 
-    def learn(self, item, time=None, time_index=None):
+    def learn(self, item, time=None, time_index=None, success=None):
 
         increment_t = 0
 
