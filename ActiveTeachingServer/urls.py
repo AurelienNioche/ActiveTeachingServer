@@ -17,8 +17,10 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls import url
 from django.views.generic.base import RedirectView
+from django.shortcuts import render
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^$', RedirectView.as_view(url='/admin'))
+    url(r'^$', RedirectView.as_view(url='/admin')),
 ]
