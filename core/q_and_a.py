@@ -1,7 +1,7 @@
 import numpy as np
 from datetime import datetime
 
-from user_data.models import Question, User
+from user_data.models import Question, Learner, User
 
 from core.fixed_parameters import N_POSSIBLE_REPLIES
 import teaching_material.selection
@@ -192,12 +192,15 @@ def _create_teacher(user_id, n_item):
 def _register_user():
 
     """
-    Creates a new user and returns its instance
+    Creates a new user and returns its id
     """
 
-    u = User()
-
+    u = Learner(
+        user=User.objects.create_user(        username='tamere',
+        email="tamere@gmail.com",                 password="tamere",),
+                gender="male")
     u.save()
+
     return u.id
 
 

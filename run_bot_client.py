@@ -7,7 +7,7 @@ from bot_client.learning_model.act_r.act_r import ActR
 
 def run_random():
 
-    ws = MySocket(register_replies=False)
+    ws = MySocket(register_replies=True)
     ws.run_forever()
 
 

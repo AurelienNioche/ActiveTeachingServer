@@ -3,7 +3,9 @@ from django.contrib.postgres.fields import ArrayField
 
 # Create your models here.
 from django.utils.timezone import now
+from django.contrib.auth.models import User
 import numpy as np
+from django.contrib.auth.models import AbstractUser
 
 
 class Question(models.Model):
@@ -23,13 +25,13 @@ class Question(models.Model):
         app_label = 'user_data'
 
 
-class User(models.Model):
+class Learner(models.Model):
 
-    # username = models.TextField(unique=True)
-    # gender = models.TextField(blank=True, null=True)
-    # age = models.IntegerField(blank=True, null=True)
-    # mother_tongue = models.TextField(blank=True, null=True)
-    # other_language = models.TextField(blank=True, null=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    gender = models.TextField(blank=True, null=True)
+    age = models.IntegerField(blank=True, null=True)
+    mother_tongue = models.TextField(blank=True, null=True)
+    other_language = models.TextField(blank=True, null=True)
     # t = models.IntegerField(blank=True, null=True, default=0)
     # teacher = models.CharField(max_length=255,
     #                            blank=True, null=True,

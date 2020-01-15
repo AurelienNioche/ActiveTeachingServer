@@ -1,15 +1,15 @@
 from django.contrib import admin
 
 # Register your models here.
-from user_data.models import Question, User
+from user_data.models import Question, Learner
 from teaching_material.models import Kanji
 
 from core.fixed_parameters import N_POSSIBLE_REPLIES
 
 
-class UserAdmin(admin.ModelAdmin):
+class LearnerAdmin(admin.ModelAdmin):
     list_display = (
-        "id", "registration_time")
+        "id", "registration_time", "user")
     # "username", "gender", "age", "mother_tongue", "other_language",
 
 
@@ -19,6 +19,6 @@ class QuestionAdmin(admin.ModelAdmin):
         "time_display", "time_reply", "possible_replies")
 
 
-admin.site.register(User, UserAdmin)
+admin.site.register(Learner, LearnerAdmin)
 admin.site.register(Question, QuestionAdmin)
 
