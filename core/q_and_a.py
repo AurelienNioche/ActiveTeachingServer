@@ -14,36 +14,53 @@ USER_DEFAULT_ID = -1
 USER_TEST_ID = -2
 
 
-def get_question(reply):
+def treat_request(reply):
+
+    request_type = reply["requestType"]
 
     # Get task parameters
     register_replies = reply['registerReplies']
     t_max = reply['nIteration']
-    teacher_name = reply['teacher']
     user_id = reply['userId']
     t = reply['t']
 
-    first_call = reply['userId'] == USER_DEFAULT_ID
+    # teacher_name = reply['teacher']
 
-    assert teacher_name == 'leitner', 'Only Leitner teacher is implemented!'
+    user_email = reply['userEmail']
+    user_password = reply['userPassword']
 
-    # Check for t_max
-    if t == t_max:
-        return {
-            't': -1
-        }
+    # first_call = reply['userId'] == USER_DEFAULT_ID
 
-    if first_call:
-        if register_replies:
-            user_id = _register_user()
-        else:
-            user_id = USER_TEST_ID
-        t = 0
+    # assert teacher_name == 'leitner', 'Only Leitner teacher is implemented!'
 
-    else:
-        if register_replies:
-            _register_question(reply)
-        t += 1
+    # # Check for t_max
+    # if t == t_max:
+    #     return {
+    #         't': -1
+    #     }
+
+    # if first_call:
+    #     if register_replies:
+    #         user_id = _register_user()
+    #     else:
+    #         user_id = USER_TEST_ID
+    #     t = 0
+    #
+    # else:
+
+    # TODO: redirect if sign up
+
+    # TODO: redirect if login
+
+    # TODO:  is the user is authorized to play?
+
+    # TODO: which material should he use?
+
+    # TODO: which teacher should he use?
+
+    if register_replies:
+        _register_question(reply)
+    t += 1
 
     id_questions, id_replies = teaching_material.selection.get_id()
 

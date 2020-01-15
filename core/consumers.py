@@ -1,7 +1,7 @@
 from channels.generic.websocket import WebsocketConsumer
 import json
 
-from . q_and_a import get_question
+from . q_and_a import treat_request
 
 
 class WebSocketConsumer(WebsocketConsumer):
@@ -30,7 +30,7 @@ class WebSocketConsumer(WebsocketConsumer):
         print("Receive:", text_data_json)
         # message = text_data_json['message']
 
-        question = get_question(text_data_json)
+        question = treat_request(text_data_json)
 
         print("Send:", question)
         resp = json.dumps(question)
