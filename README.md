@@ -71,7 +71,7 @@ Start the postgresql service:
 
 #### PostgreSQL
 
-Create user 'posgres' if it doesn't exist
+Create user 'postgres' if it doesn't exist
     
     createuser postgres
 
@@ -149,3 +149,60 @@ Remove the db
    Coming from Tamaoka, K., Makioka, S., Sanders, S. & Verdonschot, R.G. (2017). 
 www.kanjidatabase.com: a new interactive online database for psychological and linguistic research on Japanese kanji 
 and their compound words. Psychological Research, 81, 696-708.
+
+
+### Deployment server
+
+* Create a virtual environment
+
+        sudo apt-get install virtualenv
+        cd <code>
+        virtualenv -p python3 venv
+        source venv/bin/activate
+        pip install ...
+    
+* Install Apache2
+
+        sudo apt install apache2 libapache2-mod-wsgi-py3
+        a2enmod rewrite
+        a2enmod proxy_http
+        a2enmod proxy_wstunnel
+   
+* Add to apache2 config file (`/etc/apache2/sites-enabled/000-default.conf`) inside `<VirtualHost *:80>`
+
+        RewriteEngine on
+        RewriteCond %{HTTP:UPGRADE} ^WebSocket$ [NC,OR]
+        RewriteCond %{HTTP:CONNECTION} ^Upgrade$ [NC]
+        RewriteRule .* ws://127.0.0.1:8001%{REQUEST_URI} [P,QSA,L]
+    
+    
+        WSGIDaemonProcess active-teaching python-home=/var/www/html/ActiveTeachingServer/venv python-path=/var/www/html/ActiveTeachingServer
+        WSGIProcessGroup active-teaching
+    
+        WSGIScriptAlias /admin /var/www/html/ActiveTeachingServer/ActiveTeachingServer/wsgi.py process-group=active-teaching
+    
+        <Directory /var/www/html/ActiveTeachingServer/ActiveTeachingServer>
+            <Files wsgi.py>
+                Require all granted
+            </Files>
+        </Directory>
+    
+* Create Daphne daemon file at `/etc/systemd/system/daphne.service`
+
+        [Unit]
+        Description=ActiveTeaching Daphne Service
+        After=network.target
+        
+        [Service]
+        Type=simple
+        User=www-data
+        WorkingDirectory=/var/www/html/ActiveTeachingServer
+        ExecStart=/var/www/html/ActiveTeachingServer/venv/bin/python /var/www/html/ActiveTeachingServer/venv/bin/daphne -p 8001 ActiveTeachingServer.asgi:application
+        Restart=on-failure
+        
+        [Install]
+        WantedBy=multi-user.target
+        
+    * Run `sudo systemctl daemon-reload`
+    * `sudo systemctl start daphne.service`
+    * Check with `sudo systemctl status daphne.service`
