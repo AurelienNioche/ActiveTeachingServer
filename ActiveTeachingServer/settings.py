@@ -26,7 +26,7 @@ SECRET_KEY = 'u9syfm&2lrnemk&5vvi8wib1m^j=!anb@y%a^nnl2(qakn*m&@'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["activeteaching.research.comnet.aalto.fi"]
 
 
 # Application definition
