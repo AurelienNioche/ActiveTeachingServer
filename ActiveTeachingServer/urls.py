@@ -21,6 +21,6 @@ from django.shortcuts import render
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    url(r'^$', RedirectView.as_view(url='/admin')),
+    path('', admin.site.urls),
+    # url(r'^$', RedirectView.as_view(url='/admin')),
 ]
