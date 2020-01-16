@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 import sys
+from . credentials import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -34,7 +35,7 @@ ALLOWED_HOSTS = ["activeteaching.research.comnet.aalto.fi",
 
 INSTALLED_APPS = [
     'teacher.apps.TeacherConfig',
-    'user_data.apps.UserDataConfig',
+    'user.apps.UserConfig',
     'teaching_material.apps.TeachingMaterialConfig',
     'core.apps.TaskConfig',
     'channels',
@@ -155,3 +156,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
 # Channels
 ASGI_APPLICATION = 'ActiveTeachingServer.routing.application'
+
+AUTH_USER_MODEL = 'user.User'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587

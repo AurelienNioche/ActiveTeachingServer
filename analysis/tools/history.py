@@ -4,7 +4,7 @@ import pickle
 import numpy as np
 
 from teaching_material.selection import kanji
-from user_data.models import Question
+from user.models import Question
 
 BKP_FOLDER = os.path.join("data", "Pilot20190902", "pickle", "history")
 os.makedirs(BKP_FOLDER, exist_ok=True)

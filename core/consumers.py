@@ -1,7 +1,7 @@
 from channels.generic.websocket import WebsocketConsumer
 import json
 
-from . q_and_a import treat_request
+from . reception_desk import treat_request
 
 
 class WebSocketConsumer(WebsocketConsumer):

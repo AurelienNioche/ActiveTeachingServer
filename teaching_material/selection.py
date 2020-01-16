@@ -16,9 +16,8 @@ try:
     id_meaning = id_kanji[___idx___][__inverse__]
 
 except:
-    print("Cannot load the database content")
-    kanji = None
-    meaning = None
+    raise Exception("Cannot load the database content!\n"
+                    "Did you upload the kanji?")
 
 # assert len(id_kanji) == len(id_meaning)
 # for i in range(len(id_kanji)):

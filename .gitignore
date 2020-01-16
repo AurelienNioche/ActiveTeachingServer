@@ -109,7 +109,7 @@ venv.bak/
 # Django migrations
 core/migrations/*
 /teaching_material/migrations/*
-/user_data/migrations/*
+/user/migrations/*
 /teacher/migrations/*
 !*/*/__init__.py
 
@@ -118,9 +118,14 @@ templates/
 
 # Figures
 /analysis/fig/*
+
+# Data
 /data/word2vec/GoogleNews-vectors-negative300.bin
 analysis/data/
 data/simsearch/pickle/
 data/word2vec/pickle/
 data/word2vec/word_vectors/
 /data/Pilot20190902/pickle/*
+
+# Credentials
+ActiveTeachingServer/credentials.py

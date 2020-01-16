@@ -7,7 +7,7 @@ import time
 import websocket
 
 
-class MySocket(websocket.WebSocketApp):
+class ActiveTeachingSocket(websocket.WebSocketApp):
 
     def __init__(self, url="ws://localhost:8000/",
                  waiting_time=1,
@@ -85,6 +85,7 @@ class MySocket(websocket.WebSocketApp):
 
     def on_open(self):
 
+        print("I'm open")
         to_send = {
             'userId': -1,
             'nIteration': self.n_iteration,

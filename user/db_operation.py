@@ -2,7 +2,7 @@ import os
 
 from ActiveTeachingServer.settings import DATABASES
 from teacher.models import Leitner
-from user_data.models import Question, User
+from user.models import Question, User
 from tools.utils import AskUser
 
 DB_NAME = DATABASES['default']['NAME']

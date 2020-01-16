@@ -1,6 +1,6 @@
 import numpy as np
 
-from user_data.models import Question
+from user.models import Question
 
 
 def get(user_id):

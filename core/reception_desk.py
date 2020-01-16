@@ -1,10 +1,11 @@
 import numpy as np
 from datetime import datetime
 
-from user_data.models import Question, Learner, User
+from user.models import Question, User
 
 from core.fixed_parameters import N_POSSIBLE_REPLIES
 import teaching_material.selection
+import user.authentication
 
 from teacher.models import Leitner
 
@@ -14,20 +15,53 @@ USER_DEFAULT_ID = -1
 USER_TEST_ID = -2
 
 
-def treat_request(reply):
+class Request:
 
-    request_type = reply["requestType"]
+    LOGIN = "login"
+    SIGN_UP = "sign_up"
 
-    # Get task parameters
-    register_replies = reply['registerReplies']
-    t_max = reply['nIteration']
-    user_id = reply['userId']
-    t = reply['t']
+    def __init__(self, request_type=None, register_replies=None,
+                 n_iteration=None, user_id=None, t=None, user_email=None,
+                 user_password=None):
+
+        self.type = request_type
+        self.register_replies = register_replies
+        self.n_iteration = n_iteration
+        self.user_id = user_id
+        self.t = t
+
+        self.user_email = user_email
+        self.user_password = user_password
+
+    def return_to_user(self, question, possible_replies, id_question,
+                       id_possible_replies, id_reply, is_new_question):
+        return {
+            'userId': int(self.user_id),
+            't': int(self.t),
+            'nIteration': int(self.n_iteration),
+            'registerReplies': self.register_replies,
+            'question': question,
+            'possibleReplies': possible_replies,
+            'idQuestion': int(id_question),
+            'newQuestion': is_new_question,
+            'idCorrectAnswer': int(id_reply),
+            'idPossibleReplies': [int(i) for i in id_possible_replies],
+        }
+
+
+def treat_request(request_kwargs):
+
+    r = Request(**request_kwargs)
+    if r.type == Request.LOGIN:
+        user.authentication.login(r)
+
+    elif r.type == Request.SIGN_UP:
+        user.authentication.sign_up(r)
+
+
+
 
     # teacher_name = reply['teacher']
-
-    user_email = reply['userEmail']
-    user_password = reply['userPassword']
 
     # first_call = reply['userId'] == USER_DEFAULT_ID
 
@@ -58,19 +92,19 @@ def treat_request(reply):
 
     # TODO: which teacher should he use?
 
-    if register_replies:
-        _register_question(reply)
-    t += 1
+    if r.register_replies:
+        _register_question(r)
+    r.t += 1
 
     id_questions, id_replies = teaching_material.selection.get_id()
 
-    hist_question, hist_success = get_historic(user_id=user_id, t=t)
+    hist_question, hist_success = get_historic(user_id=r.user_id, t=r.t)
 
-    if register_replies:
+    if r.register_replies:
         id_question = \
             _new_question(
-                user_id=user_id,
-                t=t,
+                user_id=r.user_id,
+                t=r.t,
                 hist_question=hist_question,
                 hist_success=hist_success,
                 id_questions=id_questions)
@@ -96,19 +130,10 @@ def treat_request(reply):
 
     is_new_question = id_question not in hist_question
 
-    to_return = {
-        'userId': int(user_id),
-        't': int(t),
-        'nIteration': int(t_max),
-        'registerReplies': register_replies,
-        'question': question,
-        'possibleReplies': possible_replies,
-        'idQuestion': int(id_question),
-        'newQuestion': is_new_question,
-        'idCorrectAnswer': int(id_reply),
-        'idPossibleReplies': [int(i) for i in id_possible_replies],
-    }
-    return to_return
+    return reply.return_to_user(
+        question=question, possible_replies=possible_replies,
+        id_question=id_question, id_possible_replies=id_possible_replies,
+        id_reply=id_reply, is_new_question=is_new_question)
 
 
 def _convert_to_time(string_time):
@@ -205,41 +230,16 @@ def _create_teacher(user_id, n_item):
     return teacher.id, teacher
 
 
-@Atomic
-def _register_user():
-
-    """
-    Creates a new user and returns its id
-    """
-
-    u = Learner(
-        user=User.objects.create_user(        username='tamere',
-        email="tamere@gmail.com",                 password="tamere",),
-                gender="male")
-    u.save()
-
-    return u.id
-
-
-def _register_question(reply):
-
-    user_id = reply['userId']
-    t = reply['t']
-    success = reply['success']
-    id_question = reply['idQuestion']
-    id_reply = reply['idReply']
-    id_possible_replies = reply[f'idPossibleReplies']
-    time_display = _convert_to_time(reply['timeDisplay'])
-    time_reply = _convert_to_time(reply['timeReply'])
+def _register_question(r):
 
     question = Question(
-        user_id=user_id,
-        t=t,
-        question=id_question,
-        reply=id_reply,
-        success=success,
-        time_display=time_display,
-        time_reply=time_reply,
-        possible_replies=id_possible_replies
+        user_id=r.user_id,
+        t=r.t,
+        question=r.id_question,
+        reply=r.id_reply,
+        success=r.success,
+        time_display=_convert_to_time(r.time_display),
+        time_reply=_convert_to_time(r.time_reply),
+        possible_replies=r.id_possible_replies
     )
     question.save()

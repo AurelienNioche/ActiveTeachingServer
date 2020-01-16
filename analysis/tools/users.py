@@ -1,7 +1,7 @@
 import os
 import pickle
 
-from user_data.models import User
+from user.models import User
 
 BKP_FOLDER = os.path.join("data", "Pilot20190902", "pickle", "user")
 BKP_FILE = os.path.join(BKP_FOLDER, "user.p")

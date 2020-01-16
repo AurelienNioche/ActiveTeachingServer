@@ -1,9 +1,9 @@
 import numpy as np
 
-from . basic import MySocket
+from . basic import ActiveTeachingSocket
 
 
-class LearnerSocket(MySocket):
+class LearnerSocket(ActiveTeachingSocket):
 
     def __init__(
             self,
@@ -12,8 +12,8 @@ class LearnerSocket(MySocket):
             n_iteration=10,
             **kwargs):
 
-        MySocket.__init__(self, waiting_time=waiting_time,
-                          n_iteration=n_iteration)
+        ActiveTeachingSocket.__init__(self, waiting_time=waiting_time,
+                                      n_iteration=n_iteration)
         self.learner = cognitive_model(n_iteration=n_iteration, **kwargs)
 
     def decide(self, id_possible_replies, id_question, id_correct_answer):
