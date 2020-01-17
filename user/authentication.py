@@ -10,7 +10,7 @@ from teacher.models import Leitner
 
 def login(r):
 
-    user = authenticate(username=r.user_email, password=r.password)
+    user = authenticate(email=r.email, password=r.password)
     if user is not None:
     # A backend authenticated the credentials
         return None
@@ -19,19 +19,18 @@ def login(r):
         return user.learner
 
 
-@Atomic
 def sign_up(r, n_item):
 
     """
         Creates a new user and returns its id
-        """
+    """
 
+    leitner_teacher = Leitner.objects.create(n_item=n_item)
     u = User.objects.create_user(
-        username=r.user_email,
-        email=r.user_email,
-        password="tamere",
-        gender="male",
-        leitner_teacher=Leitner(n_item=n_item)
+        email=r.email,
+        password=r.password,
+        gender=r.gender,
+        # leitner_teacher=leitner_teacher
     )
 
     return u.id

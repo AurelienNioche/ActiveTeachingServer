@@ -9,7 +9,6 @@ from . generic import GenericTeacher
 
 class Leitner(models.Model, GenericTeacher):
 
-    user_id = models.IntegerField(default=-1)
     delay_factor = models.IntegerField(default=2)
     box_min = models.IntegerField(default=1)
     n_item = models.IntegerField(default=-1)

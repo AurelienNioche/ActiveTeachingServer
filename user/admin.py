@@ -9,7 +9,7 @@ from core.fixed_parameters import N_POSSIBLE_REPLIES
 
 class UserAdmin(admin.ModelAdmin):
     list_display = (
-        "id", "registration_time", "password")
+        "id", "email", "is_superuser", "date_joined", "last_login")
     # "username", "gender", "age", "mother_tongue", "other_language",
 
 

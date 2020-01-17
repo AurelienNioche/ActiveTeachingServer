@@ -5,7 +5,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.utils.timezone import now
 
 import numpy as np
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.utils.translation import ugettext_lazy as _
 
 from teacher.models import Leitner
@@ -62,24 +62,29 @@ class Question(models.Model):
         app_label = 'user'
 
 
-class User(AbstractUser):
+class User(AbstractBaseUser):
 
-    # Change manager
-    objects = UserManager()
-
-    USERNAME_FIELD = 'email'
-    # changes email to unique and blank to false
-    email = models.EmailField(_('email address'), unique=True)
-    REQUIRED_FIELDS = []  # removes email from REQUIRED_FIELDS
+    email = models.EmailField(unique=True)
 
     gender = models.TextField(blank=True, null=True)
     age = models.IntegerField(blank=True, null=True)
     mother_tongue = models.TextField(blank=True, null=True)
     other_language = models.TextField(blank=True, null=True)
-    registration_time = models.DateTimeField(default=now)
+
+    is_superuser = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+
+    date_joined = models.DateTimeField(auto_now_add=True)
 
     leitner_teacher = models.OneToOneField(Leitner, on_delete=models.CASCADE,
                                            null=True, blank=True)
+
+    USERNAME_FIELD = 'email'
+    EMAIL_FIELD = 'email'
+    REQUIRED_FIELDS = []  # removes email from REQUIRED_FIELDS
+
+    # Change manager
+    objects = UserManager()
 
     class Meta:
         db_table = 'user'

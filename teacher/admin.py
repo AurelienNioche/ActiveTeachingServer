@@ -6,7 +6,7 @@ from . models import Leitner
 # Register your models here.
 class LeitnerAdmin(admin.ModelAdmin):
     list_display = (
-        "id", "user_id", "delay_factor", "n_item",
+        "id", "delay_factor", "n_item",
         "taboo", "waiting_time", "box")
 
 

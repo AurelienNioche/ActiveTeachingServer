@@ -86,16 +86,12 @@ class ActiveTeachingSocket(websocket.WebSocketApp):
     def on_open(self):
 
         print("I'm open")
-        to_send = {
-            'userId': -1,
-            'nIteration': self.n_iteration,
-            'registerReplies': self.register_replies,
-            'teacher': 'leitner',
-            't': -1,
-            'idReply': -1,
-            'timeDisplay': "<empty>",
-            'timeReply': "<empty>",
-        }
+        to_send = \
+            {
+                "request_type": "sign_up",
+                "email": "active.teaching.aalto@gmail.com",
+                "password": "tamere"
+            }
 
         print(f"I'm sending {to_send}")
         self.send(json.dumps(to_send))

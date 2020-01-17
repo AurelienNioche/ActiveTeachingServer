@@ -20,9 +20,10 @@ class Request:
     LOGIN = "login"
     SIGN_UP = "sign_up"
 
-    def __init__(self, request_type=None, register_replies=None,
-                 n_iteration=None, user_id=None, t=None, user_email=None,
-                 user_password=None):
+    def __init__(self, request_type, register_replies=None,
+                 n_iteration=None, user_id=None, t=None, email=None,
+                 password=None, id_question=None,
+                 id_reply=None, success=None, gender=None):
 
         self.type = request_type
         self.register_replies = register_replies
@@ -30,8 +31,14 @@ class Request:
         self.user_id = user_id
         self.t = t
 
-        self.user_email = user_email
-        self.user_password = user_password
+        self.id_reply = id_reply
+        self.id_question = id_question
+
+        self.success = success
+
+        self.email = email
+        self.password = password
+        self.gender = gender
 
     def return_to_user(self, question, possible_replies, id_question,
                        id_possible_replies, id_reply, is_new_question):
@@ -53,13 +60,14 @@ def treat_request(request_kwargs):
 
     r = Request(**request_kwargs)
     if r.type == Request.LOGIN:
-        user.authentication.login(r)
+        if user.authentication.login(r):
+            return {'ok': True}
+        else:
+            return {'ok': False}
 
     elif r.type == Request.SIGN_UP:
-        user.authentication.sign_up(r)
-
-
-
+        user.authentication.sign_up(r, 100)
+        return {'ok': True}
 
     # teacher_name = reply['teacher']
 
@@ -130,7 +138,7 @@ def treat_request(request_kwargs):
 
     is_new_question = id_question not in hist_question
 
-    return reply.return_to_user(
+    return r.return_to_user(
         question=question, possible_replies=possible_replies,
         id_question=id_question, id_possible_replies=id_possible_replies,
         id_reply=id_reply, is_new_question=is_new_question)
@@ -149,23 +157,15 @@ def _random_question(id_questions):
 def _new_question(user_id, t, id_questions,
                   hist_question, hist_success):
 
-    if t == 0:
-        # Create teacher
-        teacher_id, teacher = _create_teacher(user_id=user_id,
-                                              n_item=len(id_questions))
-        question_id = teacher.ask(t=t, questions=id_questions)
-        teacher.save()
-
-    else:
-
-        # Get teacher
-        teacher = Leitner.objects.get(user_id=user_id)
-        question_id = teacher.ask(
-            t=t,
-            hist_success=hist_success,
-            hist_question=hist_question,
-            questions=id_questions)
-        teacher.save()
+    # Get teacher
+    u = User.objects.get(user_id=user_id)
+    teacher = u.leitner_teacher
+    question_id = teacher.ask(
+        t=t,
+        hist_success=hist_success,
+        hist_question=hist_question,
+        questions=id_questions)
+    teacher.save()
 
     return question_id
 
@@ -220,14 +220,6 @@ def get_historic(user_id, t):
         hist_success[i] = e.success
 
     return hist_question, hist_success
-
-
-@Atomic
-def _create_teacher(user_id, n_item):
-
-    teacher = Leitner(user_id=user_id, n_item=n_item)
-    teacher.save()
-    return teacher.id, teacher
 
 
 def _register_question(r):
