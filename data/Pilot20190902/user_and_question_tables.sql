@@ -114,7 +114,7 @@ ALTER SEQUENCE public.question_id_seq OWNED BY public.question.id;
 
 
 --
--- Name: user; Type: TABLE; Schema: public; Owner: postgres
+-- Name: learner; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public."user" (
@@ -163,7 +163,7 @@ ALTER TABLE ONLY public.question ALTER COLUMN id SET DEFAULT nextval('public.que
 
 
 --
--- Name: user id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: learner id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public."user" ALTER COLUMN id SET DEFAULT nextval('public.user_id_seq'::regclass);
@@ -4826,7 +4826,7 @@ INSERT INTO public.question VALUES (4773, 18, 749, 114, '{1174,1803,272,114,1324
 
 
 --
--- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: learner; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 INSERT INTO public."user" VALUES (12, NULL, '2019-08-29 09:01:02.886288+03');
@@ -4876,7 +4876,7 @@ ALTER TABLE ONLY public.question
 
 
 --
--- Name: user user_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: learner user_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public."user"

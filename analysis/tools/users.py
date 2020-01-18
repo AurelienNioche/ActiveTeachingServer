@@ -1,10 +1,10 @@
 import os
 import pickle
 
-from user.models import User
+from learner.models import User
 
-BKP_FOLDER = os.path.join("data", "Pilot20190902", "pickle", "user")
-BKP_FILE = os.path.join(BKP_FOLDER, "user.p")
+BKP_FOLDER = os.path.join("data", "Pilot20190902", "pickle", "learner")
+BKP_FILE = os.path.join(BKP_FOLDER, "learner.p")
 os.makedirs(BKP_FOLDER, exist_ok=True)
 
 

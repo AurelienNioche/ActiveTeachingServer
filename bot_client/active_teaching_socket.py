@@ -3,6 +3,7 @@ import json
 import numpy as np
 
 import time
+from datetime import datetime
 
 import websocket
 
@@ -12,7 +13,6 @@ class ActiveTeachingSocket(websocket.WebSocketApp):
     def __init__(self, url="ws://localhost:8000/",
                  waiting_time=1,
                  n_iteration=10,
-                 register_replies=True,
                  **kwargs):
         super().__init__(
             url,
@@ -24,7 +24,6 @@ class ActiveTeachingSocket(websocket.WebSocketApp):
 
         self.n_iteration = n_iteration
         self.waiting_time = waiting_time
-        self.register_replies = register_replies
 
     def decide(self, id_possible_replies, id_question, id_correct_answer):
 
@@ -42,9 +41,14 @@ class ActiveTeachingSocket(websocket.WebSocketApp):
             print("Done!")
             exit(0)
 
-        id_possible_replies = message['idPossibleReplies']
-        id_correct_answer = message['idCorrectAnswer']
-        id_question = message['idQuestion']
+        id_possible_replies = message['id_possible_replies']
+        id_correct_answer = message['id_correct_answer']
+        id_question = message['id_question']
+
+        # Timestamp for display
+        # something like "2019-01-21 00:02:21.029309"
+        message['time_display'] = \
+            datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
 
         id_reply = int(self.decide(
             id_possible_replies=id_possible_replies,
@@ -52,30 +56,24 @@ class ActiveTeachingSocket(websocket.WebSocketApp):
             id_correct_answer=id_correct_answer,
         ))
 
+        # Small pause
+        time.sleep(self.waiting_time)
+
         success = id_reply == id_correct_answer
-        print("I got question", message["idQuestion"])
+        print("I got question", message["id_question"])
         print("I replied", id_reply)
         print(f"It was{' not ' if not success else ' '}a success")
 
-        to_send = {
-            'userId': message['userId'],
-            'nIteration': message['nIteration'],
-            'registerReplies': message['registerReplies'],
-            'teacher': 'leitner',
-            't': message['t'],
-            'idQuestion': id_question,
-            'idCorrectAnswer': id_correct_answer,
-            'idPossibleReplies': id_possible_replies,
-            'idReply': id_reply,
-            'success': success,
-            'timeDisplay': "2019-01-21 00:02:21.029309",
-            'timeReply': "2019-01-21 00:02:22.159123",
-        }
+        message['subject'] = 'reply'
+        message['id_reply'] = id_reply
 
-        time.sleep(self.waiting_time)
-        print(f"I'm sending {to_send}")
+        message['time_reply'] = \
+            datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+        message['success'] = success
+
+        print(f"I'm sending {message}")
         print('\n')
-        self.send(json.dumps(to_send))
+        self.send(json.dumps(message))
 
     @classmethod
     def on_error(cls, error):

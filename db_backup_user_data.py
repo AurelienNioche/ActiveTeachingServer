@@ -4,6 +4,6 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE",
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
-from user.db_operation import backup_user_data
+from learner.db_operation import backup_user_data
 
 backup_user_data()

@@ -9,8 +9,6 @@ from django.contrib.auth.models \
     import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils.translation import ugettext_lazy as _
 
-from teacher.models import Leitner
-
 
 class UserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""
@@ -46,23 +44,6 @@ class UserManager(BaseUserManager):
         return self._create_user(email, password, **extra_fields)
 
 
-class Question(models.Model):
-
-    user_id = models.IntegerField(default=-1)
-    t = models.IntegerField(default=-1)
-    question = models.IntegerField(default=-1)
-    possible_replies = ArrayField(models.IntegerField(), default=list)
-    reply = models.IntegerField(default=-1)
-    success = models.BooleanField()
-    time_display = models.DateTimeField(default=now)
-    time_reply = models.DateTimeField(default=now)
-
-    class Meta:
-
-        db_table = 'question'
-        app_label = 'user'
-
-
 class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(unique=True)
@@ -76,9 +57,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     date_joined = models.DateTimeField(auto_now_add=True)
 
-    leitner_teacher = models.OneToOneField(Leitner, on_delete=models.CASCADE,
-                                           null=True, blank=True)
-
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = []  # removes email from REQUIRED_FIELDS
@@ -88,4 +66,21 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         db_table = 'user'
-        app_label = 'user'
+        app_label = 'learner'
+
+
+class Question(models.Model):
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    t = models.IntegerField(default=-1)
+    question = models.IntegerField(default=-1)
+    possible_replies = ArrayField(models.IntegerField(), default=list)
+    reply = models.IntegerField(default=-1)
+    success = models.BooleanField()
+    time_display = models.DateTimeField(default=now)
+    time_reply = models.DateTimeField(default=now)
+
+    class Meta:
+
+        db_table = 'question'
+        app_label = 'learner'

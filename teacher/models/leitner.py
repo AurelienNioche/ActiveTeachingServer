@@ -1,13 +1,19 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
+from learner.models import User
+
 # Create your models here.
 import numpy as np
 
 from . generic import GenericTeacher
 
 
-class Leitner(models.Model, GenericTeacher):
+class Leitner(GenericTeacher, models.Model):
+
+    user = models.OneToOneField(User,
+                                on_delete=models.CASCADE,
+                                primary_key=True)
 
     delay_factor = models.IntegerField(default=2)
     box_min = models.IntegerField(default=1)

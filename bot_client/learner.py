@@ -1,6 +1,6 @@
 import numpy as np
 
-from . basic import ActiveTeachingSocket
+from . active_teaching_socket import ActiveTeachingSocket
 
 
 class LearnerSocket(ActiveTeachingSocket):

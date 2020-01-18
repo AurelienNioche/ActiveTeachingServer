@@ -4,13 +4,18 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE",
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
-from user.models import User
+from learner.models import User
+from tools.utils import AskUser
 
 
-users = User.objects.all()
+@AskUser
+def delete_users():
+    users = User.objects.all()
 
-for u in users:
-    if u.is_superuser is False:
-        u.delete()
+    for u in users:
+        if u.is_superuser is False:
+            u.delete()
 
 
+if __name__ == "__main__":
+    delete_users()

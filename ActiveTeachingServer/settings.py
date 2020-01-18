@@ -35,7 +35,7 @@ ALLOWED_HOSTS = ["activeteaching.research.comnet.aalto.fi",
 
 INSTALLED_APPS = [
     'teacher.apps.TeacherConfig',
-    'user.apps.UserConfig',
+    'learner.apps.UserConfig',
     'teaching_material.apps.TeachingMaterialConfig',
     'core.apps.TaskConfig',
     'channels',
@@ -157,7 +157,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 # Channels
 ASGI_APPLICATION = 'ActiveTeachingServer.routing.application'
 
-AUTH_USER_MODEL = 'user.User'
+AUTH_USER_MODEL = 'learner.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

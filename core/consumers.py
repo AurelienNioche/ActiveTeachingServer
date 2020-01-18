@@ -30,7 +30,7 @@ class WebSocketConsumer(WebsocketConsumer):
         print("Receive:", text_data_json)
         # message = text_data_json['message']
 
-        question = treat_request(text_data_json).__dict__
+        question = treat_request(text_data_json)
 
         print("Send:", question)
         resp = json.dumps(question)

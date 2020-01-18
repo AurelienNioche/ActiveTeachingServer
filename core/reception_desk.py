@@ -1,11 +1,11 @@
 import numpy as np
 from datetime import datetime
 
-from user.models import Question, User
+from learner.models import Question, User
 
 from core.task_parameters import N_POSSIBLE_REPLIES
 import teaching_material.selection
-import user.authentication
+import learner.authentication
 
 
 USER_DEFAULT_ID = -1
@@ -74,6 +74,17 @@ class Request:
         self.possible_replies = None
         self.is_new_question = None
 
+    def to_json_serializable_dic(self):
+
+        dic = self.__dict__
+        for (k, v) in dic.items():
+            if type(v) == np.ndarray:
+                dic[k] = [int(i) for i in v]
+            elif type(v) == np.int64:
+                dic[k] = int(v)
+
+        return dic
+
     # def return_to_user(self, question, possible_replies, id_question,
     #                    id_possible_replies, id_reply, is_new_question):
     #     return {
@@ -97,81 +108,82 @@ def treat_request(request_kwargs):
 
     if r.subject == Request.SIGN_UP:
 
-        user_id = user.authentication.sign_up(r, len(id_questions))
+        user_id = learner.authentication.sign_up(r, len(id_questions))
         if user_id != -1:
             r.ok = True
             r.user_id = user_id
-            return r
+
         else:
             r.ok = False
             r.msg = "User already exists!"
-            return r
-
-    elif r.subject == Request.LOGIN:
-        user_id = user.authentication.login(r)
-        if user_id < 0:
-            r.ok = False
-            return r
-
-        r.user_id = user_id
-        r.ok = True
 
     else:
-        register_question(r)
 
-    # teacher_name = reply['teacher']
+        if r.subject == Request.LOGIN:
+            user_id = learner.authentication.login(r)
+            if user_id < 0:
+                r.ok = False
+                return r
 
-    # first_call = reply['userId'] == USER_DEFAULT_ID
+            r.user_id = user_id
+            r.ok = True
 
-    # assert teacher_name == 'leitner', 'Only Leitner teacher is implemented!'
+        else:
+            register_question(r)
 
-    # Check for t_max
-    if r.t == r.n_iteration:
-        r.t = -1
-        return r
+        # teacher_name = reply['teacher']
 
-    else:
-        r.reset_question()
-        r.t += 1
+        # first_call = reply['userId'] == USER_DEFAULT_ID
 
-    # TODO: redirect if sign up
+        # assert teacher_name == 'leitner', 'Only Leitner teacher is implemented!'
 
-    # TODO: redirect if login
+        hist_question, hist_success = get_historic(r)
+        r.t = len(hist_question)
 
-    # TODO:  is the user is authorized to play?
+        # Check for t_max
+        if r.t == r.n_iteration:
+            r.t = -1
+            return r
 
-    # TODO: which material should he use?
+        else:
+            r.reset_question()
 
-    # TODO: which teacher should he use?
+        # TODO: redirect if sign up
 
-    hist_question, hist_success = get_historic(user_id=r.user_id, t=r.t)
+        # TODO: redirect if login
 
-    r.id_question = \
-        new_question(
-            user_id=r.user_id,
-            t=r.t,
-            hist_question=hist_question,
-            hist_success=hist_success,
-            id_questions=id_questions)
+        # TODO:  is the learner is authorized to play?
 
-    id_reply = id_replies[r.id_question]
+        # TODO: which material should he use?
 
-    r.id_possible_replies = \
-        get_possible_replies(
-            hist_question=hist_question,
-            id_reply=id_reply,
-            id_replies=id_replies
-        )
+        # TODO: which teacher should he use?
 
-    r.question, r.possible_replies = \
-        teaching_material.selection.get_string_representation(
-            id_question=r.id_question,
-            id_possible_replies=r.id_possible_replies
-        )
+        r.id_question = \
+            new_question(
+                user_id=r.user_id,
+                t=r.t,
+                hist_question=hist_question,
+                hist_success=hist_success,
+                id_questions=id_questions)
 
-    r.is_new_question = r.id_question not in hist_question
+        id_reply = id_replies[r.id_question]
 
-    return r
+        r.id_possible_replies = \
+            get_possible_replies(
+                hist_question=hist_question,
+                id_reply=id_reply,
+                id_replies=id_replies
+            )
+
+        r.question, r.possible_replies = \
+            teaching_material.selection.get_string_representation(
+                id_question=r.id_question,
+                id_possible_replies=r.id_possible_replies
+            )
+
+        r.is_new_question = r.id_question not in hist_question
+
+    return r.to_json_serializable_dic()
 
 
 # def _random_question(id_questions):
@@ -183,9 +195,9 @@ def new_question(user_id, t, id_questions,
                  hist_question, hist_success):
 
     # Get teacher
-    print("user_id",user_id)
+    print("user_id", user_id, "t", t)
     u = User.objects.get(id=user_id)
-    teacher = u.leitner_teacher
+    teacher = u.leitner
     question_id = teacher.ask(
         t=t,
         hist_success=hist_success,
@@ -233,13 +245,14 @@ def get_possible_replies(id_replies, id_reply, hist_question):
     return possible_replies
 
 
-def get_historic(user_id, t):
-    if t < 0:
-        return [], []
+def get_historic(r):
+
+    user = User.objects.get(id=r.user_id)
 
     # Get historic
-    entries_question = \
-        Question.objects.filter(user_id=user_id).order_by('t')
+    entries_question = user.question_set.all().order_by('t')
+
+    t = len(entries_question)
 
     hist_question = np.zeros(t, dtype=int)
     hist_success = np.zeros(t, dtype=bool)
@@ -252,8 +265,9 @@ def get_historic(user_id, t):
 
 def register_question(r):
 
+    user = User.objects.get(id=r.user_id)
     question = Question(
-        user_id=r.user_id,
+        user=user,
         t=r.t,
         question=r.id_question,
         reply=r.id_reply,

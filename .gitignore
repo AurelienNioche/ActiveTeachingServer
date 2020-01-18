@@ -109,7 +109,7 @@ venv.bak/
 # Django migrations
 core/migrations/*
 /teaching_material/migrations/*
-/user/migrations/*
+/learner/migrations/*
 /teacher/migrations/*
 !*/*/__init__.py
 

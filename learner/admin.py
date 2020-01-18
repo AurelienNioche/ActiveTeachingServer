@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from user.models import Question, User
+from learner.models import Question, User
 from teaching_material.models import Kanji
 
 from core.task_parameters import N_POSSIBLE_REPLIES
@@ -15,7 +15,7 @@ class UserAdmin(admin.ModelAdmin):
 
 class QuestionAdmin(admin.ModelAdmin):
     list_display = (
-        "user_id", "t", "question", "reply", "success",
+        "user", "t", "question", "reply", "success",
         "time_display", "time_reply", "possible_replies")
 
 

@@ -2,7 +2,7 @@ import os
 
 from ActiveTeachingServer.settings import DATABASES
 from teacher.models import Leitner
-from user.models import Question, User
+from learner.models import Question, User
 from tools.utils import AskUser
 
 DB_NAME = DATABASES['default']['NAME']
@@ -42,7 +42,7 @@ def _load_user_data(bkp_file):
 def load_user_data(bkp_file=os.path.join(
         "data", "user_and_question_tables.sql")):
 
-    print("WARNING: loading user data will erase previous data if any.")
+    print("WARNING: loading learner data will erase previous data if any.")
     _load_user_data(bkp_file=bkp_file)
 
 

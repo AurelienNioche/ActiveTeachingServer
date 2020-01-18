@@ -1,13 +1,13 @@
 import websocket
 
-from bot_client.basic import ActiveTeachingSocket
+from bot_client.active_teaching_socket import ActiveTeachingSocket
 from bot_client.learner import LearnerSocket
 from bot_client.learning_model.act_r.act_r import ActR
 
 
 def run_random():
 
-    ws = ActiveTeachingSocket(register_replies=True)
+    ws = ActiveTeachingSocket()
     ws.run_forever()
 
 
