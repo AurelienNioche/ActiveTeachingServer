@@ -35,6 +35,9 @@ class ActiveTeachingSocket(websocket.WebSocketApp):
         print(f"I received: {message}")
         message = json.loads(message)
 
+        if message['subject'] == 'sign_up':
+            return
+
         if message['t'] == -1:
             print("Done!")
             exit(0)
@@ -86,12 +89,19 @@ class ActiveTeachingSocket(websocket.WebSocketApp):
     def on_open(self):
 
         print("I'm open")
-        to_send = \
-            {
-                "request_type": "sign_up",
-                "email": "active.teaching.aalto@gmail.com",
-                "password": "tamere"
-            }
+        to_send = {
+            "subject": "login",
+            "email": "nioche.aurelien@gmail.com",
+            "password": "1234",
+        }
+        # to_send = {
+        #     "subject": "sign_up",
+        #     "email": "nioche.aurelien@gmail.com",
+        #     "password": "1234",
+        #     "gender": "male",
+        #     "mother_tongue": "french",
+        #     "other_language": "english"
+        # }
 
         print(f"I'm sending {to_send}")
         self.send(json.dumps(to_send))

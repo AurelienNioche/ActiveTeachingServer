@@ -4,7 +4,13 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE",
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
-from teaching_material.db_operation import fill_kanji_table
+from user.models import User
 
 
-fill_kanji_table()
+users = User.objects.all()
+
+for u in users:
+    if u.is_superuser is False:
+        u.delete()
+
+

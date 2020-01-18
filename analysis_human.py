@@ -23,7 +23,7 @@ from bot_client.learning_model.exponential_forgetting \
 from bot_client.learning_model.rl import QLearner
 
 from teaching_material.selection import kanji, meaning
-from core.fixed_parameters import N_POSSIBLE_REPLIES
+from core.task_parameters import N_POSSIBLE_REPLIES
 import analysis.similarity.graphic.measure
 import analysis.similarity.semantic.measure
 from analysis.fit.degenerate import Degenerate

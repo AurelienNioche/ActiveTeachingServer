@@ -5,7 +5,8 @@ from django.contrib.postgres.fields import ArrayField
 from django.utils.timezone import now
 
 import numpy as np
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models \
+    import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils.translation import ugettext_lazy as _
 
 from teacher.models import Leitner
@@ -62,7 +63,7 @@ class Question(models.Model):
         app_label = 'user'
 
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(unique=True)
 
@@ -71,7 +72,6 @@ class User(AbstractBaseUser):
     mother_tongue = models.TextField(blank=True, null=True)
     other_language = models.TextField(blank=True, null=True)
 
-    is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
 
     date_joined = models.DateTimeField(auto_now_add=True)
