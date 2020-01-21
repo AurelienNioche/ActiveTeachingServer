@@ -29,13 +29,69 @@ class ActiveTeachingSocket(websocket.WebSocketApp):
 
         return np.random.choice(id_possible_replies)
 
-    def on_message(self, message):
+    def on_message(self, json_string):
 
-        print(f"I received: {message}")
-        message = json.loads(message)
+        print(f"I received: {json_string}")
+        message = json.loads(json_string)
 
         if message['subject'] == 'sign_up':
-            return
+            if message['ok'] is True:
+                self.login()
+            else:
+                print('I encountered error for sign up...')
+                self.close()
+
+        elif message['subject'] == 'login':
+            if message['ok'] is True:
+                message = self.reply_to_question()
+                self.send_dic_message(message)
+
+            else:
+                print("I will try to sign up")
+                to_send = {
+                    "subject": "sign_up",
+                    "email": "nioche.aurelien@gmail.com",
+                    "password": "1234",
+                    "gender": "male",
+                    "mother_tongue": "french",
+                    "other_language": "english"
+                }
+
+                self.send(json.dumps(to_send))
+                return
+
+        else:
+            message = self.reply_to_question()
+            self.send_dic_message(message)
+
+    @classmethod
+    def on_error(cls, error):
+        if str(error) not in ['0', '']:
+            print(f"I got error: {error}")
+
+    @classmethod
+    def on_close(cls):
+        print("I'm closing")
+
+    def on_open(self):
+
+        print("I'm open")
+        self.login()
+
+    def login(self):
+
+        self.send_dic_message({
+            "subject": "login",
+            "email": "nioche.aurelien@gmail.com",
+            "password": "1234",
+        })
+
+    def send_dic_message(self, message):
+
+        print(f"I'm sending {message}")
+        self.send(json.dumps(message))
+
+    def reply_to_question(self, message):
 
         if message['t'] == -1:
             print("Done!")
@@ -70,36 +126,4 @@ class ActiveTeachingSocket(websocket.WebSocketApp):
         message['time_reply'] = \
             datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
         message['success'] = success
-
-        print(f"I'm sending {message}")
-        print('\n')
-        self.send(json.dumps(message))
-
-    @classmethod
-    def on_error(cls, error):
-        if str(error) not in ['0', '']:
-            print(f"I got error: {error}")
-
-    @classmethod
-    def on_close(cls):
-        print("I'm closing")
-
-    def on_open(self):
-
-        print("I'm open")
-        to_send = {
-            "subject": "login",
-            "email": "nioche.aurelien@gmail.com",
-            "password": "1234",
-        }
-        # to_send = {
-        #     "subject": "sign_up",
-        #     "email": "nioche.aurelien@gmail.com",
-        #     "password": "1234",
-        #     "gender": "male",
-        #     "mother_tongue": "french",
-        #     "other_language": "english"
-        # }
-
-        print(f"I'm sending {to_send}")
-        self.send(json.dumps(to_send))
+        return message
