@@ -120,7 +120,7 @@ class ActiveTeachingSocket(websocket.WebSocketApp):
         print("I replied", id_reply)
         print(f"It was{' not ' if not success else ' '}a success")
 
-        message['subject'] = 'reply'
+        message['subject'] = 'question'
         message['id_reply'] = id_reply
 
         message['time_reply'] = \
