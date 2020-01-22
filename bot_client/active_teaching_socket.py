@@ -43,7 +43,7 @@ class ActiveTeachingSocket(websocket.WebSocketApp):
 
         elif message['subject'] == 'login':
             if message['ok'] is True:
-                message = self.reply_to_question()
+                message = self.reply_to_question(message)
                 self.send_dic_message(message)
 
             else:
@@ -61,7 +61,7 @@ class ActiveTeachingSocket(websocket.WebSocketApp):
                 return
 
         else:
-            message = self.reply_to_question()
+            message = self.reply_to_question(message)
             self.send_dic_message(message)
 
     @classmethod

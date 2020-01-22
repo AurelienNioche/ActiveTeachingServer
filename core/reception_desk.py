@@ -16,6 +16,7 @@ class Request:
 
     LOGIN = "login"
     SIGN_UP = "sign_up"
+    QUESTION = "question"
 
     def __init__(self, subject,
                  msg=None,
@@ -127,8 +128,12 @@ def treat_request(request_kwargs):
                 r.user_id = user_id
                 r.ok = True
 
-        else:
+        elif r.subject == Request.QUESTION:
             register_question(r)
+
+        else:
+            raise ValueError(
+                f"Subject of the request not recognized: '{r.subject}'")
 
         if r.ok:
 
