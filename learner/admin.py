@@ -13,11 +13,16 @@ class UserAdmin(admin.ModelAdmin):
     # "username", "gender", "age", "mother_tongue", "other_language",
 
 
+
 class QuestionAdmin(admin.ModelAdmin):
     list_display = (
-        "user", "t", "question", "reply", "success",
+        "user", "t", "kanji",
+        "reply", "success",
         "time_display", "time_reply", "possible_replies")
 
+
+    def possible_replies(self, obj):
+        return "\n".join([p.meaning for p in obj.possible_replies.all()])
 
 admin.site.register(User, UserAdmin)
 admin.site.register(Question, QuestionAdmin)

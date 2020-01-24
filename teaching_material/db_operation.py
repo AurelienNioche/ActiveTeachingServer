@@ -1,7 +1,7 @@
 import os
 
 from ActiveTeachingServer.settings import DATABASES
-from teaching_material.models import Kanji
+from teaching_material.models import Kanji, Meaning
 from tools.utils import AskUser
 
 
@@ -105,10 +105,16 @@ def backup_kanji_table(bkp_file=os.path.join("data", "kanji_table.sql")):
     os.system(command)
 
 
-@AskUser
-def fill_kanji_table(bkp_file=os.path.join("data", "kanji_table.sql")):
+def load_backup_file(model):
 
-    # Kanji.objects.all().delete()
-    command = f'psql {DB_NAME} < {bkp_file}'
+    command = f'pg_restore  -d {DB_NAME} --data-only data/{model.__name__}.dump'
     print(f"Run command '{command}'")
     os.system(command)
+
+
+@AskUser
+def fill_kanji_table():
+
+    # Kanji.objects.all().delete()
+    load_backup_file(Meaning)
+    load_backup_file(Kanji)

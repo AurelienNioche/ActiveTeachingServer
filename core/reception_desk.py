@@ -168,8 +168,10 @@ def treat_request(request_kwargs):
 
                 # TODO: which teacher should he use?
 
-                if get_question_not_answered(user) is None:
-                    r.set_question()
+                not_replied = get_question_not_answered(user)
+
+                if not_replied is not None:
+                    r.set_question(not_replied)
 
                 r.id_question = \
                     new_question(
