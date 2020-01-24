@@ -16,8 +16,8 @@ class UserAdmin(admin.ModelAdmin):
 
 class QuestionAdmin(admin.ModelAdmin):
     list_display = (
-        "user", "t", "kanji",
-        "reply", "success",
+        "user", "t", "question",
+        "user_reply", "success",
         "time_display", "time_reply", "possible_replies")
 
 

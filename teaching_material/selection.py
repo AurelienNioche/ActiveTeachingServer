@@ -27,17 +27,29 @@ from teaching_material.models import Kanji
 # print(meaning)
 
 
-def total_number_of_items():
-    return Kanji.objects.count()
+class JapaneseMaterial:
 
+    KANJI = Kanji.objects.all().order_by('id')
+    KANJI_ID = np.array([k.id for k in KANJI])
 
-def get_string_representation(id_question, id_possible_replies):
+    MEANING = np.array([k.meaning.meaning for k in KANJI])
+    MEANING_ID = np.array([k.meaning.id for k in KANJI])
 
-    question = kanji[id_question]
-    possible_replies = [meaning[i] for i in id_possible_replies]
-    return question, possible_replies
+    N_ITEM = len(KANJI)
 
+    @classmethod
+    def total_number_of_items(cls):
+        return cls.N_ITEM
 
-def get_id():
+    @classmethod
+    def get_string_representation(cls, id_question, id_possible_replies):
 
-    return id_kanji, id_meaning
+        question = cls.KANJI[id_question]
+        possible_replies = [cls.KANJI[i] for i in id_possible_replies]
+        return question, possible_replies
+
+    @classmethod
+    def get_id(cls):
+
+        return cls.KANJI_ID, cls.MEANING_ID
+

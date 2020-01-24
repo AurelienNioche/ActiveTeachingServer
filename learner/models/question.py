@@ -14,8 +14,14 @@ class Question(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     t = models.IntegerField(default=-1)
-    kanji = models.ForeignKey(Kanji, on_delete=models.SET_NULL, null=True)
-    reply = models.ForeignKey(Meaning, on_delete=models.SET_NULL, null=True)
+    question = models.ForeignKey(Kanji, on_delete=models.SET_NULL,
+                                 null=True)
+    correct_reply = models.ForeignKey(Meaning, on_delete=models.SET_NULL,
+                                      null=True,
+                                      related_name='correct_reply')
+    user_reply = models.ForeignKey(Meaning, on_delete=models.SET_NULL,
+                                   null=True, default=None,
+                                   related_name='user_reply')
     possible_replies = models.ManyToManyField(Meaning,
                                               related_name="possible_replies")
     success = models.BooleanField()
