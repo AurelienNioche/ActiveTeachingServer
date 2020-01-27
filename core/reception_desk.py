@@ -31,7 +31,7 @@ class Request:
                  question=None,
                  possible_replies=None,
                  id_question=None,
-                 id_reply=None,
+                 id_user_reply=None,
                  is_new_question=None,
                  id_correct_reply=None,
                  success=None,
@@ -50,7 +50,7 @@ class Request:
         self.user_id = user_id
         self.t = t
 
-        self.id_reply = id_reply
+        self.id_user_reply = id_user_reply
         self.id_question = id_question
         self.id_possible_replies = id_possible_replies
         self.id_correct_reply = id_correct_reply
@@ -68,21 +68,19 @@ class Request:
         self.mother_tongue = mother_tongue
         self.other_language = other_language
 
-    def set_question(self, id_question, id_reply, id_possible_replies,
-                     id_correct_reply, question, possible_replies,
-                     is_new_question,
-                     n_iteration,
-                     t):
+    def set_question(self, question_obj):
 
-        self.id_question = id_question
-        self.id_reply = id_reply
-        self.id_possible_replies = id_possible_replies
-        self.id_correct_reply = id_correct_reply
-        self.question = question
-        self.possible_replies = possible_replies
-        self.is_new_question = is_new_question
-        self.n_iteration = n_iteration
-        self.t = t
+        self.id_question = question_obj.question.id,
+        self.id_possible_replies = \
+            [p.id for p in question_obj.possible_replies.all()]
+        self.id_correct_reply = question_obj.question.meaning.id
+        self.question = question_obj.question.kanji
+        self.possible_replies = \
+            [p.meaning for p in question_obj.possible_replies.all()]
+        self.is_new_question = question_obj.new
+        self.n_iteration = N_ITERATION,
+        self.t = question_obj.t
+        self.id_user_reply = -1
 
     def to_json_serializable_dic(self):
 
@@ -95,104 +93,63 @@ class Request:
 
         return dic
 
-    # def return_to_user(self, question, possible_replies, id_question,
-    #                    id_possible_replies, id_reply, is_new_question):
-    #     return {
-    #         'userId': int(self.user_id),
-    #         't': int(self.t),
-    #         'nIteration': int(self.n_iteration),
-    #         'question': question,
-    #         'possibleReplies': possible_replies,
-    #         'idQuestion': int(id_question),
-    #         'newQuestion': is_new_question,
-    #         'idCorrectAnswer': int(id_reply),
-    #         'idPossibleReplies': [int(i) for i in id_possible_replies],
-    #     }
-
 
 def treat_request(request_kwargs):
 
     r = Request(**request_kwargs)
 
-    id_questions, id_replies = JapaneseMaterial.get_id()
-    n_item = JapaneseMaterial.N_ITEM
-
     if r.subject == Request.SIGN_UP:
 
-        user_id = learner.authentication.sign_up(r, n_item)
-        if user_id != -1:
-            r.ok = True
-            r.user_id = user_id
-
-        else:
-            r.ok = False
+        user = learner.authentication.sign_up(r=r,
+                                              material=Kanji.objects.all())
+        if user is None:
             r.msg = "User already exists!"
 
+    elif r.subject == Request.LOGIN:
+        user = learner.authentication.login(r)
+
+    elif r.subject == Request.QUESTION:
+        user = User.objects.get(id=r.user_id)
+        register_user_reply(user=user, r=r)
+
     else:
+        raise ValueError(
+            f"Subject of the request not recognized: '{r.subject}'")
 
-        if r.subject == Request.LOGIN:
-            user_id = learner.authentication.login(r)
-            if user_id < 0:
-                r.ok = False
-            else:
-                r.user_id = user_id
-                r.ok = True
+    if user is None:
+        r.ok = False
+        return r.to_json_serializable_dic()
 
-        elif r.subject == Request.QUESTION:
-            register_user_reply(r)
+    r.ok = True
+    r.user_id = user.id
+    r.subject = Request.QUESTION
 
-        else:
-            raise ValueError(
-                f"Subject of the request not recognized: '{r.subject}'")
+    hist_question = get_historic(user=user)
+    r.t = len(hist_question)
 
-        if r.ok:
+    # Check for t_max
+    if r.t == r.n_iteration:
+        r.t = -1
+        return r.to_json_serializable_dic()
 
-            user = User.objects.get(id=r.user_id)
+    # TODO: redirect if sign up
 
-            # teacher_name = reply['teacher']
+    # TODO: redirect if login
 
-            # first_call = reply['userId'] == USER_DEFAULT_ID
+    # TODO:  is the learner is authorized to play?
 
-            # assert teacher_name == 'leitner', 'Only Leitner teacher is implemented!'
+    # TODO: which material should he use?
 
-            hist_id_question, hist_id_reply, hist_success = \
-                get_historic(user=user)
-            r.t = len(hist_id_question)
+    # TODO: which teacher should he use?
 
-            # Check for t_max
-            if r.t == r.n_iteration:
-                r.t = -1
+    question = get_question_not_answered(user)
 
-            else:
+    if question is None:
+        question = new_question(
+            user=user,
+            hist_question=hist_question)
 
-                # TODO: redirect if sign up
-
-                # TODO: redirect if login
-
-                # TODO:  is the learner is authorized to play?
-
-                # TODO: which material should he use?
-
-                # TODO: which teacher should he use?
-
-                not_replied = get_question_not_answered(user)
-
-                if not_replied is not None:
-                    r.set_question(
-                        id_question=not_replied.question.id,
-                        id_possible_replies=
-                        [p.id for p in not_replied.possible_replies.all()],
-                        id_correct_reply=not_replied.correct_reply.id,
-                        question=not_replied.question.kanji,
-                        possible_replies=[p.meaning for p in not_replied.possible_replies.all()],
-                        is_new_question=not_replied.kanji.id not in hist_id_question,
-                        n_iteration=N_ITERATION,
-                        t=len(hist_id_question)
-                    )
-
-                else:
-                    raise NotImplementedError
-
+    r.set_question(question)
     return r.to_json_serializable_dic()
 
 
@@ -202,53 +159,43 @@ def treat_request(request_kwargs):
 
 
 def new_question(user,
-                 id_questions,
-                 id_replies,
-                 hist_id_question,
-                 hist_id_reply,
-                 hist_success,
-                 item_model,
-                 reply_model):
+                 hist_question,
+                 ):
 
-    # Get teacher
-    t = len(hist_id_question)
-    print("user", user, "t", t)
-    teacher = user.leitner
-    id_item = teacher.ask(
-        t=t,
-        hist_success=hist_success,
-        hist_question=hist_id_question,
-        questions=id_questions)
-    teacher.save()
+    print("user", user)
 
-    item = item_model.objects.get(id=id_item)
+    if hist_question.count():
+        last_was_success = hist_question.reverse()[0].success
+    else:
+        last_was_success = False
 
-    id_possible_replies = get_id_possible_replies(
-        id_replies=id_replies,
-        hist_id_reply=hist_id_reply,
-        id_correct_reply=id_item
-    )
+    question = user.leitner.ask(last_was_success=last_was_success)
 
-    question_entry = Question(
+    possible_replies = get_possible_replies(user=user, question=question)
+
+    question_entry = Question.objects.create(
         user=user,
-        t=t,
-        question=item,
-    )
-    question_entry.save()
-    for id_pr in id_possible_replies:
-        question_entry.possible_replies.add(reply_model.objects.get(id=id_pr))
-    # question_entry.save()
+        t=hist_question.count(),
+        question=question,
+        new=question in [q.question for q in hist_question],
+        possible_replies=possible_replies)
 
     return question_entry
 
 
-def get_id_possible_replies(
-        id_replies, id_correct_reply,
-        hist_id_reply):
+def get_possible_replies(user, question):
 
     """
     Select randomly possible replies, including the correct one
     """
+
+    id_replies = [q.meaning.id for q in user.leitner.material.all()]
+    id_correct_reply = question.meaning.id
+    hist_id_reply = [q.user_reply.id for q in user.question_set.all()]
+
+    for i in hist_id_reply:
+        assert i in id_replies, i
+
     all_seen_replies = list(np.unique(hist_id_reply))
 
     if id_correct_reply in all_seen_replies:
@@ -277,31 +224,19 @@ def get_id_possible_replies(
             size=N_POSSIBLE_REPLIES-1, replace=False))
     id_possible_replies = np.array(id_possible_replies)
     np.random.shuffle(id_possible_replies)
-    return id_possible_replies
+
+    return [Meaning.objects.get(id=i) for i in id_possible_replies]
 
 
 def get_historic(user):
 
     # Get historic
-    entries_question = user.question_set.all().order_by('t')
-
-    t = len(entries_question)
-
-    hist_id_question = np.zeros(t, dtype=int)
-    hist_id_reply = np.zeros(t, dtype=int)
-    hist_success = np.zeros(t, dtype=bool)
-    for i, e in enumerate(entries_question):
-        hist_id_question[i] = e.question.id
-        hist_success[i] = e.success
-        hist_id_reply[i] = e.question.meaning.id
-
-
-    return hist_id_question, hist_id_reply, hist_success
+    return user.question_set.exclude(user_reply=None).order_by('t')
 
 
 def get_question_not_answered(user):
 
-    entries_not_answered = user.question_set.filter(reply=None)
+    entries_not_answered = user.question_set.filter(user_reply=None)
     if entries_not_answered:
         return entries_not_answered[0]
     else:
@@ -311,7 +246,7 @@ def get_question_not_answered(user):
 def register_user_reply(user, r):
 
     question = Question.objects.get(user=user, t=r.t)
-    question.reply = Meaning.objects.get(id=r.id_reply)
+    question.user_reply = Meaning.objects.get(id=r.id_user_reply)
     question.success = r.success
     question.time_display = convert_to_time(r.time_display)
     question.time_reply = convert_to_time(r.time_reply)

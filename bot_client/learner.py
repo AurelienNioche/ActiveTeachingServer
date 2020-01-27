@@ -16,12 +16,12 @@ class LearnerSocket(ActiveTeachingSocket):
                                       n_iteration=n_iteration)
         self.learner = cognitive_model(n_iteration=n_iteration, **kwargs)
 
-    def decide(self, id_possible_replies, id_question, id_correct_answer):
+    def decide(self, id_possible_replies, id_question, id_correct_reply):
 
         recall = self.learner.p_recall(item=id_question) > np.random.random()
 
         self.learner.learn(item=id_question, success=recall)
         if recall:
-            return id_correct_answer
+            return id_correct_reply
         else:
             return np.random.choice(id_possible_replies)

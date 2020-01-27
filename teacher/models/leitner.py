@@ -2,14 +2,30 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
 from learner.models import User
+from teaching_material.models import Kanji
 
 # Create your models here.
 import numpy as np
 
-from . generic import GenericTeacher
+
+from django.db import models
 
 
-class Leitner(GenericTeacher, models.Model):
+class LeitnerManager(models.Manager):
+
+    def create(self, material, **kwargs):
+        # Do some extra stuff here on the submitted data before saving...
+
+        # Now call the super method which does the actual creation
+        obj = super().create(n_item=len(material), **kwargs)
+        for m in material:
+            obj.material.add(m)
+
+        # obj.save()
+        return obj
+
+
+class Leitner(models.Model):
 
     user = models.OneToOneField(User,
                                 on_delete=models.CASCADE,
@@ -20,6 +36,10 @@ class Leitner(GenericTeacher, models.Model):
     n_item = models.IntegerField(default=-1)
     taboo = models.IntegerField(default=-1)
 
+    # Material
+    material = models.ManyToManyField(Kanji,
+                                      related_name="material")
+
     # array of size n_item representing the box
     #             number of i^th item at i^th index.
     box = ArrayField(models.IntegerField(), default=list)
@@ -28,23 +48,24 @@ class Leitner(GenericTeacher, models.Model):
     #             of i^th item at i^th index.
     waiting_time = ArrayField(models.IntegerField(), default=list)
 
+    seen = ArrayField(models.BooleanField(), default=list)
+
+    objects = LeitnerManager()
+
     class Meta:
 
         db_table = 'leitner'
         app_label = 'teacher'
 
-    def modify_sets(self, hist_success, t):
+    def modify_sets(self, last_was_success):
         """
-        :param t: time step (integer)
-        :param hist_success: list of booleans (True: success, False: failure)
-        for every question
+        :param last_was_success: bool
 
         The boxes will be modified according to the following rules:
             * Move an item to the next box for a successful reply by learner
             * Move an item to the previous box for a failure.
         """
-        success = hist_success[t-1]
-        if success:
+        if last_was_success:
             self.box[self.taboo] += 1
         elif self.box[self.taboo] > self.box_min:
             self.box[self.taboo] -= 1
@@ -66,38 +87,34 @@ class Leitner(GenericTeacher, models.Model):
 
     def find_due_items(self):
         """
-        :return: arr : array that contains the items that are due to be shown
-        Pick all items with positive waiting time.
+        :return: arr : array that contains bool
+        True := the item is due to be shown
 
         Suppose there exist no due item then pick all items except taboo.
         """
-        due_items = np.where(np.asarray(self.waiting_time) > 0)[0]
-        if len(due_items) == 0:
-            complete_arr = np.arange(self.n_item)
-            due_items = np.delete(complete_arr, self.taboo)
-        return due_items
+        due = np.asarray(self.waiting_time) > 0
+        if np.sum(due) == 0:
+            due = np.ones(self.n_item)
 
-    @staticmethod
-    def find_due_seen_items(due_items, hist_item):
+        due[self.taboo] = 0
+        return due
+
+    def find_due_seen_items(self, due):
         """
-        :param due_items: array that contains items that are due to be shown
-        :param hist_item: historic of presented items
-        :return: * seen_due_items: as before
-                * count: the count of the number of items in seen__due_items
+        :param due: bool array size N
+        :return: seen_due: bool array size N
+            True := the items has been seen
+                    at least once and are due to be shown
 
         Finds the items that are seen and are due to be shown.
         """
 
-        # integer array with size of due_items
-        #                 * Contains the items that have been seen
-        #                     at least once and are due to be shown.
-        seen_due_items = np.intersect1d(hist_item, due_items)
-        count = len(seen_due_items)
+        seen_due = due * np.asarray(self.seen)
 
-        if count == 0:
-            seen_due_items = due_items
-            count = len(due_items)
-        return seen_due_items, count
+        if np.sum(seen_due) == 0:
+            return due
+        else:
+            return seen_due
 
     def find_max_waiting(self, items_arr):
         """
@@ -143,10 +160,7 @@ class Leitner(GenericTeacher, models.Model):
 
         return items_arr
 
-    def _get_next_node(self, t,
-                       hist_success, hist_question,
-                       questions, replies,
-                       **kwargs):
+    def ask(self, last_was_success):
         """
 
         Every item is associated with:
@@ -162,29 +176,33 @@ class Leitner(GenericTeacher, models.Model):
             4. Randomly pick from the said items.
 
         """
-        if t == 0:
+
+        # If first round
+        if True not in self.seen:
+
             print(self.n_item)
             # Initialize the arrays
             self.box = [0 for _ in range(self.n_item)]
             self.waiting_time = [0 for _ in range(self.n_item)]
+            self.seen = [False for _ in range(self.n_item)]
 
             # No past memory, so a random question shown from learning set
             idx_question = np.random.randint(0, self.n_item)
 
         else:
 
-            self.modify_sets(hist_success=hist_success, t=t)
+            self.modify_sets(last_was_success)
             self.update_wait_time()
 
             # Criteria 1, get due items
-            due_items = self.find_due_items()
+            due = self.find_due_items()
 
             # preference for seen item
-            seen_due_items, count = self.find_due_seen_items(
-                due_items=due_items, hist_item=hist_question)
+            seen_due = self.find_due_seen_items(due)
 
             # items with maximum waiting time
-            max_overdue_items = self.find_max_waiting(seen_due_items[:count])
+            max_overdue_items = \
+                self.find_max_waiting(np.arange(self.n_item)[seen_due])
 
             # pick item in lowest box
             least_box_items = self.pick_least_box(max_overdue_items)
@@ -196,4 +214,9 @@ class Leitner(GenericTeacher, models.Model):
                 idx_question = least_box_items[0]
 
         self.taboo = idx_question
-        return idx_question
+        self.seen[idx_question] = True
+
+        question = self.material.all()[int(idx_question)]
+        self.save()
+
+        return question

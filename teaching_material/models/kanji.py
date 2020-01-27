@@ -145,3 +145,6 @@ class Kanji(models.Model):
 
         db_table = 'kanji'
         app_label = 'teaching_material'
+
+    def __str__(self):
+        return getattr(self, "kanji")
