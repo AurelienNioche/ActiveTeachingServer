@@ -54,7 +54,9 @@ class Request:
         self.id_question = id_question
         self.id_possible_replies = id_possible_replies
         self.id_correct_reply = id_correct_reply
+
         self.is_new_question = is_new_question
+
         self.question = question
         self.possible_replies = possible_replies
 
@@ -70,7 +72,7 @@ class Request:
 
     def set_question(self, question_obj):
 
-        self.id_question = question_obj.question.id,
+        self.id_question = question_obj.question.id
         self.id_possible_replies = \
             [p.id for p in question_obj.possible_replies.all()]
         self.id_correct_reply = question_obj.question.meaning.id
@@ -78,7 +80,7 @@ class Request:
         self.possible_replies = \
             [p.meaning for p in question_obj.possible_replies.all()]
         self.is_new_question = question_obj.new
-        self.n_iteration = N_ITERATION,
+        self.n_iteration = N_ITERATION
         self.t = question_obj.t
         self.id_user_reply = -1
 
@@ -100,8 +102,7 @@ def treat_request(request_kwargs):
 
     if r.subject == Request.SIGN_UP:
 
-        user = learner.authentication.sign_up(r=r,
-                                              material=Kanji.objects.all())
+        user = learner.authentication.sign_up(r=r)
         if user is None:
             r.msg = "User already exists!"
 
@@ -153,16 +154,7 @@ def treat_request(request_kwargs):
     return r.to_json_serializable_dic()
 
 
-# def _random_question(id_questions):
-#     id_question = np.random.randint(len(id_questions))
-#     return id_question
-
-
-def new_question(user,
-                 hist_question,
-                 ):
-
-    print("user", user)
+def new_question(user, hist_question):
 
     if hist_question.count():
         last_was_success = hist_question.reverse()[0].success
@@ -177,7 +169,7 @@ def new_question(user,
         user=user,
         t=hist_question.count(),
         question=question,
-        new=question in [q.question for q in hist_question],
+        new=question not in [q.question for q in hist_question],
         possible_replies=possible_replies)
 
     return question_entry

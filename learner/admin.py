@@ -13,16 +13,21 @@ class UserAdmin(admin.ModelAdmin):
     # "username", "gender", "age", "mother_tongue", "other_language",
 
 
-
 class QuestionAdmin(admin.ModelAdmin):
     list_display = (
-        "user", "t", "question",
+        "user", "t", "question", "correct_reply", "new",
         "user_reply", "success",
-        "time_display", "time_reply", "possible_replies")
+        "time_display", "time_reply", "_possible_replies")
 
+    @staticmethod
+    def _possible_replies(obj):
+        return ", ".join([p.meaning for p in obj.possible_replies.all()])
 
-    def possible_replies(self, obj):
-        return "\n".join([p.meaning for p in obj.possible_replies.all()])
+    @staticmethod
+    def correct_reply(obj):
+
+        return obj.question.meaning.meaning
+
 
 admin.site.register(User, UserAdmin)
 admin.site.register(Question, QuestionAdmin)

@@ -1,12 +1,8 @@
-from django.db import models
-from django.contrib.postgres.fields import ArrayField
-
 # Create your models here.
-from django.utils.timezone import now
+from django.db import models
 
-from learner.models.user import User
-from teaching_material.models import Kanji
-from teaching_material.models import Meaning
+from learner.models import User
+from teaching_material.models import Kanji, Meaning
 
 
 class QuestionManager(models.Manager):
@@ -39,8 +35,8 @@ class Question(models.Model):
                                    null=True, default=None,
                                    related_name='user_reply')
     success = models.BooleanField(null=True, default=None)
-    time_display = models.DateTimeField(default=now)
-    time_reply = models.DateTimeField(default=now)
+    time_display = models.DateTimeField(default=None, null=True)
+    time_reply = models.DateTimeField(default=None, null=True)
 
     objects = QuestionManager()
 

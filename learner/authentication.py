@@ -15,7 +15,7 @@ def login(r):
     return authenticate(email=r.email, password=r.password)
 
 
-def sign_up(r, material):
+def sign_up(r):
 
     """
         Creates a new learner and returns its id
@@ -28,8 +28,6 @@ def sign_up(r, material):
             gender=r.gender,
             mother_tongue=r.mother_tongue
         )
-        Leitner.objects.create(user=user,
-                               material=material)
 
     except IntegrityError:
         return None

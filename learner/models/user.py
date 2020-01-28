@@ -1,8 +1,10 @@
+from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
 
-import numpy as np
 from django.contrib.auth.models \
-    import AbstractBaseUser, BaseUserManager, PermissionsMixin
+    import AbstractBaseUser, PermissionsMixin
+
+from teaching_material.models import Kanji
 
 
 class UserManager(BaseUserManager):
@@ -24,7 +26,12 @@ class UserManager(BaseUserManager):
         """Create and save a regular User with the given email and password."""
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
-        return self._create_user(email, password, **extra_fields)
+        user = self._create_user(email, password, **extra_fields)
+        material = Kanji.objects.all()
+        from teacher.models import Leitner
+        Leitner.objects.create(user=user,
+                               material=material)
+        return user
 
     def create_superuser(self, email, password, **extra_fields):
         """Create and save a SuperUser with the given email and password."""
@@ -62,3 +69,5 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         db_table = 'user'
         app_label = 'learner'
+
+

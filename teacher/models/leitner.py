@@ -79,11 +79,13 @@ class Leitner(models.Model):
         """
 
         for i in range(self.n_item):
-            if i != self.taboo:
+            if i == self.taboo:
+                self.waiting_time[self.taboo] \
+                    = - self.delay_factor ** self.box[self.taboo]
+            elif self.seen[i]:
                 self.waiting_time[i] += 1
             else:
-                self.waiting_time[self.taboo] \
-                    = - self.delay_factor**self.box[self.taboo]
+                pass
 
     def find_due_items(self):
         """
@@ -92,9 +94,10 @@ class Leitner(models.Model):
 
         Suppose there exist no due item then pick all items except taboo.
         """
-        due = np.asarray(self.waiting_time) > 0
+        due = np.zeros(self.n_item, dtype=bool)
+        due[:] = np.asarray(self.waiting_time) >= 0
         if np.sum(due) == 0:
-            due = np.ones(self.n_item)
+            due[:] = 1
 
         due[self.taboo] = 0
         return due
@@ -108,8 +111,7 @@ class Leitner(models.Model):
 
         Finds the items that are seen and are due to be shown.
         """
-
-        seen_due = due * np.asarray(self.seen)
+        seen_due = due * np.asarray(self.seen, dtype=bool)
 
         if np.sum(seen_due) == 0:
             return due
@@ -180,7 +182,6 @@ class Leitner(models.Model):
         # If first round
         if True not in self.seen:
 
-            print(self.n_item)
             # Initialize the arrays
             self.box = [0 for _ in range(self.n_item)]
             self.waiting_time = [0 for _ in range(self.n_item)]
@@ -201,8 +202,9 @@ class Leitner(models.Model):
             seen_due = self.find_due_seen_items(due)
 
             # items with maximum waiting time
+            seen_due_idx = np.arange(self.n_item)[seen_due]
             max_overdue_items = \
-                self.find_max_waiting(np.arange(self.n_item)[seen_due])
+                self.find_max_waiting(seen_due_idx)
 
             # pick item in lowest box
             least_box_items = self.pick_least_box(max_overdue_items)

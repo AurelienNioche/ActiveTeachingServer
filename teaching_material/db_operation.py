@@ -82,32 +82,29 @@ def fill_single_meaning_column():
         e.save()
 
 
-def create_index():
+# def create_index():
+#
+#     entries = Kanji.objects.all().order_by('grade')
+#     for i, e in enumerate(entries):
+#         e.index = i
+#         e.save()
 
-    entries = Kanji.objects.all().order_by('grade')
-    for i, e in enumerate(entries):
-        e.index = i
-        e.save()
 
-
-@AskUser
-def backup_kanji_table(bkp_file=os.path.join("data", "kanji_table.sql")):
+def load_backup_table(model):
 
     command = \
-        f'pg_dump ' \
-        f'--table {Kanji._meta.db_table} ' \
-        f'{DB_NAME} ' \
-        f'--inserts ' \
-        f'--clean ' \
-        f'> {bkp_file}'
-
+        f'pg_restore  -d {DB_NAME} --data-only data/{model.__name__}.dump'
     print(f"Run command '{command}'")
     os.system(command)
 
 
-def load_backup_file(model):
+def backup_table(model):
+    command = \
+        f'pg_dump -Fc --column-inserts --data-only ' \
+        f'--table {model._meta.db_table} ' \
+        f'{DB_NAME} ' \
+        f'> data/{model.__name__}.dump'
 
-    command = f'pg_restore  -d {DB_NAME} --data-only data/{model.__name__}.dump'
     print(f"Run command '{command}'")
     os.system(command)
 
@@ -115,6 +112,14 @@ def load_backup_file(model):
 @AskUser
 def fill_kanji_table():
 
-    # Kanji.objects.all().delete()
-    load_backup_file(Meaning)
-    load_backup_file(Kanji)
+    Meaning.objects.all().delete()
+    Kanji.objects.all().delete()
+    load_backup_table(Meaning)
+    load_backup_table(Kanji)
+
+
+@AskUser
+def backup_teaching_material():
+
+    backup_table(Kanji)
+    backup_table(Meaning)
