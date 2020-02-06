@@ -8,16 +8,12 @@ import os
 
 from tools.utils import AskUser
 
-import db_prepare
-
 
 @AskUser
 def reset():
 
     os.system("dropdb ActiveTeaching")
     os.system('find . -path "*/migrations/*.py" -not -name "__init__.py" -delete')
-
-    db_prepare.main()
 
 
 if __name__ == "__main__":

@@ -3,7 +3,6 @@ from django.db import models
 
 class Meaning(models.Model):
 
-    id = models.IntegerField(primary_key=True)
     meaning = models.CharField(max_length=2555, blank=True, null=True,
                                unique=True)
 
@@ -14,3 +13,19 @@ class Meaning(models.Model):
         ordering = ["meaning"]
         db_table = 'meaning'
         app_label = 'teaching_material'
+
+
+
+# class Meaning(models.Model):
+#
+#     id = models.IntegerField(primary_key=True)
+#     meaning = models.CharField(max_length=2555, blank=True, null=True,
+#                                unique=True)
+#
+#     def __str__(self):
+#         return getattr(self, "meaning")
+#
+#     class Meta:
+#         ordering = ["meaning"]
+#         db_table = 'meaning'
+#         app_label = 'teaching_material'

@@ -5,6 +5,7 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 from teaching_material.db_operation import fill_kanji_table
+from teaching_material.models import WaniKani, Kanji, Meaning
 
 from learner.models import User
 
@@ -17,17 +18,27 @@ from ActiveTeachingServer.settings import DATABASES
 DB_NAME = DATABASES['default']['NAME']
 
 
-# entries = Kanji.objects.all().order_by('id')
-# for e in entries:
-#
-#     m_entries = Meaning.objects.filter(meaning=e.meaning_string)
-#     if m_entries:
-#         m = m_entries[0]
-#     else:
-#         m = Meaning.objects.create(meaning=e.meaning_string)
-#
-#     e.meaning = m
-#     e.save()
+def import_from_wk():
+
+    Meaning.objects.all().delete()
+
+    wk = WaniKani.objects.all().order_by("level")
+
+    new_entries = []
+    for e in wk:
+
+        m_entries = Meaning.objects.filter(meaning=e.meaning[0])
+        if m_entries:
+            m = m_entries[0]
+        else:
+            m = Meaning.objects.create(meaning=e.meaning[0])
+
+        new_entries.append(Kanji(
+            kanji=e.character,
+            meaning=m
+        ))
+
+    Kanji.objects.bulk_create(new_entries)
 
 
 def main():

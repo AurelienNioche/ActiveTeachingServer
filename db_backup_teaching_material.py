@@ -4,9 +4,11 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE",
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
-from teaching_material.db_operation import backup_kanji_table
+from teaching_material.db_operation import backup_teaching_material
 
-backup_kanji_table()
+if __name__ == "__main__":
+
+    backup_teaching_material()
 
 # # import googletrans
 # # from translate import Translator
