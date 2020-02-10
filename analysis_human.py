@@ -58,7 +58,7 @@ def main():
         'semantic_connection': semantic_connection,
         'graphic_connection': graphic_connection}
 
-    list_user_id = analysis.tools.users.get(force=True)
+    list_user_id = analysis.tools.users.get(force=False)
 
     # list_user_id = [list_user_id[-1], ]
 
@@ -71,7 +71,7 @@ def main():
         print(f"User {user_id} ({i}/{n_user})")
         print("-" * 16)
         print()
-        print("Importing data...", end=' ', flush=True)
+        print("Importing data...", end=' ', flush=False)
 
         hist_question, hist_success, seen = \
             analysis.tools.history.get(user_id=user_id)

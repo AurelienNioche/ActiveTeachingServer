@@ -99,17 +99,17 @@ DATABASES = {
     },
 }
 
-# Keep the default database when testing
-if 'test' in sys.argv:
-    DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ActiveTeaching',
-        'USER': 'postgres',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '5432',
-        # 'ATOMIC_REQUESTS': True,
-    }
+# # Keep the default database when testing
+# if 'test' in sys.argv:
+#     DATABASES['default'] = {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'ActiveTeaching',
+#         'USER': 'postgres',
+#         'PASSWORD': '',
+#         'HOST': '',
+#         'PORT': '5432',
+#         # 'ATOMIC_REQUESTS': True,
+#     }
 
 
 # Password validation
