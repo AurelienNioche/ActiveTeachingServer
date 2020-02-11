@@ -26,7 +26,9 @@ SECRET_KEY = 'u9syfm&2lrnemk&5vvi8wib1m^j=!anb@y%a^nnl2(qakn*m&@'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["activeteaching.research.comnet.aalto.fi"]
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "activeteaching.research.comnet.aalto.fi"]
 
 
 # Application definition
@@ -90,7 +92,7 @@ WSGI_APPLICATION = 'ActiveTeachingServer.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ActiveTeaching',
+        'NAME': 'ActiveTeachingPilot_2019_09_02',
         'USER': 'postgres',
         'PASSWORD': '',
         'HOST': '',

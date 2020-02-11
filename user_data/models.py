@@ -3,7 +3,7 @@ from django.contrib.postgres.fields import ArrayField
 
 # Create your models here.
 from django.utils.timezone import now
-import numpy as np
+# import numpy as np
 
 
 class Question(models.Model):

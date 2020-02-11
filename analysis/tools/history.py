@@ -10,11 +10,11 @@ BKP_FOLDER = os.path.join("data", "Pilot20190902", "pickle", "history")
 os.makedirs(BKP_FOLDER, exist_ok=True)
 
 
-def get(user_id):
+def get(user_id, force=False):
 
     bkp_file = os.path.join(BKP_FOLDER, f"user_{user_id}.p")
 
-    if os.path.exists(bkp_file):
+    if not force and os.path.exists(bkp_file):
 
         print("Loading from pickle file...")
         hist_question, hist_success, seen = \

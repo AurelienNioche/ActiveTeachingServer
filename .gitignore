@@ -124,3 +124,7 @@ data/simsearch/pickle/
 data/word2vec/pickle/
 data/word2vec/word_vectors/
 /data/Pilot20190902/pickle/fit/
+/ActiveTeachingServer/credentials.py
+.DS_Store
+teacher/.DS_Store
+teaching_material/.DS_Store

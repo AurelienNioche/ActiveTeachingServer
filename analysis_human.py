@@ -35,9 +35,7 @@ BKP_FOLDER = os.path.join("data", "Pilot20190902", "pickle", "fit")
 os.makedirs(BKP_FOLDER, exist_ok=True)
 
 
-def main():
-
-    force = False
+def main(force_data_import=True, force_fit=True):
 
     # Get similarity
     print("Computing the graphic connection...")
@@ -58,7 +56,7 @@ def main():
         'semantic_connection': semantic_connection,
         'graphic_connection': graphic_connection}
 
-    list_user_id = analysis.tools.users.get(force=False)
+    list_user_id = analysis.tools.users.get(force=force_data_import)
 
     # list_user_id = [list_user_id[-1], ]
 
@@ -74,7 +72,8 @@ def main():
         print("Importing data...", end=' ', flush=False)
 
         hist_question, hist_success, seen = \
-            analysis.tools.history.get(user_id=user_id)
+            analysis.tools.history.get(user_id=user_id,
+                                       force=force_data_import)
         print("Done.\n")
 
         print(f"N iteration: {len(hist_question)}.")
@@ -92,7 +91,7 @@ def main():
             BKP_FOLDER,
             f'fit_u{user_id}_degenerate.p')
 
-        if not os.path.exists(bkp_file) or force:
+        if force_fit or not os.path.exists(bkp_file):
 
             f = Degenerate()
             r = f.evaluate(
@@ -112,7 +111,7 @@ def main():
                 BKP_FOLDER,
                 f'fit_u{user_id}_{model_to_fit.__name__}.p')
 
-            if not os.path.exists(bkp_file) or force:
+            if force_fit or not os.path.exists(bkp_file):
                 print(f"Running fit {model_to_fit.__name__}...",
                       end=' ', flush=True)
                 f = fit_class(model=model_to_fit)
