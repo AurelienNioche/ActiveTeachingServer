@@ -91,7 +91,7 @@ WSGI_APPLICATION = 'ActiveTeachingServer.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ActiveTeaching',
+        'NAME': 'ActiveTeachingServer',
         'USER': 'postgres',
         'PASSWORD': '',
         'HOST': '',

@@ -9,18 +9,20 @@ import json
 
 from teaching_material.models import WaniKani
 
-def import_from_wk():
+
+def import_from_web():
 
     r = \
         requests.get(f"https://www.wanikani.com/api/"
                      f"user/bb7eb20355d4d3c2eacdb120901fb47d/kanji/"
                      f"{','.join([str(i) for i in range(1, 61)])}")
 
-    with open('wanikani.json', 'w', encoding='utf-8') as f:
+    with open('data/wanikani.json', 'w', encoding='utf-8') as f:
         json.dump(r.json(), f, ensure_ascii=False, indent=4)
 
+
 def main():
-    with open('wanikani.json', 'r', encoding='utf-8') as f:
+    with open('data/wanikani.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
 
     entries = []
