@@ -48,6 +48,9 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
 
+    FEMALE = "female"
+    MALE = "male"
+
     email = models.EmailField(unique=True)
 
     gender = models.TextField(blank=True, null=True)
