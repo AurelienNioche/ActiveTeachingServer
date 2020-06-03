@@ -8,6 +8,10 @@ from learner.authentication import sign_up
 from learner.models import User
 
 
+class Condition:
+    TEST = 0
+
+
 def main():
 
     user = sign_up(
@@ -16,7 +20,9 @@ def main():
         gender=User.MALE,
         age=33,
         mother_tongue="french",
-        other_language="english")
+        other_language="english",
+        condition=Condition.TEST
+    )
 
     if user is not None:
         print("Success!")

@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models \
     import AbstractBaseUser, PermissionsMixin
 
+from learner.models import Session
 from teaching_material.models import Kanji
 
 
@@ -48,19 +49,23 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
 
-    FEMALE = "female"
-    MALE = "male"
+    FEMALE = 0
+    MALE = 1
 
     email = models.EmailField(unique=True)
 
-    gender = models.TextField(blank=True, null=True)
+    gender = models.IntegerField(blank=True, null=True)
     age = models.IntegerField(blank=True, null=True)
     mother_tongue = models.TextField(blank=True, null=True)
     other_language = models.TextField(blank=True, null=True)
 
+    condition = models.IntegerField(blank=True, null=True)
+
     is_staff = models.BooleanField(default=False)
 
     date_joined = models.DateTimeField(auto_now_add=True)
+
+    current_session = models.ForeignKey(Session, blank=True, null=True)
 
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
@@ -73,4 +78,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         db_table = 'user'
         app_label = 'learner'
 
+    def get_historic(self):
 
+        # Get historic
+        return self.question_set.exclude(user_reply=None).order_by('t')
+
+    def get_question_not_answered(self):
+
+        entries_not_answered = self.question_set.filter(user_reply=None)
+        if entries_not_answered:
+            return entries_not_answered[0]
+        else:
+            return None

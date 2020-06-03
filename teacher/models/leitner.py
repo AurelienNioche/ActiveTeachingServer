@@ -162,7 +162,7 @@ class Leitner(models.Model):
 
         return items_arr
 
-    def ask(self, last_was_success):
+    def ask(self, user):
         """
 
         Every item is associated with:
@@ -178,6 +178,13 @@ class Leitner(models.Model):
             4. Randomly pick from the said items.
 
         """
+
+        hist_question = user.get_historic()
+
+        if hist_question.count():
+            last_was_success = hist_question.reverse()[0].success
+        else:
+            last_was_success = False
 
         # If first round
         if True not in self.seen:
@@ -218,7 +225,7 @@ class Leitner(models.Model):
         self.taboo = idx_question
         self.seen[idx_question] = True
 
-        question = self.material.all()[int(idx_question)]
+        kanji = self.material.all()[int(idx_question)]
         self.save()
 
-        return question
+        return kanji
