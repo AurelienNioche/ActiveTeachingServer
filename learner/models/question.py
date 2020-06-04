@@ -1,6 +1,6 @@
 # Create your models here.
 from django.db import models
-from datetime import datetime
+from utils.time import string_to_datetime
 import numpy as np
 
 from learner.models import User, Session
@@ -50,10 +50,6 @@ class Question(models.Model):
         db_table = 'question'
         app_label = 'learner'
 
-    @staticmethod
-    def convert_to_time(string_time):
-        return datetime.strptime(string_time, '%Y-%m-%d %H:%M:%S.%f')
-
     @classmethod
     def register_user_reply(cls, question_id, id_user_reply,
                             time_display,
@@ -64,8 +60,8 @@ class Question(models.Model):
         if question is not None:
             question.user_reply = Meaning.objects.get(id=id_user_reply)
             question.success = success
-            question.time_display = cls.convert_to_time(time_display)
-            question.time_reply = cls.convert_to_time(time_reply)
+            question.time_display = string_to_datetime(time_display)
+            question.time_reply = string_to_datetime(time_reply)
             question.save()
         else:
             question = None

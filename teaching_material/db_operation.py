@@ -5,7 +5,7 @@ import dateutil.parser
 
 from ActiveTeachingServer.settings import DATABASES
 from teaching_material.models import Kanji, Meaning
-from tools.utils import AskUser
+from utils.utils import AskUser
 
 
 DB_NAME = DATABASES['default']['NAME']

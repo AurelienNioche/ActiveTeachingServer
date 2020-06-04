@@ -1,5 +1,3 @@
-import numpy as np
-
 from learner.models import Question, User
 import learner.authentication
 
@@ -25,9 +23,18 @@ def treat_request(r):
     elif r["subject"] == Subject.SESSION:
 
         user = User.objects.get(id=r["user_id"])
-        available_session = user.session_set()
+        session = user.session_set.filter(close=False).first()
+        if session is None:
+            session = user.create_new_session()
 
-        return {"available": True}
+        if session is None:
+            return {"end": True}
+        elif session.is_available():
+            return {"available": True}
+        else:
+            return {
+                "available": False,
+                "available_time": session.available_time}
 
     elif r["subject"] == Subject.QUESTION:
 

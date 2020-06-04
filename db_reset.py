@@ -6,7 +6,7 @@ application = get_wsgi_application()
 
 import os
 
-from tools.utils import AskUser
+from utils.utils import AskUser
 
 
 @AskUser

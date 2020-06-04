@@ -8,10 +8,6 @@ from learner.authentication import sign_up
 from learner.models import User
 
 
-class Condition:
-    TEST = 0
-
-
 def main():
 
     user = sign_up(
@@ -21,7 +17,7 @@ def main():
         age=33,
         mother_tongue="french",
         other_language="english",
-        condition=Condition.TEST
+        condition=User.Condition.TEST
     )
 
     if user is not None:

@@ -1,10 +1,12 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
+from django.utils import timezone
 
 from django.contrib.auth.models \
     import AbstractBaseUser, PermissionsMixin
 
 from learner.models import Session
+from teacher.models import Leitner
 from teaching_material.models import Kanji
 
 
@@ -49,6 +51,9 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
 
+    class Condition:
+        TEST = 0
+
     FEMALE = 0
     MALE = 1
 
@@ -90,3 +95,24 @@ class User(AbstractBaseUser, PermissionsMixin):
             return entries_not_answered[0]
         else:
             return None
+
+    def create_new_session(self):
+
+        if self.condition == self.Condition.TEST:
+            # n_completed_session = self.session_set.count()
+            material = Kanji.objects.all().order_by("id")[:50]
+            new_session = Session.objects.create(
+                user=self,
+                date_creation=timezone.now(),
+                available_time=timezone.now(),
+                leitner_teacher=Leitner.objects.create(material=material,
+                                                       user=self),
+                n_iteration=10,
+            )
+
+            return new_session
+
+        else:
+            raise ValueError
+
+

@@ -30,11 +30,11 @@ class Leitner(models.Model):
     user = models.OneToOneField(User,
                                 on_delete=models.CASCADE,
                                 primary_key=True)
+    n_item = models.IntegerField()
 
     delay_factor = models.IntegerField(default=2)
-    box_min = models.IntegerField(default=1)
-    n_item = models.IntegerField(default=-1)
-    taboo = models.IntegerField(default=-1)
+    box_min = models.IntegerField(blank=True, null=True)
+    taboo = models.IntegerField(blank=True, null=True)
 
     # Material
     material = models.ManyToManyField(Kanji,
