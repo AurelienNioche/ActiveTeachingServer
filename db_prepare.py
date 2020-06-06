@@ -86,6 +86,8 @@ def import_from_wk():
 
 
 def main():
+    os.system('find . -path "*/migrations/*.py" -not -name "__init__.py" -delete')
+    os.system('find . -path "*/migrations/*.pyc" -delete')
     os.system(f"createdb {DB_NAME} --owner postgres")
     os.system("python3 manage.py makemigrations")
     os.system("python3 manage.py migrate")

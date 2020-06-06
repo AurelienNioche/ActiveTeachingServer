@@ -1,14 +1,10 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
-from learner.models import User
-from teaching_material.models import Kanji
-
-# Create your models here.
 import numpy as np
 
-
-from django.db import models
+from learner.models import User
+from teaching_material.models import Kanji
 
 
 class LeitnerManager(models.Manager):
@@ -180,14 +176,10 @@ class Leitner(models.Model):
         """
 
         hist_question = user.get_historic()
+        len_hist = hist_question.count()
+        if not len_hist:
 
-        if hist_question.count():
-            last_was_success = hist_question.reverse()[0].success
-        else:
-            last_was_success = False
-
-        # If first round
-        if True not in self.seen:
+            print("first round")
 
             # Initialize the arrays
             self.box = [0 for _ in range(self.n_item)]
@@ -198,6 +190,7 @@ class Leitner(models.Model):
             idx_question = np.random.randint(0, self.n_item)
 
         else:
+            last_was_success = hist_question.reverse()[0].success
 
             self.modify_sets(last_was_success)
             self.update_wait_time()

@@ -1,10 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
-from learner.models import Question, User
-from teaching_material.models import Kanji
-
-from core.task_parameters import N_POSSIBLE_REPLIES
+from learner.models import Question, User, Session
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -29,6 +25,11 @@ class QuestionAdmin(admin.ModelAdmin):
         return obj.question.meaning.meaning
 
 
+class SessionAdmin(admin.ModelAdmin):
+    pass
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Question, QuestionAdmin)
+admin.site.register(Session, SessionAdmin)
 

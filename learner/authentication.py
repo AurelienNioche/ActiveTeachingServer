@@ -16,7 +16,7 @@ def login(email, password):
 
 
 def sign_up(email, password, gender, age,
-            mother_tongue, other_language):
+            mother_tongue, other_language, condition):
 
     """
         Creates a new learner and returns its id
@@ -29,7 +29,8 @@ def sign_up(email, password, gender, age,
             gender=gender,
             mother_tongue=mother_tongue,
             other_language=other_language,
-            age=age
+            age=age,
+            condition=condition
         )
 
     except IntegrityError:

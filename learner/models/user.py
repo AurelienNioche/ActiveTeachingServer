@@ -1,12 +1,8 @@
 from django.contrib.auth.base_user import BaseUserManager
-from django.db import models
-from django.utils import timezone
-
 from django.contrib.auth.models \
     import AbstractBaseUser, PermissionsMixin
+from django.db import models
 
-from learner.models import Session
-from teacher.models import Leitner
 from teaching_material.models import Kanji
 
 
@@ -70,8 +66,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     date_joined = models.DateTimeField(auto_now_add=True)
 
-    current_session = models.ForeignKey(Session, blank=True, null=True)
-
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = []  # removes email from REQUIRED_FIELDS
@@ -95,24 +89,3 @@ class User(AbstractBaseUser, PermissionsMixin):
             return entries_not_answered[0]
         else:
             return None
-
-    def create_new_session(self):
-
-        if self.condition == self.Condition.TEST:
-            # n_completed_session = self.session_set.count()
-            material = Kanji.objects.all().order_by("id")[:50]
-            new_session = Session.objects.create(
-                user=self,
-                date_creation=timezone.now(),
-                available_time=timezone.now(),
-                leitner_teacher=Leitner.objects.create(material=material,
-                                                       user=self),
-                n_iteration=10,
-            )
-
-            return new_session
-
-        else:
-            raise ValueError
-
-

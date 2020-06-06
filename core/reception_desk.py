@@ -1,4 +1,4 @@
-from learner.models import Question, User
+from learner.models import Question, User, Session
 import learner.authentication
 
 
@@ -23,9 +23,7 @@ def treat_request(r):
     elif r["subject"] == Subject.SESSION:
 
         user = User.objects.get(id=r["user_id"])
-        session = user.session_set.filter(close=False).first()
-        if session is None:
-            session = user.create_new_session()
+        session = Session.get_user_session(user=user)
 
         if session is None:
             return {"end": True}
@@ -39,20 +37,22 @@ def treat_request(r):
     elif r["subject"] == Subject.QUESTION:
 
         user = User.objects.get(id=r["user_id"])
-        question = Question.objects.get(r["question_id"])
-        question.register_user_reply(
-            user=user,
-            id_user_reply=r["id_user_reply"],
-            time_display=r["time_display"],
-            time_reply=r["time_reply"],
-            success=r["success"])
+        previous_q = Question.objects.filter(id=r["question_id"]).first()
+        print(previous_q)
+        if previous_q is not None:
+            print("register previous reply")
+            previous_q.register_user_reply(
+                id_user_reply=r["id_user_reply"],
+                time_display=r["time_display"],
+                time_reply=r["time_reply"],
+                success=r["success"])
 
-        q = Question.next_question(user, previous_question=question)
+        q = Question.next_question(user, previous_question=previous_q)
         if q is None:
             return {"session_done": -1}  # End of the session
         else:
             return {
-                "question_id": q.question.id,
+                "question_id": q.id,
                 "id_possible_replies": [p.id for p in q.possible_replies.all()],
                 "id_correct_reply": q.question.meaning.id,
                 "question": q.question.kanji,

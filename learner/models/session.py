@@ -1,18 +1,48 @@
 from django.db import models
 from django.utils import timezone
+import datetime
 
-from teacher.models import Leitner
 from . user import User
+
+
+class SessionManager(models.Manager):
+
+    def create(self, user):
+        # Do some extra stuff here on the submitted data before saving...
+
+        last_session = \
+            user.session_set.order_by("available_time").reverse().first()
+
+        if last_session is None:
+            available_time = timezone.now()
+        else:
+            available_time = \
+                last_session.available_time + datetime.timedelta(minutes=5)
+
+        if user.condition == user.Condition.TEST:
+            # n_completed_session = self.session_set.count()
+            obj = super().create(
+                user=user,
+                date_creation=timezone.now(),
+                available_time=available_time,
+                n_iteration=10
+            )
+
+            return obj
+
+        else:
+            raise ValueError
 
 
 class Session(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date_creation = models.DateTimeField(auto_now_add=True)
-    available_time = models.TimeField(auto_now_add=True)
-    leitner_teacher = models.ForeignKey(Leitner, blank=True, null=True)
+    available_time = models.DateTimeField(auto_now_add=True)
     n_iteration = models.IntegerField(default=100)
     close = models.BooleanField(default=False)
+
+    objects = SessionManager()
 
     class Meta:
         db_table = 'session'
@@ -22,6 +52,8 @@ class Session(models.Model):
     def done(self):
         n_question = self.question_set.exclude(user_reply=None).count()
         if n_question == self.n_iteration:
+            self.close = True
+            self.save()
             return True
         else:
             return False
@@ -32,6 +64,13 @@ class Session(models.Model):
         return n_question
 
     def is_available(self):
-
         return self.available_time <= timezone.now()
 
+    @classmethod
+    def get_user_session(cls, user):
+
+        session = user.session_set.filter(close=False).first()
+        if session is None:
+            session = cls.objects.create(user=user)
+
+        return session
