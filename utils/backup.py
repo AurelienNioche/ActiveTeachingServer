@@ -4,9 +4,6 @@ from glob import glob
 import dateutil.parser
 
 from ActiveTeachingServer.settings import DATABASES
-from teaching_material.models import Kanji, Meaning
-from utils.utils import AskUser
-
 
 DB_NAME = DATABASES['default']['NAME']
 
@@ -39,19 +36,3 @@ def backup_table(model):
 
     print(f"Run command '{command}'")
     os.system(command)
-
-
-@AskUser
-def fill_kanji_table():
-
-    Meaning.objects.all().delete()
-    Kanji.objects.all().delete()
-    load_backup_table(Meaning)
-    load_backup_table(Kanji)
-
-
-@AskUser
-def backup_teaching_material():
-
-    backup_table(Kanji)
-    backup_table(Meaning)

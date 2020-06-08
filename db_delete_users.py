@@ -5,7 +5,7 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 from learner.models import User
-from utils.utils import AskUser
+from utils.console import AskUser
 
 
 @AskUser

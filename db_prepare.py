@@ -94,9 +94,6 @@ def main():
 
     User.objects.create_superuser(f'{EMAIL_HOST_USER}',
                                   f'{EMAIL_HOST_PASSWORD}')
-    # # fill_kanji_table()
-    # Meaning.objects.all().delete()
-    # Kanji.objects.all().delete()
 
     import_from_wk()
 
