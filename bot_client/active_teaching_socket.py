@@ -127,7 +127,7 @@ class ActiveTeachingSocket(websocket.WebSocketApp):
         time.sleep(self.waiting_time)
 
         success = id_user_reply == message.id_correct_reply
-        print("I got question ID ", message.id_question)
+        print("I got kanji ID ", message.id_question)
         print("I replied ID ", id_user_reply)
         print(f"It was{' not ' if not success else ' '}a success")
 

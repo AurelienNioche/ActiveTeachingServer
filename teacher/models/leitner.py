@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.utils import timezone
+import datetime
 
 import numpy as np
 
@@ -9,15 +11,24 @@ from teaching_material.models import Kanji
 
 class LeitnerManager(models.Manager):
 
-    def create(self, material, **kwargs):
+    def create(self, material, delay_factor=2, **kwargs):
+
         # Do some extra stuff here on the submitted data before saving...
+        n_item = material.count()
+        # material_list = [m for m in material]
+        id_items = [m.id for m in material]
+        box = [-1 for _ in range(n_item)]
+        due = [None for _ in range(n_item)]
 
         # Now call the super method which does the actual creation
-        obj = super().create(n_item=len(material), **kwargs)
-        for m in material:
-            obj.material.add(m)
+        obj = super().create(n_item=n_item,
+                             id_items=id_items,
+                             box=box,
+                             due=due,
+                             delay_factor=delay_factor,
+                             **kwargs)
 
-        # obj.save()
+        obj.material.set(material)
         return obj
 
 
@@ -26,25 +37,17 @@ class Leitner(models.Model):
     user = models.OneToOneField(User,
                                 on_delete=models.CASCADE,
                                 primary_key=True)
-    n_item = models.IntegerField()
 
-    delay_factor = models.IntegerField(default=2)
-    box_min = models.IntegerField(blank=True, null=True)
-    taboo = models.IntegerField(blank=True, null=True)
+    delay_factor = models.IntegerField()
 
     # Material
     material = models.ManyToManyField(Kanji,
                                       related_name="material")
+    n_item = models.IntegerField()
+    id_items = ArrayField(models.IntegerField(), default=list)
 
-    # array of size n_item representing the box
-    #             number of i^th item at i^th index.
     box = ArrayField(models.IntegerField(), default=list)
-
-    #  array of size n_item representing the waiting time
-    #             of i^th item at i^th index.
-    waiting_time = ArrayField(models.IntegerField(), default=list)
-
-    seen = ArrayField(models.BooleanField(), default=list)
+    due = ArrayField(models.DateTimeField(), default=list)
 
     objects = LeitnerManager()
 
@@ -53,172 +56,59 @@ class Leitner(models.Model):
         db_table = 'leitner'
         app_label = 'teacher'
 
-    def modify_sets(self, last_was_success):
-        """
-        :param last_was_success: bool
+    def update_box_and_due_time(self, last_idx,
+                                last_was_success, last_time_reply):
 
-        The boxes will be modified according to the following rules:
-            * Move an item to the next box for a successful reply by learner
-            * Move an item to the previous box for a failure.
-        """
         if last_was_success:
-            self.box[self.taboo] += 1
-        elif self.box[self.taboo] > self.box_min:
-            self.box[self.taboo] -= 1
-
-    def update_wait_time(self):
-        """
-        Update the waiting time of every item in wait_time_arr according to the
-         following rules:
-            * Taboo will have its wait time changed according to its box.
-            * The rest of the item's wait time will be increased by 1
-        """
-
-        for i in range(self.n_item):
-            if i == self.taboo:
-                self.waiting_time[self.taboo] \
-                    = - self.delay_factor ** self.box[self.taboo]
-            elif self.seen[i]:
-                self.waiting_time[i] += 1
-            else:
-                pass
-
-    def find_due_items(self):
-        """
-        :return: arr : array that contains bool
-        True := the item is due to be shown
-
-        Suppose there exist no due item then pick all items except taboo.
-        """
-        due = np.zeros(self.n_item, dtype=bool)
-        due[:] = np.asarray(self.waiting_time) >= 0
-        if np.sum(due) == 0:
-            due[:] = 1
-
-        due[self.taboo] = 0
-        return due
-
-    def find_due_seen_items(self, due):
-        """
-        :param due: bool array size N
-        :return: seen_due: bool array size N
-            True := the items has been seen
-                    at least once and are due to be shown
-
-        Finds the items that are seen and are due to be shown.
-        """
-        seen_due = due * np.asarray(self.seen, dtype=bool)
-
-        if np.sum(seen_due) == 0:
-            return due
+            self.box[last_idx] += 1
         else:
-            return seen_due
+            self.box[last_idx] = \
+                max(0, self.box[last_idx] - 1)
 
-    def find_max_waiting(self, items_arr):
-        """
-        :param items_arr: an integer array that contains the items that should
-                be shown.
-        :return: arr: contains the items that have been waiting to be shown the
-            most.
+        delay = self.delay_factor ** self.box[last_idx]
+        # Delay is 1, 2, 4, 8, 16, 32, 64, 128, 256, 512 ... minutes
+        self.due[last_idx] = \
+            last_time_reply + datetime.timedelta(minutes=delay)
 
-        Finds those items with maximum waiting time.
-        """
+    def _pickup_item(self):
 
-        max_wait = float('-inf')
-        arr = None
-        for i in range(len(items_arr)):
-            wait_time_item = self.waiting_time[items_arr[i]]
-            if max_wait < wait_time_item:
-                arr = [items_arr[i]]
-                max_wait = wait_time_item
-            elif max_wait == wait_time_item:
-                arr.append(items_arr[i])
-        return arr
+        seen = np.argwhere(np.asarray(self.box) >= 0).flatten()
+        n_seen = len(seen)
 
-    def pick_least_box(self, max_overdue_items):
-        """
-        :param max_overdue_items: an integer array that contains the items that
-            should be shown.
-        :return: items_arr: contains the items that are in the lowest box from
-            the max_overdue_items.
+        if n_seen == self.n_item:
+            return np.argmin(self.due)
 
-        Finds the items present in the lowest box number.
-        """
+        else:
+            print("seen", seen)
+            seen__due = np.asarray(self.due)[seen]
+            seen__is_due = np.asarray(seen__due) <= timezone.now()
+            if np.sum(seen__is_due):
+                seen_and_is_due__due = seen__due[seen__is_due]
+                return seen[np.argmin(seen_and_is_due__due)]
+            else:
+                return self._pickup_new()
 
-        items_arr = []
-        min_box = float('inf')
-        for item in max_overdue_items:
-            box = self.box[item]
-            if box < min_box:
-                items_arr = [item]
-                min_box = box
-            elif box == min_box:
-                items_arr.append(item)
-        assert len(items_arr), 'This should not be empty'
-
-        return items_arr
+    def _pickup_new(self):
+        return np.argmin(self.box)
 
     def ask(self, user):
-        """
 
-        Every item is associated with:
-            * A waiting time i.e the time since it was
-            last shown to the learner.
-                -- maintained in variable wait_time_arr
-            * A box that decides the frequency of repeating an item.
-                -- maintained in variable learning_progress
-        Function implements 4 rules in order:
-            1. The items that are due to be shown are picked.
-            2. Preference given to the seen items.
-            3. Preference given to the items present in lowest box number.
-            4. Randomly pick from the said items.
-
-        """
-
-        hist_question = user.get_historic()
-        len_hist = hist_question.count()
-        if not len_hist:
-
-            print("first round")
-
-            # Initialize the arrays
-            self.box = [0 for _ in range(self.n_item)]
-            self.waiting_time = [0 for _ in range(self.n_item)]
-            self.seen = [False for _ in range(self.n_item)]
-
-            # No past memory, so a random question shown from learning set
-            idx_question = np.random.randint(0, self.n_item)
+        last_q_entry = user.question_set.reverse().first()
+        if last_q_entry is None:
+            question_idx = self._pickup_new()
 
         else:
-            last_was_success = hist_question.reverse()[0].success
+            last_was_success = last_q_entry.success
+            last_time_reply = last_q_entry.time_reply
+            idx_last_q = self.id_items.index(last_q_entry.item.id)
 
-            self.modify_sets(last_was_success)
-            self.update_wait_time()
+            self.update_box_and_due_time(
+                last_idx=idx_last_q,
+                last_was_success=last_was_success,
+                last_time_reply=last_time_reply)
+            question_idx = self._pickup_item()
 
-            # Criteria 1, get due items
-            due = self.find_due_items()
+        item = self.material.get(id=self.id_items[question_idx])
 
-            # preference for seen item
-            seen_due = self.find_due_seen_items(due)
-
-            # items with maximum waiting time
-            seen_due_idx = np.arange(self.n_item)[seen_due]
-            max_overdue_items = \
-                self.find_max_waiting(seen_due_idx)
-
-            # pick item in lowest box
-            least_box_items = self.pick_least_box(max_overdue_items)
-
-            if len(least_box_items) > 1:
-                pick_question_index = np.random.randint(len(least_box_items))
-                idx_question = least_box_items[pick_question_index]
-            else:
-                idx_question = least_box_items[0]
-
-        self.taboo = idx_question
-        self.seen[idx_question] = True
-
-        kanji = self.material.all()[int(idx_question)]
         self.save()
-
-        return kanji
+        return item

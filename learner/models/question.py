@@ -11,10 +11,10 @@ class QuestionManager(models.Manager):
 
     def create(self, user):
 
-        kanji = user.leitner.ask(user=user)
+        item = user.leitner.ask(user=user)
         hist_question = user.get_historic()
 
-        possible_replies = self.get_possible_replies(user=user, kanji=kanji)
+        possible_replies = self.get_possible_replies(user=user, item=item)
 
         current_session = user.session_set.filter(close=False).first()
 
@@ -22,8 +22,8 @@ class QuestionManager(models.Manager):
             user=user,
             session=current_session,
             t=hist_question.count(),
-            question=kanji,
-            new=kanji not in [q.question for q in hist_question])
+            item=item,
+            new=item not in [q.item for q in hist_question])
 
         for pr in possible_replies:
             obj.possible_replies.add(pr)
@@ -31,14 +31,14 @@ class QuestionManager(models.Manager):
         return obj
 
     @classmethod
-    def get_possible_replies(cls, kanji, user):
+    def get_possible_replies(cls, item, user):
 
         """
         Select randomly possible replies, including the correct one
         """
 
         id_replies = [q.meaning.id for q in user.leitner.material.all()]
-        id_correct_reply = kanji.meaning.id
+        id_correct_reply = item.meaning.id
         hist_id_reply = [q.user_reply.id for q in user.question_set.all()]
 
         for i in hist_id_reply:
@@ -85,8 +85,8 @@ class Question(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     session = models.ForeignKey(Session, on_delete=models.CASCADE, null=True)
     t = models.IntegerField(null=True)
-    question = models.ForeignKey(Kanji, on_delete=models.SET_NULL,
-                                 null=True)
+    item = models.ForeignKey(Kanji, on_delete=models.SET_NULL,
+                             null=True)
 
     possible_replies = models.ManyToManyField(Meaning,
                                               related_name="possible_replies")

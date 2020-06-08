@@ -53,7 +53,7 @@ def create_predefined_questions(n_kanji=10, grade=1):
 
     for t in range(t_max):
 
-        # Get question and correct answer
+        # Get kanji and correct answer
         question = kanji[q_idx[t]]
         correct_answer = meaning[q_idx[t]]
 
@@ -70,7 +70,7 @@ def create_predefined_questions(n_kanji=10, grade=1):
         # Create new entry
         q = PredefinedQuestion()
         q.t = t
-        q.question = question
+        q.kanji = question
         q.correct_answer = correct_answer
         for i in range(n_possible_replies):
             setattr(q, f'possible_reply_{i}', possible_replies[i])

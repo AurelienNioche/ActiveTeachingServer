@@ -36,7 +36,7 @@ def get(user_id):
     seen = np.zeros((n_item, n_iteration), dtype=bool)
     for t in range(n_iteration):
 
-        question = entries_question[t].question
+        question = entries_question[t].kanji
         success = entries_question[t].success
 
         hist_question[t] = question

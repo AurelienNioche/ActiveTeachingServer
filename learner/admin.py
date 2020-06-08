@@ -11,7 +11,7 @@ class UserAdmin(admin.ModelAdmin):
 
 class QuestionAdmin(admin.ModelAdmin):
     list_display = (
-        "user", "t", "question", "correct_reply", "new",
+        "user", "t", "item", "correct_reply", "new",
         "user_reply", "success",
         "time_display", "time_reply", "_possible_replies")
 
@@ -22,11 +22,12 @@ class QuestionAdmin(admin.ModelAdmin):
     @staticmethod
     def correct_reply(obj):
 
-        return obj.question.meaning.meaning
+        return obj.kanji.meaning.meaning
 
 
 class SessionAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        "user", "date_creation", "available_time", "n_iteration", "close")
 
 
 admin.site.register(User, UserAdmin)

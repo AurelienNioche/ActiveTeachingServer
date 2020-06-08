@@ -73,7 +73,7 @@ ALTER SEQUENCE public.leitner_id_seq OWNED BY public.leitner.id;
 
 
 --
--- Name: question; Type: TABLE; Schema: public; Owner: postgres
+-- Name: kanji; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.question (
@@ -156,7 +156,7 @@ ALTER TABLE ONLY public.leitner ALTER COLUMN id SET DEFAULT nextval('public.leit
 
 
 --
--- Name: question id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: kanji id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.question ALTER COLUMN id SET DEFAULT nextval('public.question_id_seq'::regclass);
@@ -183,7 +183,7 @@ INSERT INTO public.leitner VALUES (15, 18, 2, 2136, 230, '{0,0,0,0,0,0,0,0,0,0,0
 
 
 --
--- Data for Name: question; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: kanji; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 INSERT INTO public.question VALUES (137, 12, 0, 1708, '{102,2041,1708,770,663,1108}', 663, false, '2019-08-29 09:01:02.964491+03', '2019-08-29 09:01:08.980588+03');
@@ -4868,7 +4868,7 @@ ALTER TABLE ONLY public.leitner
 
 
 --
--- Name: question question_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: kanji question_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.question

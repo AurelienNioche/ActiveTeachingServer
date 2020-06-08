@@ -15,17 +15,25 @@ class SessionManager(models.Manager):
 
         if last_session is None:
             available_time = timezone.now()
+            print(f"No previous session existing for {user.email}, I'm creating a new one now, available now ({available_time} UTC)")
         else:
+
             available_time = \
                 last_session.available_time + datetime.timedelta(minutes=5)
+
+            print(
+                f"Previous session was available at {last_session.available_time} UTC for user {user.email}, \n"
+                f"I'm creating a new one now, available 5 min later than the previous one ({available_time} UTC)")
+
+            print("now", timezone.now())
+            print("next available time", available_time)
 
         if user.condition == user.Condition.TEST:
             # n_completed_session = self.session_set.count()
             obj = super().create(
                 user=user,
-                date_creation=timezone.now(),
                 available_time=available_time,
-                n_iteration=10
+                n_iteration=3
             )
 
             return obj
@@ -38,7 +46,7 @@ class Session(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date_creation = models.DateTimeField(auto_now_add=True)
-    available_time = models.DateTimeField(auto_now_add=True)
+    available_time = models.DateTimeField(null=True, blank=True)
     n_iteration = models.IntegerField(default=100)
     close = models.BooleanField(default=False)
 
@@ -64,6 +72,8 @@ class Session(models.Model):
         return n_question
 
     def is_available(self):
+        print("now", timezone.now())
+        print("available time", self.available_time)
         return self.available_time <= timezone.now()
 
     @classmethod

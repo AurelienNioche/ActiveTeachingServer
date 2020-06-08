@@ -1,6 +1,8 @@
 from learner.models import Question, User, Session
 import learner.authentication
 
+from utils.time import datetime_to_sting
+
 
 class Subject:
 
@@ -26,13 +28,14 @@ def treat_request(r):
         session = Session.get_user_session(user=user)
 
         if session is None:
-            return {"end": True}
+            return {"end": True,
+                    "available": False}
         elif session.is_available():
             return {"available": True}
         else:
             return {
                 "available": False,
-                "available_time": session.available_time}
+                "available_time": datetime_to_sting(session.available_time)}
 
     elif r["subject"] == Subject.QUESTION:
 
@@ -54,8 +57,8 @@ def treat_request(r):
             return {
                 "question_id": q.id,
                 "id_possible_replies": [p.id for p in q.possible_replies.all()],
-                "id_correct_reply": q.question.meaning.id,
-                "question": q.question.kanji,
+                "id_correct_reply": q.item.meaning.id,
+                "question": q.item.value,
                 "possible_replies": [p.meaning for p in q.possible_replies.all()],
                 "is_new_question": q.new,
                 "n_iteration": q.session.n_iteration,
@@ -64,7 +67,7 @@ def treat_request(r):
 
     else:
         raise ValueError(
-            f"Subject of the request not recognized: '{r.subject}'")
+            f"Subject of the request not recognized: '{r['subject']}'")
 
 
 # def to_json_serializable_dic(obj):
