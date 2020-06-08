@@ -1,4 +1,6 @@
-from learner.models import Question, User, Session
+from learner.models.user import User
+from learner.models.session import Session
+from learner.models.question import Question
 import learner.authentication
 
 from utils.time import datetime_to_sting

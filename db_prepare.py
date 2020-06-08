@@ -13,7 +13,7 @@ from ActiveTeachingServer.credentials import \
     EMAIL_HOST_PASSWORD
 from ActiveTeachingServer.settings import DATABASES
 from teaching_material.models import WaniKani, Kanji, Meaning
-from learner.models import User
+from learner.models.user import User
 
 
 DB_NAME = DATABASES['default']['NAME']

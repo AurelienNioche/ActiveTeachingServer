@@ -1,12 +1,10 @@
 from django.contrib.auth import authenticate
-# from tools.utils import Atomic
 
 from django.core.mail import send_mail
 from django.conf import settings
 from django.db import IntegrityError
 
-from learner.models import User
-# from teacher.models import Leitner
+from learner.models.user import User
 
 
 def login(email, password):
@@ -45,4 +43,3 @@ def send_email(email_address):
     email_from = settings.EMAIL_HOST_USER
     recipient_list = [email_address, ]
     send_mail(subject, message, email_from, recipient_list)
-    # return redirect('redirect to a new page')

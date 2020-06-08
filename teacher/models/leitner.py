@@ -5,22 +5,19 @@ import datetime
 
 import numpy as np
 
-from learner.models import User
 from teaching_material.models import Kanji
+from learner.models.user import User
 
 
 class LeitnerManager(models.Manager):
 
     def create(self, material, delay_factor=2, **kwargs):
 
-        # Do some extra stuff here on the submitted data before saving...
         n_item = material.count()
-        # material_list = [m for m in material]
         id_items = [m.id for m in material]
         box = [-1 for _ in range(n_item)]
         due = [None for _ in range(n_item)]
 
-        # Now call the super method which does the actual creation
         obj = super().create(n_item=n_item,
                              id_items=id_items,
                              box=box,
@@ -40,7 +37,6 @@ class Leitner(models.Model):
 
     delay_factor = models.IntegerField()
 
-    # Material
     material = models.ManyToManyField(Kanji,
                                       related_name="material")
     n_item = models.IntegerField()
@@ -79,22 +75,26 @@ class Leitner(models.Model):
             return np.argmin(self.due)
 
         else:
-            print("seen", seen)
             seen__due = np.asarray(self.due)[seen]
+            print("seen__due", seen__due)
             seen__is_due = np.asarray(seen__due) <= timezone.now()
+            print(timezone.now())
+            print("seen__is_due", seen__is_due)
             if np.sum(seen__is_due):
                 seen_and_is_due__due = seen__due[seen__is_due]
-                return seen[np.argmin(seen_and_is_due__due)]
+
+                return seen[seen__is_due][np.argmin(seen_and_is_due__due)]
             else:
                 return self._pickup_new()
 
     def _pickup_new(self):
         return np.argmin(self.box)
 
-    def ask(self, user):
+    def ask(self):
 
-        last_q_entry = user.question_set.reverse().first()
+        last_q_entry = self.question_set.order_by("id").reverse().first()
         if last_q_entry is None:
+            print("No previous entry: Present new item!")
             question_idx = self._pickup_new()
 
         else:

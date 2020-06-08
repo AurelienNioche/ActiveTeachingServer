@@ -1,1 +1,1 @@
-from . leitner import Leitner
+from teacher.models.leitner import Leitner

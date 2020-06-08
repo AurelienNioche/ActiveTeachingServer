@@ -11,7 +11,7 @@ class LeitnerAdmin(admin.ModelAdmin):
 
     @staticmethod
     def _material(obj):
-        return ", ".join([m.kanji for m in obj.material.all()])
+        return ", ".join([m.value for m in obj.material.all()])
 
 
 admin.site.register(Leitner, LeitnerAdmin)

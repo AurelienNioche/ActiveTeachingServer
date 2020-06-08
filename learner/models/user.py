@@ -3,8 +3,6 @@ from django.contrib.auth.models \
     import AbstractBaseUser, PermissionsMixin
 from django.db import models
 
-from teaching_material.models import Kanji
-
 
 class UserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""
@@ -26,8 +24,9 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
         user = self._create_user(email, password, **extra_fields)
-        material = Kanji.objects.all()
         from teacher.models import Leitner
+        from teaching_material.models import Kanji
+        material = Kanji.objects.all()
         Leitner.objects.create(user=user,
                                material=material)
         return user
@@ -70,22 +69,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = []  # removes email from REQUIRED_FIELDS
 
-    # Change manager
     objects = UserManager()
 
     class Meta:
         db_table = 'user'
         app_label = 'learner'
-
-    def get_historic(self):
-
-        # Get historic
-        return self.question_set.exclude(user_reply=None).order_by('t')
-
-    def get_question_not_answered(self):
-
-        entries_not_answered = self.question_set.filter(user_reply=None)
-        if entries_not_answered:
-            return entries_not_answered[0]
-        else:
-            return None

@@ -1,6 +1,8 @@
 from django.contrib import admin
 
-from learner.models import Question, User, Session
+from learner.models.user import User
+from learner.models.session import Session
+from learner.models.question import Question
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -11,13 +13,17 @@ class UserAdmin(admin.ModelAdmin):
 
 class QuestionAdmin(admin.ModelAdmin):
     list_display = (
-        "user", "t", "item", "correct_reply", "new",
+        "id", "user", "leitner", "item", "correct_reply", "new",
         "user_reply", "success",
         "time_display", "time_reply", "_possible_replies")
 
     @staticmethod
     def _possible_replies(obj):
         return ", ".join([p.meaning for p in obj.possible_replies.all()])
+
+    @staticmethod
+    def user(obj):
+        return obj.leitner.user
 
     @staticmethod
     def correct_reply(obj):
