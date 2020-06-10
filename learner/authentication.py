@@ -21,18 +21,35 @@ def sign_up(email, password, gender, age,
     """
 
     try:
-        user = User.objects.create_user(
-            email=email,
-            password=password,
-            gender=gender,
-            mother_tongue=mother_tongue,
-            other_language=other_language,
-            age=age,
-            condition=condition
-        )
+        if condition == User.Condition.TEST:
+            user = User.objects.create_user(
+                email=email,
+                password=password,
+                gender=gender,
+                mother_tongue=mother_tongue,
+                other_language=other_language,
+                age=age,
+                condition=condition
+            )
+            from teacher.models.leitner import Leitner
+            from teacher.models.threshold import Threshold
+            from teaching_material.models import Kanji
+            material = Kanji.objects.all()
+            Leitner.objects.create(user=user,
+                                   material=material[0:50],
+                                   delay_factor=2)
+            Threshold.objects.create(user=user,
+                                     material=material[50:100],
+                                     learnt_threshold=0.90,
+                                     heterogeneous_param=False,
+                                     bounds=((0.001, 0.04), (0.2, 0.5)),
+                                     grid_size=20)
 
-    except IntegrityError:
-        return None
+        else:
+            raise ValueError
+
+    except IntegrityError as e:
+        raise e
 
     return user
 

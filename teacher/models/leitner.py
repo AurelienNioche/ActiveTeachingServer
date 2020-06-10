@@ -11,7 +11,7 @@ from learner.models.user import User
 
 class LeitnerManager(models.Manager):
 
-    def create(self, material, delay_factor=2, **kwargs):
+    def create(self, material, delay_factor, user):
 
         n_item = material.count()
         id_items = [m.id for m in material]
@@ -23,7 +23,7 @@ class LeitnerManager(models.Manager):
                              box=box,
                              due=due,
                              delay_factor=delay_factor,
-                             **kwargs)
+                             user=user)
 
         obj.material.set(material)
         return obj
@@ -38,7 +38,7 @@ class Leitner(models.Model):
     delay_factor = models.IntegerField()
 
     material = models.ManyToManyField(Kanji,
-                                      related_name="material")
+                                      related_name="leitner_material")
     n_item = models.IntegerField()
     id_items = ArrayField(models.IntegerField(), default=list)
 

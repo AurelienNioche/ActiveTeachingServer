@@ -86,16 +86,19 @@ def import_from_wk():
 
 
 def main():
+
     os.system('find . -path "*/migrations/*.py" -not -name "__init__.py" -delete')
     os.system('find . -path "*/migrations/*.pyc" -delete')
+
     os.system(f"createdb {DB_NAME} --owner postgres")
     os.system("python3 manage.py makemigrations")
     os.system("python3 manage.py migrate")
 
+    import_from_wk()
+
     User.objects.create_superuser(f'{EMAIL_HOST_USER}',
                                   f'{EMAIL_HOST_PASSWORD}')
 
-    import_from_wk()
 
 
 if __name__ == "__main__":

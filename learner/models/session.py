@@ -2,7 +2,9 @@ from django.db import models
 from django.utils import timezone
 import datetime
 
-from . user import User
+from learner.models.user import User
+from teacher.models.leitner import Leitner
+from teacher.models.threshold import Threshold
 
 
 class SessionManager(models.Manager):
@@ -19,12 +21,14 @@ class SessionManager(models.Manager):
             available_time = \
                 last_session.available_time + datetime.timedelta(minutes=5)
 
-        if user.condition == user.Condition.TEST:
+        if user.condition == User.Condition.TEST:
 
             obj = super().create(
                 user=user,
                 available_time=available_time,
-                n_iteration=3
+                n_iteration=3,
+                leitner=user.leitner,
+                threshold=None,
             )
 
             return obj
@@ -36,6 +40,8 @@ class SessionManager(models.Manager):
 class Session(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    leitner = models.ForeignKey(Leitner, on_delete=models.CASCADE, null=True)
+    threshold = models.ForeignKey(Threshold, on_delete=models.CASCADE, null=True)
     date_creation = models.DateTimeField(auto_now_add=True)
     available_time = models.DateTimeField()
     n_iteration = models.IntegerField()

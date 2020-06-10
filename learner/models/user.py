@@ -24,11 +24,6 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
         user = self._create_user(email, password, **extra_fields)
-        from teacher.models import Leitner
-        from teaching_material.models import Kanji
-        material = Kanji.objects.all()
-        Leitner.objects.create(user=user,
-                               material=material)
         return user
 
     def create_superuser(self, email, password, **extra_fields):

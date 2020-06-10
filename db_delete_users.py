@@ -10,11 +10,7 @@ from utils.console import AskUser
 
 @AskUser
 def delete_users():
-    users = User.objects.all()
-
-    for u in users:
-        if u.is_superuser is False:
-            u.delete()
+    User.objects.filter(is_superuser=False).delete()
 
 
 if __name__ == "__main__":
