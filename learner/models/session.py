@@ -5,6 +5,8 @@ from learner.models.user import User
 from teacher.models.leitner import Leitner
 from teacher.models.threshold import Threshold
 
+from experimental_condition import experimental_condition
+
 
 class Session(models.Model):
 
@@ -43,7 +45,6 @@ class Session(models.Model):
 
         session = user.session_set.filter(close=False).first()
         if session is None:
-            from experimental_condition import experimental_condition
             session = experimental_condition.session_creation(user=user)
 
         return session

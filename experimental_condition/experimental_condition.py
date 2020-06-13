@@ -1,16 +1,14 @@
 from django.utils import timezone
 
-from teacher.models.leitner import Leitner
-from teacher.models.threshold import Threshold
-from teaching_material.models import Kanji
-from learner.models.session import Session
-
-
 class Condition:
     TEST = 0
 
 
 def user_creation(user):
+
+    from teacher.models.leitner import Leitner
+    from teacher.models.threshold import Threshold
+    from teaching_material.models import Kanji
 
     if user.condition == Condition.TEST:
 
@@ -21,7 +19,7 @@ def user_creation(user):
         Threshold.objects.create(user=user,
                                  material=material[50:100],
                                  learnt_threshold=0.90,
-                                 heterogeneous_param=False,
+                                 heterogeneous_param=True,
                                  bounds=((0.001, 0.04), (0.2, 0.5)),
                                  grid_size=20)
 
@@ -31,6 +29,7 @@ def user_creation(user):
 
 
 def session_creation(user):
+    from learner.models.session import Session
     # last_session = \
     #     user.session_set.order_by("available_time").reverse().first()
     # print("user condition", user.condition)

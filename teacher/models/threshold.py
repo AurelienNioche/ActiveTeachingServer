@@ -72,6 +72,7 @@ class Threshold(models.Model):
 
             seen = self.psychologist.learner.seen
             p = self.psychologist.p_seen()
+            print("p", p, "p shape", p.shape)
 
             min_p = np.min(p)
 
