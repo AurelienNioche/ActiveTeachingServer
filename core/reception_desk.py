@@ -43,9 +43,7 @@ def treat_request(r):
 
         user = User.objects.get(id=r["user_id"])
         previous_q = Question.objects.filter(id=r["question_id"]).first()
-        print(previous_q)
         if previous_q is not None:
-            print("register previous reply")
             previous_q.register_user_reply(
                 id_user_reply=r["id_user_reply"],
                 time_display=r["time_display"],
@@ -82,6 +80,3 @@ def treat_request(r):
 #             dic[k] = int(v)
 #
 #     return dic
-
-
-

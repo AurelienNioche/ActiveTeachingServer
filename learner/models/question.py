@@ -15,20 +15,16 @@ class QuestionManager(models.Manager):
     def create(self, teacher, session, item, new, possible_replies):
 
         if isinstance(teacher, Leitner):
-            leitner = teacher,
-            threshold = None
+            teacher_entry = {"leitner": teacher}
         elif isinstance(teacher, Threshold):
-            leitner = None
-            threshold = teacher
+            teacher_entry = {"threshold": teacher}
         else:
             raise ValueError
 
         obj = super().create(
-            leitner=leitner,
-            threshold=threshold,
             session=session,
             item=item,
-            new=new)
+            new=new, **teacher_entry)
 
         obj.possible_replies.set(possible_replies)
         return obj

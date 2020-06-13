@@ -1,40 +1,9 @@
 from django.db import models
 from django.utils import timezone
-import datetime
 
 from learner.models.user import User
 from teacher.models.leitner import Leitner
 from teacher.models.threshold import Threshold
-
-
-class SessionManager(models.Manager):
-
-    def create(self, user):
-
-        last_session = \
-            user.session_set.order_by("available_time").reverse().first()
-
-        if last_session is None:
-            available_time = timezone.now()
-        else:
-
-            available_time = \
-                last_session.available_time + datetime.timedelta(minutes=5)
-
-        if user.condition == User.Condition.TEST:
-
-            obj = super().create(
-                user=user,
-                available_time=available_time,
-                n_iteration=3,
-                leitner=user.leitner,
-                threshold=None,
-            )
-
-            return obj
-
-        else:
-            raise ValueError
 
 
 class Session(models.Model):
@@ -46,8 +15,6 @@ class Session(models.Model):
     available_time = models.DateTimeField()
     n_iteration = models.IntegerField()
     close = models.BooleanField(default=False)
-
-    objects = SessionManager()
 
     class Meta:
         db_table = 'session'
@@ -76,6 +43,7 @@ class Session(models.Model):
 
         session = user.session_set.filter(close=False).first()
         if session is None:
-            session = cls.objects.create(user=user)
+            from experimental_condition import experimental_condition
+            session = experimental_condition.session_creation(user=user)
 
         return session

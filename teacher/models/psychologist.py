@@ -24,12 +24,20 @@ class PsychologistManager(models.Manager):
         lp = np.ones(n_param_set)
         log_post = lp - logsumexp(lp)
 
+        argmax_post = self.get_init_guess(bounds=learner.bounds)
+
         obj = super().create(
             learner=learner,
             log_post=list(log_post),
-            grid_param=list(grid_param.flatten())
+            grid_param=list(grid_param.flatten()),
+            argmax_post=list(argmax_post)
         )
         return obj
+
+    @staticmethod
+    def get_init_guess(bounds):
+        bounds = np.reshape(bounds, (-1, 2))
+        return [np.mean(b) for b in bounds]
 
     @staticmethod
     def cp_grid_param(grid_size, bounds):
@@ -54,23 +62,23 @@ class Psychologist(models.Model):
 
         if self.learner.n_pres[item] == 0:
             pass
+        else:
+            gp = np.reshape(self.grid_param, (-1, self.learner.n_param))
+            log_lik = self.learner.log_lik(item=item,
+                                           grid_param=gp,
+                                           response=response,
+                                           timestamp=timestamp)
+            # Update prior
+            lp = np.asarray(self.log_post)
+            lp += log_lik
+            lp -= logsumexp(lp)
+            self.log_post = list(lp)
 
-        gp = np.reshape(self.grid_param, (-1, self.learner.n_param))
-        log_lik = self.learner.log_lik(item=item,
-                                       grid_param=gp,
-                                       response=response,
-                                       timestamp=timestamp)
-        # Update prior
-        lp = np.asarray(self.log_post)
-        lp += log_lik
-        lp -= logsumexp(lp)
-        self.log_post = list(lp)
-
-        # Save argmax
-        self.argmax_post = list(gp[np.argmax(self.log_post)])
+            # Save argmax
+            self.argmax_post = list(gp[np.argmax(self.log_post)])
+            self.save()
 
         self.learner.update(item=item, timestamp=timestamp)
-        self.save()
 
     def p_seen(self):
         return self.learner.p_seen(param=self.argmax_post)

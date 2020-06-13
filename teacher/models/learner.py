@@ -12,12 +12,14 @@ class LearnerManager(models.Manager):
     def create(self, n_item, bounds, heterogeneous_param):
 
         n_pres = np.zeros(n_item, dtype=int)
+        last_pres = [None for _ in range(n_item)]
 
         obj = super().create(
             n_param=len(bounds),
             n_item=n_item,
             bounds=list(np.asarray(bounds).flatten()),
             n_pres=list(n_pres),
+            last_pres=last_pres,
             heterogeneous_param=heterogeneous_param)
 
         return obj
@@ -64,7 +66,8 @@ class Learner(models.Model):
 
     def p_seen(self, param):
 
-        seen = self.seen
+        seen = np.asarray(self.seen)
+        n_pres = np.asarray(self.n_pres)
 
         if self.heterogeneous_param:
             init_forget = param[seen, 0]
@@ -72,9 +75,9 @@ class Learner(models.Model):
         else:
             init_forget, rep_effect = param
 
-        fr = init_forget \
-            * (1-rep_effect) ** (self.n_pres[seen] - 1)
-        delta_series = timezone.now() - pd.Series(self.last_pres)[seen]
+        fr = init_forget * (1-rep_effect) ** (n_pres[seen] - 1)
+        last_pres = pd.Series(self.last_pres)[seen]
+        delta_series = timezone.now() - last_pres
         delta = delta_series.dt.total_seconds()
         p = np.exp(-fr * delta)
         return p

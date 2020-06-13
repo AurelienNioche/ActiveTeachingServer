@@ -7,8 +7,8 @@ from learner.models.question import Question
 
 class UserAdmin(admin.ModelAdmin):
     list_display = (
-        "id", "email", "is_superuser", "date_joined", "last_login")
-    # "username", "gender", "age", "mother_tongue", "other_language",
+        "id", "email", "is_superuser", "date_joined", "condition",
+        "last_login", "gender", "age", "mother_tongue", "other_language")
 
 
 class QuestionAdmin(admin.ModelAdmin):

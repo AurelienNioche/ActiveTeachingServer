@@ -19,13 +19,6 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_user(self, email, password=None, **extra_fields):
-        """Create and save a regular User with the given email and password."""
-        extra_fields.setdefault('is_staff', False)
-        extra_fields.setdefault('is_superuser', False)
-        user = self._create_user(email, password, **extra_fields)
-        return user
-
     def create_superuser(self, email, password, **extra_fields):
         """Create and save a SuperUser with the given email and password."""
         extra_fields.setdefault('is_staff', True)
@@ -38,11 +31,20 @@ class UserManager(BaseUserManager):
 
         return self._create_user(email, password, **extra_fields)
 
+    def create_user(self, email, password, condition, **extra_fields):
+        """Create and save a regular User with the given email and password."""
+        extra_fields.setdefault('is_staff', False)
+        extra_fields.setdefault('is_superuser', False)
+
+        user = self._create_user(email=email,
+                                 password=password,
+                                 condition=condition, **extra_fields)
+        from experimental_condition import experimental_condition
+        experimental_condition.user_creation(user=user)
+        return user
+
 
 class User(AbstractBaseUser, PermissionsMixin):
-
-    class Condition:
-        TEST = 0
 
     FEMALE = 0
     MALE = 1

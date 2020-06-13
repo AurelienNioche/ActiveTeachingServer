@@ -7,17 +7,21 @@ application = get_wsgi_application()
 from learner.authentication import sign_up
 from learner.models.user import User
 
+from experimental_condition.experimental_condition import Condition
+
 
 def main():
+    email = "james.jones@gmail.com"
+    User.objects.filter(email=email).delete()
 
     user = sign_up(
-        email="james.jones@gmail.com",
+        email=email,
         password="1234",
         gender=User.MALE,
         age=33,
         mother_tongue="french",
         other_language="english",
-        condition=User.Condition.TEST
+        condition=Condition.TEST
     )
 
     if user is not None:
