@@ -4,6 +4,7 @@ from django.utils import timezone
 from learner.models.user import User
 from teacher.models.leitner import Leitner
 from teacher.models.threshold import Threshold
+from teacher.models.mcts import MCTSTeacher
 
 from experimental_condition import experimental_condition
 
@@ -11,8 +12,14 @@ from experimental_condition import experimental_condition
 class Session(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    leitner = models.ForeignKey(Leitner, on_delete=models.CASCADE, null=True)
-    threshold = models.ForeignKey(Threshold, on_delete=models.CASCADE, null=True)
+
+    leitner = models.ForeignKey(Leitner,
+                                on_delete=models.CASCADE, null=True)
+    threshold = models.ForeignKey(Threshold,
+                                  on_delete=models.CASCADE, null=True)
+    mcts = models.ForeignKey(MCTSTeacher,
+                             on_delete=models.CASCADE, null=True)
+
     date_creation = models.DateTimeField(auto_now_add=True)
     available_time = models.DateTimeField()
     n_iteration = models.IntegerField()

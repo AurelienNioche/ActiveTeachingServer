@@ -11,7 +11,7 @@ from teacher.models.psychologist import Psychologist
 class ThresholdManager(models.Manager):
 
     def create(self, user, material, learnt_threshold, bounds, grid_size,
-               heterogeneous_param):
+               is_item_specific):
 
         n_item = material.count()
         id_items = [m.id for m in material]
@@ -19,7 +19,7 @@ class ThresholdManager(models.Manager):
             n_item=n_item,
             bounds=bounds,
             grid_size=grid_size,
-            heterogeneous_param=heterogeneous_param)
+            is_item_specific=is_item_specific)
 
         obj = super().create(
             user=user,
@@ -51,15 +51,11 @@ class Threshold(models.Model):
         db_table = 'threshold'
         app_label = 'teacher'
 
-    def _pickup_new(self):
-        return np.argmin(self.psychologist.learner.seen)
-
     def ask(self):
 
         last_q_entry = self.question_set.order_by("id").reverse().first()
         if last_q_entry is None:
-            print("No previous entry: Present new item!")
-            question_idx = self._pickup_new()
+            item_idx = 0
 
         else:
             last_was_success = last_q_entry.success
@@ -70,17 +66,21 @@ class Threshold(models.Model):
                                      response=last_was_success,
                                      timestamp=last_time_reply)
 
-            seen = self.psychologist.learner.seen
-            p = self.psychologist.p_seen()
-            print("p", p, "p shape", p.shape)
+            item_idx = self._select_item()
 
-            min_p = np.min(p)
-
-            if np.sum(seen) == self.n_item or min_p <= self.learnt_threshold:
-                question_idx = np.arange(self.n_item)[seen][np.argmin(p)]
-
-            else:
-                question_idx = self._pickup_new()
-
-        item = self.material.get(id=self.id_items[question_idx])
+        item = self.material.get(id=self.id_items[item_idx])
         return item
+
+    def _select_item(self):
+
+        p, seen = self.psychologist.p_seen()
+
+        min_p = np.min(p)
+
+        if np.sum(seen) == self.n_item or min_p <= self.learnt_threshold:
+            item_idx = np.arange(self.n_item)[seen][np.argmin(p)]
+
+        else:
+            item_idx = np.argmin(seen)
+
+        return item_idx

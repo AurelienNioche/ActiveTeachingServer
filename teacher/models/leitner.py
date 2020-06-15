@@ -76,10 +76,7 @@ class Leitner(models.Model):
 
         else:
             seen__due = np.asarray(self.due)[seen]
-            print("seen__due", seen__due)
             seen__is_due = np.asarray(seen__due) <= timezone.now()
-            print(timezone.now())
-            print("seen__is_due", seen__is_due)
             if np.sum(seen__is_due):
                 seen_and_is_due__due = seen__due[seen__is_due]
 
@@ -94,7 +91,6 @@ class Leitner(models.Model):
 
         last_q_entry = self.question_set.order_by("id").reverse().first()
         if last_q_entry is None:
-            print("No previous entry: Present new item!")
             question_idx = self._pickup_new()
 
         else:

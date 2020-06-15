@@ -5,6 +5,7 @@ import numpy as np
 
 from teacher.models.leitner import Leitner
 from teacher.models.threshold import Threshold
+from teacher.models.mcts import MCTSTeacher
 from teaching_material.models import Kanji, Meaning
 from learner.models.user import User
 from . session import Session
@@ -18,6 +19,8 @@ class QuestionManager(models.Manager):
             teacher_entry = {"leitner": teacher}
         elif isinstance(teacher, Threshold):
             teacher_entry = {"threshold": teacher}
+        elif isinstance(teacher, MCTSTeacher):
+            teacher_entry = {"mcts": teacher}
         else:
             raise ValueError
 
@@ -36,8 +39,14 @@ class Question(models.Model):
 
     # Set at the moment of the creation ----------------------------------
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    leitner = models.ForeignKey(Leitner, on_delete=models.CASCADE, null=True)
-    threshold = models.ForeignKey(Threshold, on_delete=models.CASCADE, null=True)
+
+    leitner = models.ForeignKey(Leitner,
+                                on_delete=models.CASCADE, null=True)
+    threshold = models.ForeignKey(Threshold,
+                                  on_delete=models.CASCADE, null=True)
+    mcts = models.ForeignKey(MCTSTeacher,
+                             on_delete=models.CASCADE, null=True)
+
     session = models.ForeignKey(Session, on_delete=models.CASCADE, null=True)
     item = models.ForeignKey(Kanji, on_delete=models.SET_NULL, null=True)
 
@@ -46,7 +55,8 @@ class Question(models.Model):
     new = models.BooleanField()
 
     # Set after the user reply --------------------------------------------
-    user_reply = models.ForeignKey(Meaning, on_delete=models.SET_NULL,
+    user_reply = models.ForeignKey(Meaning,
+                                   on_delete=models.SET_NULL,
                                    null=True, default=None,
                                    related_name='user_reply')
     success = models.BooleanField(null=True, default=None)
@@ -82,8 +92,13 @@ class Question(models.Model):
             session = Session.get_user_session(user=user)
             if session.leitner is not None:
                 teacher = session.leitner
+
             elif session.threshold is not None:
                 teacher = session.threshold
+
+            elif session.mcts is not None:
+                teacher = session.mcts
+
             else:
                 raise Exception
 
@@ -100,7 +115,8 @@ class Question(models.Model):
                 possible_replies = cls.get_possible_replies(teacher=teacher,
                                                             item=item)
 
-                current_session = teacher.user.session_set.filter(close=False).first()
+                current_session = \
+                    teacher.user.session_set.filter(close=False).first()
 
                 question = cls.objects.create(
                     teacher=teacher,

@@ -8,9 +8,15 @@ def user_creation(user):
 
     from teacher.models.leitner import Leitner
     from teacher.models.threshold import Threshold
+    from teacher.models.mcts import MCTSTeacher
     from teaching_material.models import Kanji
 
     if user.condition == Condition.TEST:
+
+        is_item_specific = False
+        learnt_threshold = 0.90
+        bounds = ((0.001, 0.04), (0.2, 0.5))
+        grid_size = 20
 
         material = Kanji.objects.all()
         Leitner.objects.create(user=user,
@@ -18,10 +24,19 @@ def user_creation(user):
                                delay_factor=2)
         Threshold.objects.create(user=user,
                                  material=material[50:100],
-                                 learnt_threshold=0.90,
-                                 heterogeneous_param=True,
-                                 bounds=((0.001, 0.04), (0.2, 0.5)),
-                                 grid_size=20)
+                                 learnt_threshold=learnt_threshold,
+                                 is_item_specific=is_item_specific,
+                                 bounds=bounds,
+                                 grid_size=grid_size)
+
+        MCTSTeacher.objects.create(user=user,
+                                   material=material[100:151],
+                                   learnt_threshold=learnt_threshold,
+                                   bounds=bounds,
+                                   grid_size=grid_size,
+                                   is_item_specific=is_item_specific,
+                                   iter_limit=500,
+                                   time_limit=None)
 
     else:
         msg = f"Condition '{user.condition}' not recognized"
@@ -47,7 +62,8 @@ def session_creation(user):
             user=user,
             available_time=timezone.now(),
             n_iteration=10,
-            threshold=user.threshold,
+            mcts=user.mctsteacher,
+            # threshold=user.threshold,
             # leitner=user.leitner,
         )
 

@@ -1,3 +1,5 @@
+from django.utils import timezone
+
 from learner.models.user import User
 from learner.models.session import Session
 from learner.models.question import Question
@@ -41,6 +43,8 @@ def treat_request(r):
 
     elif r["subject"] == Subject.QUESTION:
 
+        a = timezone.now()
+
         user = User.objects.get(id=r["user_id"])
         previous_q = Question.objects.filter(id=r["question_id"]).first()
         if previous_q is not None:
@@ -51,6 +55,8 @@ def treat_request(r):
                 success=r["success"])
 
         q = Question.next_question(user, previous_question=previous_q)
+        b = timezone.now()
+        print(f"Time to generate the question {b-a}")
         if q is None:
             return {"session_done": -1}  # End of the session
         else:
