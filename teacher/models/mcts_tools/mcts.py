@@ -1,36 +1,37 @@
 """
 Adapted from: https://github.com/pbsinclair42/MCTS/blob/master/mcts.py
 """
+from django.utils import timezone
 import time
 import numpy as np
-from abc import abstractmethod, ABC
+# from abc import abstractmethod, ABC
 
 
-class State(ABC):
-
-    @property
-    @abstractmethod
-    def possible_actions(self):
-        """Returns an iterable of all actions which can be taken
-        from this state"""
-
-    @abstractmethod
-    def take_action(self, action):
-        """Returns the state which results from taking action 'action'"""
-
-    @property
-    @abstractmethod
-    def is_terminal(self):
-        """Returns whether this state is a terminal state"""
-
-    @property
-    @abstractmethod
-    def reward(self):
-        """"Returns the reward for this state"""
-
-    @abstractmethod
-    def new_rollout_action(self):
-        """"Returns one rollout action for this state"""
+# class State(ABC):
+#
+#     @property
+#     @abstractmethod
+#     def possible_actions(self):
+#         """Returns an iterable of all actions which can be taken
+#         from this state"""
+#
+#     @abstractmethod
+#     def take_action(self, action):
+#         """Returns the state which results from taking action 'action'"""
+#
+#     @property
+#     @abstractmethod
+#     def is_terminal(self):
+#         """Returns whether this state is a terminal state"""
+#
+#     @property
+#     @abstractmethod
+#     def reward(self):
+#         """"Returns the reward for this state"""
+#
+#     @abstractmethod
+#     def new_rollout_action(self):
+#         """"Returns one rollout action for this state"""
 
 
 class Node:
@@ -146,14 +147,14 @@ class MCTS:
         return best_node
 
     def _rollout(self, state):
-
         while not state.is_terminal:
-            action = state.new_rollout_action()
+            action = state.rollout_action
             state = state.take_action(action)
         return state.reward
 
     @classmethod
     def _backpropogate(cls, node, reward):
+
         while node is not None:
             node.num_visits += 1
             node.total_reward += reward

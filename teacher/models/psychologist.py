@@ -28,7 +28,8 @@ class Learner:
     #     return p
 
     @classmethod
-    def p_seen(cls, param, n_pres, last_pres, is_item_specific, now):
+    def p_seen(cls, param, n_pres, is_item_specific, last_pres=None, now=None,
+               delta=None):
 
         seen = n_pres >= 1
 
@@ -39,9 +40,12 @@ class Learner:
             init_forget, rep_effect = param
 
         fr = init_forget * (1-rep_effect) ** (n_pres[seen] - 1)
-        last_pres = last_pres[seen]
-        delta_series = now - last_pres
-        delta = delta_series.dt.total_seconds()
+        if delta is None:
+            last_pres = last_pres[seen]
+            delta_series = now - last_pres
+            delta = delta_series.dt.total_seconds()
+        else:
+            delta = delta[seen]
         p = np.exp(-fr * delta)
         return p, seen
 

@@ -11,16 +11,16 @@ from . psychologist import Psychologist, Learner
 from teaching_material.models import Kanji
 from learner.models.user import User
 
-from . mcts_tools.mcts import MCTS, State
+from . mcts_tools.mcts import MCTS
 
 
 class LearnerStateParam:
 
     def __init__(self, learner_param, is_item_specific, learnt_threshold,
-                 n_item, horizon, delta_time):
+                 n_item, horizon, delta_timestep):
 
         self.horizon = horizon
-        self.delta_time = delta_time
+        self.delta_timestep = delta_timestep
 
         self.n_item = n_item
         self.learnt_threshold = learnt_threshold
@@ -29,41 +29,32 @@ class LearnerStateParam:
         self.is_item_specific = is_item_specific
 
 
-class LearnerState(State):
+class LearnerState:
 
-    def __init__(self, param, last_pres, n_pres, timestep, timestamp):
+    def __init__(self, param, delta, n_pres, timestep):
 
         self.param = param
 
         self.timestep = timestep
-        self.timestamp = timestamp
 
         self.n_pres = n_pres
-        self.last_pres = last_pres
+        self.delta = delta
 
-        self._p_seen, self._seen = Learner.p_seen(
+        p_seen, seen = Learner.p_seen(
                 param=self.param.learner_param,
                 is_item_specific=self.param.is_item_specific,
                 n_pres=n_pres,
-                last_pres=last_pres,
-                now=self.timestamp
+                delta=delta
         )
+        n_seen = np.sum(seen)
 
-        self._reward = self._cpt_reward()
-        self._actions = self._cpt_possible_actions()
-        self._is_terminal = timestep == self.param.horizon - 1
+        self.reward = self._cpt_reward(p_seen)
+        self.possible_actions = self._cpt_possible_actions(n_seen=n_seen)
+        self.is_terminal = timestep == self.param.horizon - 1
+        self.rollout_action = self._cpt_rollout_action(n_seen=n_seen,
+                                                       p_seen=p_seen)
 
         self.children = dict()
-
-    @property
-    def reward(self):
-        return self._reward
-
-    @property
-    def possible_actions(self):
-        """Returns an iterable of all actions which can be taken
-        from this state"""
-        return self._actions
 
     def take_action(self, action):
         """Returns the state which results from taking action 'action'"""
@@ -74,61 +65,46 @@ class LearnerState(State):
         else:
             n_pres = self.n_pres.copy()
             n_pres[action] += 1
-            last_pres = self.last_pres.copy()
-            last_pres[action] = self.timestamp
-            timestamp = self.timestamp + self.param.delta_time[self.timestep]
+            delta = self.delta.copy()
+            dt = self.param.delta_timestep[self.timestep]
+            delta += dt
+            delta[action] = dt
             timestep = self.timestep + 1
             new_state = LearnerState(
                 param=self.param,
-                last_pres=last_pres,
+                delta=delta,
                 n_pres=n_pres,
                 timestep=timestep,
-                timestamp=timestamp,
             )
             self.children[action] = new_state
 
         return new_state
 
-    @property
-    def is_terminal(self):
-        """Returns whether this state is a terminal state"""
-        return self._is_terminal
+    def _cpt_rollout_action(self, p_seen, n_seen):
 
-    def new_rollout_action(self):
-        n_seen = np.sum(self._seen)
-
-        if n_seen == 0:
-            item = 0
-
-        else:
+        if n_seen:
             n_item = self.param.n_item
             tau = self.param.learnt_threshold
 
-            min_p = np.min(self._p_seen)
+            min_p = p_seen.min()
 
             if n_seen == n_item or min_p <= tau:
-                is_min = self._p_seen == min_p
-                selection = np.arange(n_item)[self._seen][is_min]
-                item = np.random.choice(selection)
+                item = p_seen.argmin()
             else:
-                item = np.max(np.arange(n_item)[self._seen]) + 1
+                item = n_seen
+        else:
+            item = 0
 
         return item
 
-    def _cpt_reward(self):
-        n_learnt = np.sum(self._p_seen > self.param.learnt_threshold)
-        return n_learnt / self.param.n_item
+    def _cpt_reward(self, p_seen):
+        return np.mean(p_seen > self.param.learnt_threshold)
 
-    def _cpt_possible_actions(self):
-        n_seen = np.sum(self._seen)
-        if n_seen == 0:
-            possible_actions = np.arange(1)
-        elif n_seen == self.param.n_item:
+    def _cpt_possible_actions(self, n_seen):
+        if n_seen == self.param.n_item:
             possible_actions = np.arange(self.param.n_item)
         else:
-            already_seen = np.arange(self.param.n_item)[self._seen]
-            new = np.max(already_seen) + 1
-            possible_actions = list(already_seen) + [new]
+            possible_actions = np.arange(n_seen+1)
         return possible_actions
 
 
@@ -181,14 +157,21 @@ class MCTSTeacher(models.Model):
 
         h = 10
 
-        return h, [datetime.timedelta(seconds=2) for _ in range(h)]
+        return h, np.ones(h, dtype=int) * 2
 
     def _select_item(self):
 
         m = MCTS(iteration_limit=self.iter_limit)
 
-        horizon, delta_time = self._revise_goal()
+        horizon, delta_timestep = self._revise_goal()
 
+        n_pres = np.asarray(self.psychologist.n_pres)
+        seen = n_pres >= 1
+        last_pres = pd.Series(self.psychologist.last_pres)[seen]
+        delta_series = timezone.now() - last_pres
+        sc = delta_series.dt.total_seconds()
+        delta = np.full(self.n_item, -1, dtype=int)
+        delta[seen] = sc
         learner_state = LearnerState(
             param=LearnerStateParam(
                 learner_param=self.psychologist.inferred_learner_param(),
@@ -196,11 +179,10 @@ class MCTSTeacher(models.Model):
                 learnt_threshold=self.learnt_threshold,
                 n_item=self.n_item,
                 horizon=horizon,
-                delta_time=delta_time
+                delta_timestep=delta_timestep,
             ),
-            n_pres=np.asarray(self.psychologist.n_pres),
-            last_pres=pd.Series(self.psychologist.last_pres),
-            timestamp=timezone.now(),
+            n_pres=n_pres,
+            delta=delta,
             timestep=0
         )
 
@@ -211,7 +193,6 @@ class MCTSTeacher(models.Model):
 
         last_q_entry = self.question_set.order_by("id").reverse().first()
         if last_q_entry is None:
-            print("No previous entry: Present new item!")
             item_idx = 0
 
         else:
