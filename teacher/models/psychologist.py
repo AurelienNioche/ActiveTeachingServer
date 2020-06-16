@@ -12,21 +12,6 @@ EPS = np.finfo(np.float).eps
 
 class Learner:
 
-    # @classmethod
-    # def p(self, item, n_pres, last_pres, param):
-    #
-    #     if n_pres[item] == 0:
-    #         return 0
-    #
-    #     init_forget, rep_effect = param
-    #
-    #     fr = init_forget \
-    #         * (1 - rep_effect) ** (n_pres[item] - 1)
-    #
-    #     delta = (timezone.now() - last_pres[item]).total_seconds()
-    #     p = np.exp(- fr * delta)
-    #     return p
-
     @classmethod
     def p_seen(cls, param, n_pres, is_item_specific, last_pres=None, now=None,
                delta=None):

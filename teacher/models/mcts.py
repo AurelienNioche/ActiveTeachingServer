@@ -4,7 +4,6 @@ from django.utils import timezone
 
 import numpy as np
 import pandas as pd
-import datetime
 
 from . psychologist import Psychologist, Learner
 
@@ -50,7 +49,7 @@ class LearnerState:
 
         self.reward = self._cpt_reward(p_seen)
         self.possible_actions = self._cpt_possible_actions(n_seen=n_seen)
-        self.is_terminal = timestep == self.param.horizon - 1
+        self.is_terminal = timestep == self.param.horizon
         self.rollout_action = self._cpt_rollout_action(n_seen=n_seen,
                                                        p_seen=p_seen)
 
@@ -111,7 +110,8 @@ class LearnerState:
 class MCTSManager(models.Manager):
 
     def create(self, user, material, learnt_threshold, bounds, grid_size,
-               is_item_specific, iter_limit, time_limit):
+               is_item_specific, iter_limit, time_limit, horizon,
+               time_per_iter):
 
         n_item = material.count()
         id_items = [m.id for m in material]
@@ -128,7 +128,10 @@ class MCTSManager(models.Manager):
             n_item=n_item,
             learnt_threshold=learnt_threshold,
             iter_limit=iter_limit,
-            time_limit=time_limit
+            time_limit=time_limit,
+            horizon=horizon,
+            time_per_iter=time_per_iter,
+            iter=0
         )
 
         obj.material.set(material)
@@ -150,18 +153,53 @@ class MCTSTeacher(models.Model):
 
     iter_limit = models.IntegerField(null=True)
     time_limit = models.FloatField(null=True)
+    time_per_iter = models.IntegerField()
+    horizon = models.IntegerField()
+    iter = models.IntegerField()
 
     objects = MCTSManager()
 
     def _revise_goal(self):
 
-        h = 10
+        session = self.session_set.filter(close=False).first()
+        ss_n_iter = session.n_iteration
+        ss_it = session.iter
+        remain = ss_n_iter - ss_it
 
-        return h, np.ones(h, dtype=int) * 2
+        print("iter", self.iter)
+        print("horizon", self.horizon)
+
+        if self.iter < self.horizon:
+            h = self.horizon - self.iter
+        else:
+            self.iter = 0
+            h = self.horizon
+
+        print("iter", self.iter)
+        print("h", h)
+
+        if remain > h:
+            delta_timestep = np.ones(h, dtype=int) * self.time_per_iter
+        else:
+            delta_timestep = np.zeros(h, dtype=int)
+            dt = session.next_available_time - timezone.now()
+            time_to_complete = remain * self.time_per_iter
+            dt = max(time_to_complete + self.time_per_iter,
+                     dt.total_seconds() - time_to_complete)
+            delta_timestep[:remain] = \
+                np.ones(remain) * self.time_per_iter
+            next_ss = h - remain
+            delta_timestep[remain:] = dt + np.ones(next_ss) * self.time_per_iter
+
+            assert h - remain <= ss_n_iter, "case not handled!"
+
+        self.iter += 1
+        self.save()
+        return h, delta_timestep
 
     def _select_item(self):
 
-        m = MCTS(iteration_limit=self.iter_limit)
+        m = MCTS(iteration_limit=self.iter_limit, time_limit=self.time_limit)
 
         horizon, delta_timestep = self._revise_goal()
 

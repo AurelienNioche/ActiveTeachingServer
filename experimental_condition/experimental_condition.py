@@ -1,4 +1,5 @@
 from django.utils import timezone
+import datetime
 
 class Condition:
     TEST = 0
@@ -36,7 +37,9 @@ def user_creation(user):
                                    grid_size=grid_size,
                                    is_item_specific=is_item_specific,
                                    iter_limit=500,
-                                   time_limit=None)
+                                   time_limit=None,
+                                   horizon=10,
+                                   time_per_iter=2)
 
     else:
         msg = f"Condition '{user.condition}' not recognized"
@@ -61,7 +64,8 @@ def session_creation(user):
         obj = Session.objects.create(
             user=user,
             available_time=timezone.now(),
-            n_iteration=10,
+            next_available_time=timezone.now() + datetime.timedelta(minutes=0),
+            n_iteration=15,
             mcts=user.mctsteacher,
             # threshold=user.threshold,
             # leitner=user.leitner,
