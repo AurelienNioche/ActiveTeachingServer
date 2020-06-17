@@ -206,3 +206,8 @@ and their compound words. Psychological Research, 81, 696-708.
     * Run `sudo systemctl daemon-reload`
     * `sudo systemctl start daphne.service`
     * Check with `sudo systemctl status daphne.service`
+   
+ 
+Permission errors:
+
+    sudo chmod -R o+rwx /directory

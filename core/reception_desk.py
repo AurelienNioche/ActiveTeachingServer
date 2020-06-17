@@ -58,7 +58,7 @@ def treat_request(r):
         b = timezone.now()
         print(f"Time to generate the question {b-a}")
         if q is None:
-            return {"session_done": -1}  # End of the session
+            return {"session_done": True}  # End of the session
         else:
             return {
                 "question_id": q.id,

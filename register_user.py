@@ -14,7 +14,7 @@ def main():
     for (email, condition) in (
             ("leitner@test.com", Condition.LEITNER),
             ("mcts@test.com", Condition.MCTS),
-            ("mcts_item_sp@test.com", Condition.MCTS_ITEM_SPECIFIC),
+            ("mcts_sp@test.com", Condition.MCTS_ITEM_SPECIFIC),
             ("threshold@test.com", Condition.THRESHOLD),
             ("threshold_sp@test.com", Condition.THRESHOLD_ITEM_SPECIFIC)
     ):
