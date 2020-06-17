@@ -167,76 +167,76 @@ EMAIL_PORT = 587
 
 # os.makedirs('tmp', exist_ok=True)
 #
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {message}',
-            'style': '{',
-        },
-    },
-    # 'filters': {
-    #     'require_debug_false': {
-    #         '()': 'django.utils.log.RequireDebugFalse',
-    #     },
-    #     'require_debug_true': {
-    #         '()': 'django.utils.log.RequireDebugTrue',
-    #     },
-    # },
-
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join('tmp', 'django-debug.log'),
-            'formatter': 'verbose'
-        },
-        'file_error': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join('tmp', 'django-error.log'),
-            'formatter': 'verbose'
-        },
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
-        }
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file', 'console', 'file_error'],
-            'propagate': True,
-            'level': os.getenv('DEBUG')
-        },
-        'django.server': {
-            'handlers': ['file', 'console', 'file_error'],
-            'propagate': True,
-            'level': os.getenv('DEBUG')
-        },
-        'django.request': {
-            'handlers': ['file', 'console', 'file_error'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-        'django.security': {
-            'handlers': ['file', 'console', 'file_error'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-        'daphne': {
-            'handlers': ['file', 'file_error'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'daphne.server': {
-            'handlers': ['file', 'file_error'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': '{levelname} {asctime} {message}',
+#             'style': '{',
+#         },
+#     },
+#     # 'filters': {
+#     #     'require_debug_false': {
+#     #         '()': 'django.utils.log.RequireDebugFalse',
+#     #     },
+#     #     'require_debug_true': {
+#     #         '()': 'django.utils.log.RequireDebugTrue',
+#     #     },
+#     # },
+#
+#     'handlers': {
+#         'file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join('tmp', 'django-debug.log'),
+#             'formatter': 'verbose'
+#         },
+#         'file_error': {
+#             'level': 'ERROR',
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join('tmp', 'django-error.log'),
+#             'formatter': 'verbose'
+#         },
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'verbose'
+#         }
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['file', 'console', 'file_error'],
+#             'propagate': True,
+#             'level': os.getenv('DEBUG')
+#         },
+#         'django.server': {
+#             'handlers': ['file', 'console', 'file_error'],
+#             'propagate': True,
+#             'level': os.getenv('DEBUG')
+#         },
+#         'django.request': {
+#             'handlers': ['file', 'console', 'file_error'],
+#             'level': 'ERROR',
+#             'propagate': True,
+#         },
+#         'django.security': {
+#             'handlers': ['file', 'console', 'file_error'],
+#             'level': 'ERROR',
+#             'propagate': True,
+#         },
+#         'daphne': {
+#             'handlers': ['file', 'file_error'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#         'daphne.server': {
+#             'handlers': ['file', 'file_error'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#     },
+# }
 
 # CSRF_COOKIE_SECURE = True
 # SECURE_SSL_REDIRECT = True
