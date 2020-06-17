@@ -195,6 +195,11 @@ LOGGING = {
             'propagate': True,
             'level': os.getenv('DEBUG')
         },
+        'django.server': {
+            'handlers': ['file', 'console'],
+            'propagate': True,
+            'level': os.getenv('DEBUG')
+        },
         'django.request': {
             'handlers': ['file', 'console'],
             'level': 'ERROR',
@@ -210,13 +215,18 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'daphne.server': {
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     },
 }
 
-# CSRF_COOKIE_SECURE = True
-# SECURE_SSL_REDIRECT = True
-# SESSION_COOKIE_SECURE = True
-# SECURE_REFERRER_POLICY = 'no-referrer'
+CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+SECURE_REFERRER_POLICY = 'no-referrer'
 
-# DEBUG_PROPAGATE_EXCEPTIONS = True
-# SECURE_HSTS_SECONDS = 60
+DEBUG_PROPAGATE_EXCEPTIONS = True
+SECURE_HSTS_SECONDS = 60
