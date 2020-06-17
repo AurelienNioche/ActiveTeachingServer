@@ -18,6 +18,8 @@ class Subject:
 
 def treat_request(r):
 
+    a = 1 / 0
+
     if r["subject"] == Subject.LOGIN:
         user = learner.authentication.login(email=r["email"],
                                             password=r["password"])
@@ -74,6 +76,7 @@ def treat_request(r):
     else:
         raise ValueError(
             f"Subject of the request not recognized: '{r['subject']}'")
+
 
 
 # def to_json_serializable_dic(obj):
