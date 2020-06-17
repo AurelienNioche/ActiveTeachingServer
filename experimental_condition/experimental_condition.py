@@ -2,7 +2,11 @@ from django.utils import timezone
 import datetime
 
 class Condition:
-    TEST = 0
+    LEITNER = 0
+    THRESHOLD = 1
+    MCTS = 2
+    THRESHOLD_ITEM_SPECIFIC = 1
+    MCTS_ITEM_SPECIFIC = 1
 
 
 def user_creation(user):
@@ -12,26 +16,52 @@ def user_creation(user):
     from teacher.models.mcts import MCTSTeacher
     from teaching_material.models import Kanji
 
-    if user.condition == Condition.TEST:
+    material = Kanji.objects.all()[0:50]
 
-        is_item_specific = False
-        learnt_threshold = 0.90
-        bounds = ((0.001, 0.04), (0.2, 0.5))
-        grid_size = 20
+    learnt_threshold = 0.90
+    bounds = ((0.001, 0.04), (0.2, 0.5))
+    grid_size = 20
 
-        material = Kanji.objects.all()
+    if user.condition == Condition.LEITNER:
+
         Leitner.objects.create(user=user,
-                               material=material[0:50],
+                               material=material,
                                delay_factor=2)
+
+    elif user.condition == Condition.THRESHOLD:
+        is_item_specific = False
         Threshold.objects.create(user=user,
-                                 material=material[50:100],
+                                 material=material,
+                                 learnt_threshold=learnt_threshold,
+                                 is_item_specific=is_item_specific,
+                                 bounds=bounds,
+                                 grid_size=grid_size)
+    elif user.condition == Condition.THRESHOLD_ITEM_SPECIFIC:
+        is_item_specific = True
+        Threshold.objects.create(user=user,
+                                 material=material,
                                  learnt_threshold=learnt_threshold,
                                  is_item_specific=is_item_specific,
                                  bounds=bounds,
                                  grid_size=grid_size)
 
+    elif user.condition == Condition.MCTS:
+        is_item_specific = False
         MCTSTeacher.objects.create(user=user,
-                                   material=material[100:151],
+                                   material=material,
+                                   learnt_threshold=learnt_threshold,
+                                   bounds=bounds,
+                                   grid_size=grid_size,
+                                   is_item_specific=is_item_specific,
+                                   iter_limit=500,
+                                   time_limit=None,
+                                   horizon=10,
+                                   time_per_iter=2)
+
+    elif user.condition == Condition.MCTS_ITEM_SPECIFIC:
+        is_item_specific = True
+        MCTSTeacher.objects.create(user=user,
+                                   material=material,
                                    learnt_threshold=learnt_threshold,
                                    bounds=bounds,
                                    grid_size=grid_size,
@@ -52,7 +82,10 @@ def session_creation(user):
     #     user.session_set.order_by("available_time").reverse().first()
     # print("user condition", user.condition)
 
-    if user.condition == Condition.TEST:
+    if user.condition in (Condition.LEITNER, Condition.THRESHOLD,
+                          Condition.THRESHOLD_ITEM_SPECIFIC,
+                          Condition.MCTS_ITEM_SPECIFIC,
+                          Condition.MCTS):
 
         # if last_session is None:
         #     available_time = timezone.now()
@@ -66,11 +99,15 @@ def session_creation(user):
             available_time=timezone.now(),
             next_available_time=timezone.now() + datetime.timedelta(minutes=0),
             n_iteration=15,
-            mcts=user.mctsteacher,
-            # threshold=user.threshold,
-            # leitner=user.leitner,
         )
 
+        if user.condition == Condition.LEITNER:
+            obj.leitner = user.leitner
+        elif user.condition in (Condition.THRESHOLD, Condition.THRESHOLD_ITEM_SPECIFIC):
+            obj.threshold = user.threshold
+        else:
+            obj.mcts = user.mctsteacher
+        obj.save()
         return obj
 
     else:

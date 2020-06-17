@@ -11,23 +11,30 @@ from experimental_condition.experimental_condition import Condition
 
 
 def main():
-    email = "james.jones@gmail.com"
-    User.objects.filter(email=email).delete()
+    for (email, condition) in (
+            ("leitner@test.com", Condition.LEITNER),
+            ("mcts@test.com", Condition.MCTS),
+            ("mcts_item_sp@test.com", Condition.MCTS_ITEM_SPECIFIC),
+            ("threshold@test.com", Condition.THRESHOLD),
+            ("threshold_sp@test.com", Condition.THRESHOLD_ITEM_SPECIFIC)
+    ):
 
-    user = sign_up(
-        email=email,
-        password="1234",
-        gender=User.MALE,
-        age=33,
-        mother_tongue="french",
-        other_language="english",
-        condition=Condition.TEST
-    )
+        User.objects.filter(email=email).delete()
 
-    if user is not None:
-        print("Success!")
-    else:
-        raise ValueError("Error! User already exist!")
+        user = sign_up(
+            email=email,
+            password="1234",
+            gender=User.MALE,
+            age=33,
+            mother_tongue="french",
+            other_language="english",
+            condition=condition
+        )
+
+        if user is not None:
+            print("Success!")
+        else:
+            raise ValueError("Error! User already exist!")
 
 
 if __name__ == "__main__":

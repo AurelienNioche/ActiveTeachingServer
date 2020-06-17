@@ -7,7 +7,6 @@ from . meaning import Meaning
 class Kanji(models.Model):
 
     value = models.TextField()  # Field name made lowercase.
-
     meaning = models.ForeignKey(Meaning, on_delete=models.CASCADE)
 
     class Meta:

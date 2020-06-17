@@ -8,9 +8,9 @@ import requests
 import json
 
 # from teaching_material.db_operation import fill_kanji_table
-from ActiveTeachingServer.credentials import \
-    EMAIL_HOST_USER, \
-    EMAIL_HOST_PASSWORD
+# from ActiveTeachingServer.credentials import \
+#     EMAIL_HOST_USER, \
+#     EMAIL_HOST_PASSWORD
 from ActiveTeachingServer.settings import DATABASES
 from teaching_material.models import WaniKani, Kanji, Meaning
 from learner.models.user import User
@@ -78,7 +78,7 @@ def import_from_wk():
             m = Meaning.objects.create(meaning=e.meaning[0])
 
         new_entries.append(Kanji(
-            kanji=e.character,
+            value=e.character,
             meaning=m
         ))
 
@@ -96,10 +96,8 @@ def main():
 
     import_from_wk()
 
-    User.objects.create_superuser(f'{EMAIL_HOST_USER}',
-                                  f'{EMAIL_HOST_PASSWORD}')
-
-
+    # User.objects.create_superuser(f'{EMAIL_HOST_USER}',
+    #                               f'{EMAIL_HOST_PASSWORD}')
 
 if __name__ == "__main__":
     main()
