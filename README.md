@@ -156,10 +156,10 @@ and their compound words. Psychological Research, 81, 696-708.
 * Create a virtual environment
 
         sudo apt-get install virtualenv
-        cd <code>
+        cd ActiveTeachingServer
         virtualenv -p python3 venv
         source venv/bin/activate
-        pip install ...
+        pip install -r requirements.txt
     
 * Install Apache2
 
@@ -198,7 +198,7 @@ and their compound words. Psychological Research, 81, 696-708.
         User=www-data
         WorkingDirectory=/var/www/html/ActiveTeachingServer
         ExecStart=/var/www/html/ActiveTeachingServer/venv/bin/python /var/www/html/ActiveTeachingServer/venv/bin/daphne -p 8001 ActiveTeachingServer.asgi:application
-        Restart=on-failure
+        Restart=always
         
         [Install]
         WantedBy=multi-user.target
@@ -211,3 +211,18 @@ and their compound words. Psychological Research, 81, 696-708.
 Permission errors:
 
     sudo chmod -R o+rwx /directory
+    
+    
+Build Unity
+
+Buid Settings -> Build -> Save as 'Builds'
+Structure is 
+Builds
+-> Build/
+-> index.html
+-> TemplateData/
+-> UnityLoader.js
+
+
+Be careful that the address is of the form ws://<domain>/
+(no port)
