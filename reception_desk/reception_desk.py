@@ -18,7 +18,6 @@ class Subject:
 
 def treat_request(r):
 
-    a = 1/0
     if r["subject"] == Subject.LOGIN:
         user = learner.authentication.login(email=r["email"],
                                             password=r["password"])
