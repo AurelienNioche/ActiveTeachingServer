@@ -170,12 +170,12 @@ EMAIL_PORT = 587
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    # 'formatters': {
-    #     'verbose': {
-    #         'format': '{levelname} {asctime} {message}',
-    #         'style': '{',
-    #     },
-    # },
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {message}',
+            'style': '{',
+        },
+    },
     # 'filters': {
     #     'require_debug_false': {
     #         '()': 'django.utils.log.RequireDebugFalse',
@@ -190,23 +190,23 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': 'django-debug.log',   # os.path.join('tmp', 'django-debug.log'),
-            # 'formatter': 'verbose'
+            'formatter': 'verbose'
         },
         'file_error': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
             'filename': 'django-error.log',   # os.path.join('tmp', 'django-error.log'),
-            # 'formatter': 'verbose'
+            'formatter': 'verbose'
         },
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            # 'formatter': 'verbose'
-        }
+        # 'console': {
+        #     'level': 'DEBUG',
+        #     'class': 'logging.StreamHandler',
+        #     'formatter': 'verbose'
+        # }
     },
     'loggers': {
         'django': {
-            'handlers': ['file', 'console', 'file_error'],
+            'handlers': ['file', 'file_error'],
             'propagate': True,
             'level': 'INFO'
         },
@@ -216,12 +216,12 @@ LOGGING = {
         #     'level': 'INFO'
         # },
         'django.request': {
-            'handlers': ['file', 'console', 'file_error'],
+            'handlers': ['file', 'file_error'],
             'level': 'ERROR',
             'propagate': True,
         },
         'django.security': {
-            'handlers': ['file', 'console', 'file_error'],
+            'handlers': ['file', 'file_error'],
             'level': 'ERROR',
             'propagate': True,
         },
@@ -242,6 +242,5 @@ LOGGING = {
 # SECURE_SSL_REDIRECT = True
 # SESSION_COOKIE_SECURE = True
 # SECURE_REFERRER_POLICY = 'no-referrer'
-#
-# DEBUG_PROPAGATE_EXCEPTIONS = True
+
 # SECURE_HSTS_SECONDS = 60
