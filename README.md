@@ -11,16 +11,24 @@ Instructions are given for MacOS (unless specified otherwise), using homebrew pa
 
     brew install python3
 
+Version used:
+- Python 3.7.7
+
 #### Python libraries
 
-* django
-* psycopg2-binary (interaction with postgreSQL)
-* channels (for websockets)
-* websocket-client (only for using the 'bot_client.py' script)
-* pyGPGO 
-* gensim
+    pip3 install -r requirements.txt
 
-    pip3 install django psycopg2-binary channels websocket-client
+Version used:
+
+- pytz=2020.1
+- python-dateutil=2.8.1
+- Django=3.0.7
+- numpy=1.18.5
+- pandas=1.0.4
+- scipy=1.4.1
+- websocket-client=0.57.0
+- requests=2.23.0
+- channels=2.4.0
 
 
 #### PostgreSQL (MacOS)
@@ -43,20 +51,25 @@ OR if you don't want/need a background service:
 #### PostgreSQL (GNU/Linux)
 
 (Skip this if you are on MacOS)
+Install postgresql
 
-Check the ArchWiki (https://wiki.archlinux.org/index.php/PostgreSQL). In short:
+For Arch: https://wiki.archlinux.org/index.php/PostgreSQL
 
-Install the postgresql package. It will also create a system user called postgres.
+Make sure:
+- you run commands starting with "$" as your normal/super user
+ - you run commands starting by "[postgres]" as postgres
 
-*Make sure you run commands starting with "$" as your normal/super user and those starting by "[postgres]" as postgres (use "sudo -iu postgres" and "exit" to swap between the two)*
-
-Switch to the PostgreSQL user:
+Switch to the user 'postgres':
 
     $ sudo -iu postgres
+    
+Switch bak
+
+    postgres:$ exit
 
 Initialize the database:
 
-    [postgres]$ initdb -D /var/lib/postgres/data
+    postgres:$ initdb -D /var/lib/postgres/data
 
 Start the postgresql service:
 
@@ -75,15 +88,30 @@ Create user 'postgres' if it doesn't exist
     
     createuser postgres
 
-Create a database named 'ActiveTeaching'
+Create a database named 'ActiveTeachingServer'
 
-    createdb ActiveTeaching --owner postgres
+    createdb ActiveTeachingServer --owner postgres
 
 #### Django
 
 Move to the directory containing this script
 
     cd <path to the parent folder>/ActiveTeachingServer
+    
+Create a "credential.py" script
+
+    nano ActiveTeachingServer/credentials.py
+
+It should look like:
+    
+    SECRET_KEY = '<one arbirary combinaton of characters>'
+
+    DB_NAME = 'ActiveTeachingServer'
+    DB_USER = 'postgres'
+    DB_PASSWORD = ''
+    
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
 
 Prepare the DB (make migrations and migrate)
 
@@ -116,10 +144,6 @@ Run Django server using the Django command
 
 #### Kanji table modifications
 
-To make a backup from the kanji table, run:
-
-    python3 db_backup_kanji_table
-
 To load kanji table from the backup, run:
 
     python 3 db_prepare.py
@@ -144,32 +168,43 @@ Remove the db
     
 #### Sources
 
-*  Kanji database
-   
-   Coming from Tamaoka, K., Makioka, S., Sanders, S. & Verdonschot, R.G. (2017). 
-www.kanjidatabase.com: a new interactive online database for psychological and linguistic research on Japanese kanji 
-and their compound words. Psychological Research, 81, 696-708.
+*  Kanji database: wanikani.com
+    
+ 
 
 
 ### Deployment server
 
+* Clone repository in /var/www/html/
+
 * Create a virtual environment
 
+
         sudo apt-get install virtualenv
-        cd ActiveTeachingServer
+        cd /var/www/html/ActiveTeachingServer
         virtualenv -p python3 venv
         source venv/bin/activate
         pip install -r requirements.txt
+        
+In case of permission errors:
+
+    sudo chmod -R o+rwx /var
     
 * Install Apache2
+
 
         sudo apt install apache2 libapache2-mod-wsgi-py3
         a2enmod rewrite
         a2enmod proxy_http
         a2enmod proxy_wstunnel
    
-* Add to apache2 config file (`/etc/apache2/sites-enabled/000-default.conf`) inside `<VirtualHost *:80>`
+* Edit apache2 config file `/etc/apache2/sites-enabled/000-default.conf`:
 
+
+    <VirtualHost *:80>
+    
+        ....
+            
         RewriteEngine on
         RewriteCond %{HTTP:UPGRADE} ^WebSocket$ [NC,OR]
         RewriteCond %{HTTP:CONNECTION} ^Upgrade$ [NC]
@@ -187,7 +222,8 @@ and their compound words. Psychological Research, 81, 696-708.
             </Files>
         </Directory>
     
-* Create Daphne daemon file at `/etc/systemd/system/daphne.service`
+* Create Daphne daemon file `/etc/systemd/system/daphne.service`
+
 
         [Unit]
         Description=ActiveTeaching Daphne Service
@@ -206,23 +242,38 @@ and their compound words. Psychological Research, 81, 696-708.
     * Run `sudo systemctl daemon-reload`
     * `sudo systemctl start daphne.service`
     * Check with `sudo systemctl status daphne.service`
-   
- 
-Permission errors:
-
-    sudo chmod -R o+rwx /directory
     
     
-Build Unity
+### Build Unity
 
-Buid Settings -> Build -> Save as 'Builds'
-Structure is 
-Builds
--> Build/
--> index.html
--> TemplateData/
--> UnityLoader.js
+Do a build for Unity:
+
+    Build Settings -> Build -> Save as 'Builds'
+
+Structure is: 
+
+    Builds
+    -> Build/
+    -> index.html
+    -> TemplateData/
+    -> UnityLoader.js
+
+Be careful that the address is of the following form (don't include the port):
+    
+    ws://<domain>/
 
 
-Be careful that the address is of the form ws://<domain>/
-(no port)
+### Architecture server
+
+    /var/www/html/
+    -> ActiveTeachingServer
+    -> Build
+    -> index.html
+    -> TemplateData
+    -> UnityLoader.js
+
+
+### List of config files
+- /etc/apache2/sites-enabled/000-default.conf
+- /etc/systemd/system/daphne.service
+- /var/www/html/ActiveTeachingServer/credentials.py

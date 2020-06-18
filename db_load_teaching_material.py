@@ -7,13 +7,8 @@ application = get_wsgi_application()
 import requests
 import json
 
-# from teaching_material.db_operation import fill_kanji_table
-# from ActiveTeachingServer.credentials import \
-#     EMAIL_HOST_USER, \
-#     EMAIL_HOST_PASSWORD
 from ActiveTeachingServer.settings import DATABASES
 from teaching_material.models import WaniKani, Kanji, Meaning
-from learner.models.user import User
 
 
 DB_NAME = DATABASES['default']['NAME']
@@ -87,17 +82,8 @@ def import_from_wk():
 
 def main():
 
-    os.system('find . -path "*/migrations/*.py" -not -name "__init__.py" -delete')
-    os.system('find . -path "*/migrations/*.pyc" -delete')
-
-    os.system(f"createdb {DB_NAME} --owner postgres")
-    os.system("python3 manage.py makemigrations")
-    os.system("python3 manage.py migrate")
-
     import_from_wk()
 
-    # User.objects.create_superuser(f'{EMAIL_HOST_USER}',
-    #                               f'{EMAIL_HOST_PASSWORD}')
 
 if __name__ == "__main__":
     main()
