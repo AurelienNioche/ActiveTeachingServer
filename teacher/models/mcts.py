@@ -189,7 +189,8 @@ class MCTSTeacher(models.Model):
             delta_timestep[:remain] = \
                 np.ones(remain) * self.time_per_iter
             next_ss = h - remain
-            delta_timestep[remain:] = dt + np.arange(next_ss) * self.time_per_iter
+            delta_timestep[remain:] = \
+                dt + np.arange(next_ss) * self.time_per_iter
 
             assert h - remain <= ss_n_iter, "case not handled!"
 
