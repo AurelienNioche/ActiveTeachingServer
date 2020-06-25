@@ -166,17 +166,11 @@ class MCTSTeacher(models.Model):
         ss_it = session.iter
         remain = ss_n_iter - ss_it
 
-        print("iter", self.iter)
-        print("horizon", self.horizon)
-
         if self.iter < self.horizon:
             h = self.horizon - self.iter
         else:
             self.iter = 0
             h = self.horizon
-
-        print("iter", self.iter)
-        print("h", h)
 
         if remain > h:
             delta_timestep = np.ones(h, dtype=int) * self.time_per_iter
