@@ -178,13 +178,13 @@ class MCTSTeacher(models.Model):
             delta_timestep = np.zeros(h, dtype=int)
             dt = session.next_available_time - timezone.now()
             time_to_complete = remain * self.time_per_iter
-            dt = max(time_to_complete + self.time_per_iter,
+            dt = max(time_to_complete,
                      dt.total_seconds() - time_to_complete)
             delta_timestep[:remain] = \
-                np.ones(remain) * self.time_per_iter
+                np.ones(remain, dtype=int) * self.time_per_iter
             next_ss = h - remain
             delta_timestep[remain:] = \
-                dt + np.arange(next_ss) * self.time_per_iter
+                dt + np.ones(next_ss) * self.time_per_iter
 
             assert h - remain <= ss_n_iter, "case not handled!"
 
