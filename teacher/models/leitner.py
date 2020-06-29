@@ -11,7 +11,7 @@ from learner.models.user import User
 
 class LeitnerManager(models.Manager):
 
-    def create(self, material, delay_factor, user):
+    def create(self, material, delay_factor, delay_min, user):
 
         n_item = material.count()
         id_items = [m.id for m in material]
@@ -22,6 +22,7 @@ class LeitnerManager(models.Manager):
                              id_items=id_items,
                              box=box,
                              due=due,
+                             delay_min=delay_min,
                              delay_factor=delay_factor,
                              user=user)
 
@@ -36,6 +37,7 @@ class Leitner(models.Model):
                                 primary_key=True)
 
     delay_factor = models.IntegerField()
+    delay_min = models.IntegerField()
 
     material = models.ManyToManyField(Kanji,
                                       related_name="leitner_material")
@@ -61,10 +63,10 @@ class Leitner(models.Model):
             self.box[last_idx] = \
                 max(0, self.box[last_idx] - 1)
 
-        delay = self.delay_factor ** self.box[last_idx]
+        delay = self.delay_min * self.delay_factor ** self.box[last_idx]
         # Delay is 1, 2, 4, 8, 16, 32, 64, 128, 256, 512 ... minutes
         self.due[last_idx] = \
-            last_time_reply + datetime.timedelta(minutes=delay)
+            last_time_reply + datetime.timedelta(seconds=delay)
 
     def _pickup_item(self):
 

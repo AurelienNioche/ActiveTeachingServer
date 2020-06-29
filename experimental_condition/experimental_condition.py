@@ -22,11 +22,18 @@ def user_creation(user):
     bounds = ((0.001, 0.04), (0.2, 0.5))
     grid_size = 20
 
+    mcts_horizon = 10
+    mcts_time_limit = None
+
+    leitner_delay_factor = 2
+    leitner_delay_min = 2
+
     if user.condition == Condition.LEITNER:
 
         Leitner.objects.create(user=user,
                                material=material,
-                               delay_factor=2)
+                               delay_factor=leitner_delay_factor,
+                               delay_min=leitner_delay_min)
 
     elif user.condition == Condition.THRESHOLD:
         is_item_specific = False
@@ -54,8 +61,8 @@ def user_creation(user):
                                    grid_size=grid_size,
                                    is_item_specific=is_item_specific,
                                    iter_limit=500,
-                                   time_limit=None,
-                                   horizon=10,
+                                   time_limit=mcts_time_limit,
+                                   horizon=mcts_horizon,
                                    time_per_iter=2)
 
     elif user.condition == Condition.MCTS_ITEM_SPECIFIC:
