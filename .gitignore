@@ -129,3 +129,9 @@ data/word2vec/word_vectors/
 
 # Credentials
 ActiveTeachingServer/credentials.py
+
+# MacOs file
+.DS_Store
+teacher/.DS_Store
+teaching_material/.DS_Store
+

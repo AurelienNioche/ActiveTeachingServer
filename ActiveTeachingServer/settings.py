@@ -28,9 +28,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["activeteaching.research.comnet.aalto.fi",
-                 "127.0.0.1"]
-
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "activeteaching.research.comnet.aalto.fi"]
 
 # Application definition
 
@@ -78,23 +78,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ActiveTeachingServer.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ActiveTeachingServer',
-        'USER': 'postgres',
-        'PASSWORD': '',
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
         'HOST': '',
         'PORT': '5432',
         # 'ATOMIC_REQUESTS': True,
@@ -112,7 +101,7 @@ if 'test' in sys.argv:
         'PORT': '5432',
         'CONN_MAX_AGE': None
     # 'ATOMIC_REQUESTS': True,
-    }
+}
 
 
 # Password validation

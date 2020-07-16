@@ -142,13 +142,20 @@ Run Django server using the Django command
 
 ## Extra information
 
+#### Load specific session
+
+Run:
+
+    python3 db_load_xp_session.py
+
+
 #### Kanji table modifications
 
 To load kanji table from the backup, run:
 
     python 3 db_prepare.py
 
-#### User data modifications
+#### Load experimental session
 
 To make a backup of the user data, run:
 
