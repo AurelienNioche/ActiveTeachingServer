@@ -26,15 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECRET_KEY = 'u9syfm&2lrnemk&5vvi8wib1m^j=!anb@y%a^nnl2(qakn*m&@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-<<<<<<< HEAD
 DEBUG = False
-=======
-DEBUG = True
-
-ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "activeteaching.research.comnet.aalto.fi"]
->>>>>>> master
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
@@ -89,22 +81,15 @@ WSGI_APPLICATION = 'ActiveTeachingServer.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-<<<<<<< HEAD
         'NAME': DB_NAME,
         'USER': DB_USER,
         'PASSWORD': DB_PASSWORD,
-=======
-        'NAME': 'ActiveTeachingPilot_2019_09_02',
-        'USER': 'postgres',
-        'PASSWORD': '',
->>>>>>> master
         'HOST': '',
         'PORT': '5432',
         # 'ATOMIC_REQUESTS': True,
     },
 }
 
-<<<<<<< HEAD
 # Keep the default database when testing
 if 'test' in sys.argv:
     DATABASES['default'] = {
@@ -117,20 +102,6 @@ if 'test' in sys.argv:
         'CONN_MAX_AGE': None
     # 'ATOMIC_REQUESTS': True,
 }
-=======
-# # Keep the default database when testing
-# if 'test' in sys.argv:
-#     DATABASES['default'] = {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'ActiveTeaching',
-#         'USER': 'postgres',
-#         'PASSWORD': '',
-#         'HOST': '',
-#         'PORT': '5432',
-#         # 'ATOMIC_REQUESTS': True,
-#     }
->>>>>>> master
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
