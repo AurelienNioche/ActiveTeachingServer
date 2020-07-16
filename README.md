@@ -147,6 +147,12 @@ Run Django server using the Django command
 Run:
 
     python3 db_load_xp_session.py
+<<<<<<< HEAD
+=======
+
+
+#### Kanji table modifications
+>>>>>>> master
 
 
 #### Kanji table modifications
