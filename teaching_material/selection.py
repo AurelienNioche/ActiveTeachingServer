@@ -2,43 +2,30 @@ import numpy as np
 
 from teaching_material.models import Kanji
 
-try:
-    kanji, meaning = \
-        np.array(
-            Kanji.objects.values_list('kanji', 'meaning').order_by('index')
-        ).T
 
-    unique_meaning, ___idx___, __inverse__ = np.unique(meaning,
-                                                       return_index=True,
-                                                       return_inverse=True)
+class JapaneseMaterial:
 
-    id_kanji = np.arange(len(kanji))
-    id_meaning = id_kanji[___idx___][__inverse__]
+    KANJI = Kanji.objects.all().order_by('id')
+    KANJI_ID = np.array([k.id for k in KANJI])
 
-except:
-    print("Cannot load the database content")
-    kanji = None
-    meaning = None
+    MEANING = np.array([k.meaning.meaning for k in KANJI])
+    MEANING_ID = np.array([k.meaning.id for k in KANJI])
 
-# assert len(id_kanji) == len(id_meaning)
-# for i in range(len(id_kanji)):
-#     assert meaning[id_meaning[i]] == meaning[i]
+    N_ITEM = len(KANJI)
 
-# print(kanji)
-# print(meaning)
+    @classmethod
+    def total_number_of_items(cls):
+        return cls.N_ITEM
 
+    @classmethod
+    def get_string_representation(cls, id_question, id_possible_replies):
 
-def total_number_of_items():
-    return Kanji.objects.count()
+        question = cls.KANJI[id_question]
+        possible_replies = [cls.KANJI[i] for i in id_possible_replies]
+        return question, possible_replies
 
+    @classmethod
+    def get_id(cls):
 
-def get_string_representation(id_question, id_possible_replies):
+        return cls.KANJI_ID, cls.MEANING_ID
 
-    question = kanji[id_question]
-    possible_replies = [meaning[i] for i in id_possible_replies]
-    return question, possible_replies
-
-
-def get_id():
-
-    return id_kanji, id_meaning

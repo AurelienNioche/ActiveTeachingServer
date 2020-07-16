@@ -24,7 +24,7 @@ class Learner:
             reply = np.random.choice(possible_replies)
 
         # if self.verbose:
-        #     print(f't={self.t}: question {item}, reply {reply}')
+        #     print(f't={self.t}: kanji {item}, reply {reply}')
         return reply
 
     def learn(self, item, time=None, success=None):

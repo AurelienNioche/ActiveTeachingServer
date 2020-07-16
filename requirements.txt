@@ -1,0 +1,9 @@
+pytz
+python-dateutil
+Django
+numpy
+pandas
+scipy
+websocket-client
+requests
+channels
