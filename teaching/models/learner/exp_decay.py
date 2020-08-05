@@ -1,0 +1,109 @@
+from django.db import models
+from django.contrib.postgres.fields import ArrayField
+
+import numpy as np
+from scipy.special import logsumexp
+
+EPS = np.finfo(np.float).eps
+
+
+class ExpDecayManager(models.Manager):
+
+    def create(self, n_item, bounds, grid_size, is_item_specific):
+
+        n_pres = np.zeros(n_item, dtype=int)
+        last_pres = [None for _ in range(n_item)]
+
+        obj = super().create(
+            seen=list(np.zeros(n_item)),
+            n_pres=list(n_pres),
+            last_pres=last_pres,
+            n_item=n_item)
+        return obj
+
+
+class ExpDecay(models.Model):
+
+    n_item = models.IntegerField()
+
+    seen = ArrayField(models.BooleanField(), default=list)
+    ts = ArrayField(models.BigIntegerField(), default=list)
+    hist = ArrayField(models.IntegerField(), default=list)
+
+    n_seen = models.IntegerField(default=0)
+    seen_item = ArrayField(models.IntegerField(), default=list)
+
+    n_pres = ArrayField(models.IntegerField(), default=list)
+    last_pres = ArrayField(models.BigIntegerField(), default=list)
+
+    objects = ExpDecayManager()
+
+    def p_seen(self, param, now):
+
+        seen = self.n_pres >= 1
+
+        if len(param.shape) > 1:  # Is item specific
+            init_forget = param[seen, 0]
+            rep_effect = param[seen, 1]
+        else:
+            init_forget, rep_effect = param
+
+        fr = init_forget * (1 - rep_effect) ** (self.n_pres[seen] - 1)
+
+        last_pres = self.last_pres[seen]
+        delta = now - last_pres
+
+        p = np.exp(-fr * delta)
+        return p, seen
+
+    def p_seen_spec_hist(self, param, now, hist, ts):
+
+        seen = np.zeros(self.n_item, dtype=bool)
+        seen[np.unique(hist)] = True
+
+        if len(param.shape) > 1:  # Is item specific
+            init_forget = param[seen, 0]
+            rep_effect = param[seen, 1]
+        else:
+            init_forget, rep_effect = param
+
+        seen_item = sorted(np.flatnonzero(seen))
+        n_pres = np.zeros(len(seen))
+        last_pres = np.zeros(len(seen))
+        for i, item in enumerate(seen_item):
+            is_item = hist == item
+            n_pres = np.sum(is_item)
+            last_pres[i] = np.max(ts[is_item])
+
+        fr = init_forget * (1-rep_effect) ** (n_pres[seen] - 1)
+
+        delta = now - last_pres
+        p = np.exp(-fr * delta)
+        return p, seen
+
+    def log_lik_grid(self, item, grid_param, response, timestamp):
+
+        fr = grid_param[:, 0] \
+            * (1 - grid_param[:, 1]) ** (self.n_pres[item] - 1)
+
+        delta = timestamp - self.last_pres[item]
+        p_success = np.exp(- fr * delta)
+
+        p = p_success if response else 1 - p_success
+
+        log_lik = np.log(p + EPS)
+        return log_lik
+
+    def update(self, idx_last_q, last_time_reply):
+
+        self.last_pres[idx_last_q] = last_time_reply
+        self.n_pres[idx_last_q] += 1
+
+        self.seen[idx_last_q] = True
+        self.hist.append(idx_last_q)
+        self.ts.append(last_time_reply)
+
+        self.n_seen = np.sum(self.seen)
+        self.seen_item = np.flatnonzero(self.seen)
+
+        self.save()

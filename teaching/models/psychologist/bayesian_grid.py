@@ -1,58 +1,12 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from django.utils import timezone
 
 import numpy as np
 from scipy.special import logsumexp
 from itertools import product
-import pandas as pd
+
 
 EPS = np.finfo(np.float).eps
-
-
-class Learner:
-
-    @classmethod
-    def p_seen(cls, param, n_pres, is_item_specific, last_pres=None, now=None,
-               delta=None):
-
-        seen = n_pres >= 1
-
-        if is_item_specific:
-            init_forget = param[seen, 0]
-            rep_effect = param[seen, 1]
-        else:
-            init_forget, rep_effect = param
-
-        fr = init_forget * (1-rep_effect) ** (n_pres[seen] - 1)
-        if delta is None:
-            last_pres = last_pres[seen]
-            delta_series = now - last_pres
-            delta = delta_series.dt.total_seconds()
-        else:
-            delta = delta[seen]
-        p = np.exp(-fr * delta)
-        return p, seen
-
-    @classmethod
-    def log_lik(cls, item, grid_param, response, timestamp,
-                n_pres, last_pres):
-
-        fr = grid_param[:, 0] \
-            * (1 - grid_param[:, 1]) ** (n_pres[item] - 1)
-
-        delta = (timestamp - last_pres[item]).total_seconds()
-        p_success = np.exp(- fr * delta)
-
-        if response == 1:
-            p = p_success
-        elif response == 0:
-            p = 1 - p_success
-        else:
-            raise ValueError
-
-        log_lik = np.log(p + EPS)
-        return log_lik
 
 
 class PsychologistManager(models.Manager):
@@ -73,17 +27,12 @@ class PsychologistManager(models.Manager):
         else:
             log_post = lp
 
-        n_pres = np.zeros(n_item, dtype=int)
-        last_pres = [None for _ in range(n_item)]
-
         obj = super().create(
             log_post=list(log_post),
             grid_param=list(grid_param),
-            last_pres=last_pres,
             n_param=len(bounds),
             n_item=n_item,
             bounds=list(np.asarray(bounds).flatten()),
-            n_pres=list(n_pres),
             is_item_specific=is_item_specific
         )
         return obj
@@ -104,27 +53,28 @@ class Psychologist(models.Model):
 
     n_item = models.IntegerField()
     n_param = models.IntegerField()
-    n_pres = ArrayField(models.IntegerField(), default=list)
-    is_item_specific = models.BooleanField()
-    last_pres = ArrayField(models.DateTimeField(null=True), default=list)
+
     bounds = ArrayField(models.FloatField(), default=list)
+
+    is_item_specific = models.BooleanField()
 
     objects = PsychologistManager()
 
-    def update(self, item, response, timestamp):
+    def update(self, learner, idx_last_q, last_was_success, last_time_reply):
 
-        if self.n_pres[item] == 0:
+        item = idx_last_q
+        response = last_was_success
+        timestamp = last_time_reply
+
+        if learner.seen[item] == 0:
             pass
         else:
             gp = np.reshape(self.grid_param, (-1, self.n_param))
-            log_lik = Learner.log_lik(
+            log_lik = learner.log_lik_grid(
                 item=item,
                 grid_param=gp,
                 response=response,
-                timestamp=timestamp,
-                n_pres=np.asarray(self.n_pres),
-                last_pres=pd.Series(self.last_pres)
-            )
+                timestamp=timestamp)
 
             # Update prior
             if self.is_item_specific:
@@ -140,19 +90,9 @@ class Psychologist(models.Model):
                 lp -= logsumexp(lp)
                 self.log_post = list(lp)
 
-        self.last_pres[item] = timestamp
-        self.n_pres[item] += 1
         self.save()
 
-    def p_seen(self):
-        param = self.inferred_learner_param()
-        return Learner.p_seen(param=param,
-                              n_pres=np.asarray(self.n_pres),
-                              last_pres=pd.Series(self.last_pres),
-                              is_item_specific=self.is_item_specific,
-                              now=timezone.now())
-
-    def inferred_learner_param(self):
+    def inferred_learner_param(self, learner):
 
         gp = np.reshape(self.grid_param, (-1, self.n_param))
         if self.is_item_specific:
@@ -160,13 +100,12 @@ class Psychologist(models.Model):
             param = np.zeros((self.n_item, self.n_param))
             param[:] = self.get_init_guess()
             lp = np.reshape(self.log_post, (self.n_item, -1))
-            rep = np.asarray(self.n_pres) > 1
+            rep = np.asarray(learner.seen)
             param[rep] = gp[lp[rep].argmax(axis=-1)]
         else:
-            if np.max(self.n_pres) <= 1:
-                param = self.get_init_guess()
-            else:
-                param = gp[np.argmax(self.log_post)]
+            param = gp[np.argmax(self.log_post)] \
+                if np.sum(learner.seen) \
+                else self.get_init_guess()
 
         return param
 

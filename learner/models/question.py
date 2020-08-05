@@ -3,9 +3,7 @@ from django.db import models
 from utils.time import string_to_datetime
 import numpy as np
 
-from teacher.models.leitner import Leitner
-from teacher.models.threshold import Threshold
-from teacher.models.mcts import MCTSTeacher
+from teaching.models.teaching_engine import TeachingEngine
 from teaching_material.models import Kanji, Meaning
 from learner.models.user import User
 from . session import Session
@@ -13,21 +11,12 @@ from . session import Session
 
 class QuestionManager(models.Manager):
 
-    def create(self, teacher, session, item, new, possible_replies):
-
-        if isinstance(teacher, Leitner):
-            teacher_entry = {"leitner": teacher}
-        elif isinstance(teacher, Threshold):
-            teacher_entry = {"threshold": teacher}
-        elif isinstance(teacher, MCTSTeacher):
-            teacher_entry = {"mcts": teacher}
-        else:
-            raise ValueError
+    def create(self, teaching_engine, session, item, new, possible_replies):
 
         obj = super().create(
             session=session,
             item=item,
-            new=new, **teacher_entry)
+            new=new, teaching_engine=teaching_engine)
 
         obj.possible_replies.set(possible_replies)
         return obj
@@ -40,12 +29,8 @@ class Question(models.Model):
     # Set at the moment of the creation ----------------------------------
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
-    leitner = models.ForeignKey(Leitner,
-                                on_delete=models.CASCADE, null=True)
-    threshold = models.ForeignKey(Threshold,
-                                  on_delete=models.CASCADE, null=True)
-    mcts = models.ForeignKey(MCTSTeacher,
-                             on_delete=models.CASCADE, null=True)
+    teaching_engine = models.ForeignKey(TeachingEngine,
+                                        on_delete=models.CASCADE, null=True)
 
     session = models.ForeignKey(Session, on_delete=models.CASCADE, null=True)
     item = models.ForeignKey(Kanji, on_delete=models.SET_NULL, null=True)
@@ -90,37 +75,28 @@ class Question(models.Model):
         else:
 
             session = Session.get_user_session(user=user)
-            if session.leitner is not None:
-                teacher = session.leitner
-
-            elif session.threshold is not None:
-                teacher = session.threshold
-
-            elif session.mcts is not None:
-                teacher = session.mcts
-
-            else:
-                raise Exception
+            teaching_engine = session.teaching_engine
 
             question = \
-                teacher.question_set.filter(user_reply=None).first()
+                teaching_engine.question_set.filter(user_reply=None).first()
 
             if question is None:
-                item = teacher.ask()
+                item = teaching_engine.ask()
                 hist_question = \
-                    teacher.question_set.exclude(user_reply=None)
+                    teaching_engine.question_set.exclude(user_reply=None)
 
                 new = hist_question.filter(item=item).count() == 0
 
-                possible_replies = cls.get_possible_replies(teacher=teacher,
-                                                            item=item)
+                possible_replies = \
+                    cls.get_possible_replies(teaching_engine=teaching_engine,
+                                             item=item)
 
-                current_session = \
-                    teacher.user.session_set.filter(close=False).first()
+                # current_session = \
+                #     teacher.user.session_set.filter(close=False).first()
 
                 question = cls.objects.create(
-                    teacher=teacher,
-                    session=current_session,
+                    teaching_engine=teaching_engine,
+                    session=session,
                     item=item,
                     new=new,
                     possible_replies=possible_replies,
@@ -129,17 +105,17 @@ class Question(models.Model):
         return question
 
     @classmethod
-    def get_possible_replies(cls, item, teacher):
+    def get_possible_replies(cls, item, teaching_engine):
 
         """
         Select randomly possible replies, including the correct one
         """
 
         id_correct_reply = item.meaning.id
-        id_replies = teacher.material.values_list("meaning__id",
-                                                  flat=True)
-        hist_id_reply = teacher.question_set.values_list("user_reply__id",
-                                                         flat=True)
+        id_replies = teaching_engine.material.values_list(
+            "meaning__id", flat=True)
+        hist_id_reply = teaching_engine.question_set.values_list(
+            "user_reply__id", flat=True)
 
         for i in hist_id_reply:
             assert i in id_replies, i

@@ -11,9 +11,9 @@ class Condition:
 
 def user_creation(user):
 
-    from teacher.models.leitner import Leitner
-    from teacher.models.threshold import Threshold
-    from teacher.models.mcts import MCTSTeacher
+    from teaching.models.teacher.leitner import Leitner
+    from teaching.models.teacher.threshold import Threshold
+    from teaching.models.teacher.mcts import MCTSTeacher
     from teaching_material.models import Kanji
 
     material = Kanji.objects.all()[0:50]

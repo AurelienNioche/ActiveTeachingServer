@@ -35,7 +35,8 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
-    'teacher.apps.TeacherConfig',
+    'experimental_condition.apps.ExperimentalConditionConfig'
+    'teaching.apps.TeachingConfig',
     'learner.apps.UserConfig',
     'teaching_material.apps.TeachingMaterialConfig',
     'reception_desk.apps.TaskConfig',
