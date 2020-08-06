@@ -17,3 +17,4 @@ def create_super_user():
 
 if __name__ == "__main__":
     create_super_user()
+    print("Done!")

@@ -1,9 +1,10 @@
 from django.utils import timezone
 
 from learner.models.user import User
-from learner.models.session import Session
 from learner.models.question import Question
 import learner.authentication
+
+from experimental_condition.models.session import Session
 
 from utils.time import datetime_to_sting
 

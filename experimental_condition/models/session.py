@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 
 from learner.models.user import User
+from teaching.models.teaching_engine import TeachingEngine
 
 from experimental_condition import experimental_condition
 
@@ -15,6 +16,9 @@ class Session(models.Model):
     next_available_time = models.DateTimeField()
     n_iteration = models.IntegerField()
     close = models.BooleanField(default=False)
+
+    teaching_engine = models.ForeignKey(TeachingEngine,
+                                        on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'session'

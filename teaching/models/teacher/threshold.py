@@ -1,9 +1,13 @@
 from django.db import models
 
+from learner.models.user import User
+
 import numpy as np
 
 
 class Threshold(models.Model):
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     n_item = models.IntegerField()
     learnt_threshold = models.FloatField()

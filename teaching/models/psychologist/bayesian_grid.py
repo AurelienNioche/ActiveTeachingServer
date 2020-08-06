@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
+from learner.models.user import User
+
 import numpy as np
 from scipy.special import logsumexp
 from itertools import product
@@ -11,7 +13,7 @@ EPS = np.finfo(np.float).eps
 
 class PsychologistManager(models.Manager):
 
-    def create(self, n_item, bounds, grid_size, is_item_specific):
+    def create(self, user, n_item, bounds, grid_size, is_item_specific):
 
         grid_param = self.cp_grid_param(grid_size=grid_size,
                                         bounds=bounds)
@@ -28,6 +30,7 @@ class PsychologistManager(models.Manager):
             log_post = lp
 
         obj = super().create(
+            user=user,
             log_post=list(log_post),
             grid_param=list(grid_param),
             n_param=len(bounds),
@@ -48,6 +51,8 @@ class PsychologistManager(models.Manager):
 
 class Psychologist(models.Model):
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
     grid_param = ArrayField(models.FloatField(), default=list)
     log_post = ArrayField(models.FloatField(), default=list)
 
@@ -59,6 +64,11 @@ class Psychologist(models.Model):
     is_item_specific = models.BooleanField()
 
     objects = PsychologistManager()
+
+    class Meta:
+
+        db_table = 'psychologist'
+        app_label = 'teaching'
 
     def update(self, learner, idx_last_q, last_was_success, last_time_reply):
 

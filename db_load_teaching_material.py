@@ -12,6 +12,7 @@ from teaching_material.models import WaniKani, Kanji, Meaning
 
 
 DB_NAME = DATABASES['default']['NAME']
+os.makedirs("data", exist_ok=True)
 WK_BKP = os.path.join('data', 'wanikani.json')
 
 
@@ -42,7 +43,7 @@ def create_wk_entries():
     entries = []
     for d in data['requested_information']:
         d.pop("user_specific", None)
-        for k in ("meaning","onyomi", "kunyomi", "nanori"):
+        for k in ("meaning", "onyomi", "kunyomi", "nanori"):
             if d[k] is None:
                 d.pop(k)
             else:
@@ -83,6 +84,7 @@ def import_from_wk():
 def main():
 
     import_from_wk()
+    print("Done!")
 
 
 if __name__ == "__main__":

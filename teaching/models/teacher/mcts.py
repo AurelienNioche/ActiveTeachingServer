@@ -1,5 +1,7 @@
 from django.db import models
 
+from learner.models.user import User
+
 import numpy as np
 
 from . mcts_tools.mcts import MCTS
@@ -95,6 +97,8 @@ class LearnerState:
 
 class MCTSTeacher(models.Model):
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
     n_item = models.IntegerField()
 
     learnt_threshold = models.FloatField()
@@ -110,6 +114,11 @@ class MCTSTeacher(models.Model):
 
     # So need to set them at creation ---
     ss_it = models.IntegerField(default=0)
+
+    class Meta:
+
+        db_table = 'mcts'
+        app_label = 'teaching'
 
     def _revise_goal(self, now):
 

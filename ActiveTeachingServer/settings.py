@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECRET_KEY = 'u9syfm&2lrnemk&5vvi8wib1m^j=!anb@y%a^nnl2(qakn*m&@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
@@ -35,7 +35,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
-    'experimental_condition.apps.ExperimentalConditionConfig'
+    'experimental_condition.apps.ExperimentalConditionConfig',
     'teaching.apps.TeachingConfig',
     'learner.apps.UserConfig',
     'teaching_material.apps.TeachingMaterialConfig',
@@ -187,15 +187,15 @@ LOGGING = {
             'filename': 'django-error.log',   # os.path.join('tmp', 'django-error.log'),
             'formatter': 'verbose'
         },
-        # 'console': {
-        #     'level': 'DEBUG',
-        #     'class': 'logging.StreamHandler',
-        #     'formatter': 'verbose'
-        # }
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        }
     },
     'loggers': {
         'django': {
-            'handlers': ['file', 'file_error'],
+            'handlers': ['console', 'file', 'file_error'],
             'propagate': True,
             'level': 'INFO'
         },
@@ -205,17 +205,17 @@ LOGGING = {
         #     'level': 'INFO'
         # },
         'django.request': {
-            'handlers': ['file', 'file_error'],
+            'handlers': ['console', 'file', 'file_error'],
             'level': 'ERROR',
             'propagate': True,
         },
         'django.security': {
-            'handlers': ['file', 'file_error'],
+            'handlers': ['console', 'file', 'file_error'],
             'level': 'ERROR',
             'propagate': True,
         },
         'daphne': {
-            'handlers': ['file', 'file_error'],
+            'handlers': ['console', 'file', 'file_error'],
             'level': 'DEBUG',
             'propagate': True,
         },

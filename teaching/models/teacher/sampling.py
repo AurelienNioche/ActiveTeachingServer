@@ -1,12 +1,14 @@
 from django.db import models
-from django.contrib.postgres.fields import ArrayField
-from django.utils import timezone
 
 import numpy as np
 import itertools as it
 
+from learner.models.user import User
+
 
 class Sampling(models.Model):
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     n_item = models.IntegerField()
     learnt_threshold = models.FloatField()
@@ -22,6 +24,11 @@ class Sampling(models.Model):
 
     # So need to set them at creation ---
     ss_it = models.IntegerField(default=0)
+
+    class Meta:
+
+        db_table = 'sampling'
+        app_label = 'teaching'
 
     def _revise_goal(self, now):
 

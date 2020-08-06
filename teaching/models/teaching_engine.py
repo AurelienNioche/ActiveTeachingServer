@@ -1,9 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-# from django.utils import timezone
-# import datetime
-#
-# import numpy as np
+from django.utils import timezone
 
 from teaching_material.models import Kanji
 from learner.models.user import User
@@ -13,23 +10,25 @@ from teaching.models.teacher.mcts import MCTSTeacher
 from teaching.models.psychologist.bayesian_grid import Psychologist
 from teaching.models.learner.exp_decay import ExpDecay
 
-from django.utils import timezone
-
 
 class TeachingEngineManager(models.Manager):
 
     def create(self, material, *args, **kwargs):
 
-        obj = super().create(*args, **kwargs)
+        n_item = material.count()
+        id_items = [m.id for m in material]
+
+        obj = super().create(
+            n_item=n_item,
+            id_items=id_items,
+            *args, **kwargs)
         obj.material.set(material)
         return obj
 
 
 class TeachingEngine(models.Model):
 
-    user = models.OneToOneField(User,
-                                on_delete=models.CASCADE,
-                                primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     material = models.ManyToManyField(Kanji,
                                       related_name="teaching_material")
@@ -122,7 +121,7 @@ class TeachingEngine(models.Model):
                                            now=now)
 
             else:
-                question_idx = teacher.ask()
+                question_idx = teacher.ask(now=now)
 
         item = self.material.get(id=self.id_items[question_idx])
 

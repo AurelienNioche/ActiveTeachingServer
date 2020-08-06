@@ -1,7 +1,6 @@
 from django.contrib import admin
 
 from learner.models.user import User
-from learner.models.session import Session
 from learner.models.question import Question
 
 
@@ -13,7 +12,7 @@ class UserAdmin(admin.ModelAdmin):
 
 class QuestionAdmin(admin.ModelAdmin):
     list_display = (
-        "id", "user", "leitner", "item", "correct_reply", "new",
+        "id", "user", "item", "correct_reply", "new",
         "user_reply", "success",
         "time_display", "time_reply", "_possible_replies")
 
@@ -31,12 +30,5 @@ class QuestionAdmin(admin.ModelAdmin):
         return obj.kanji.meaning.meaning
 
 
-class SessionAdmin(admin.ModelAdmin):
-    list_display = (
-        "user", "date_creation", "available_time", "n_iteration", "close")
-
-
 admin.site.register(User, UserAdmin)
 admin.site.register(Question, QuestionAdmin)
-admin.site.register(Session, SessionAdmin)
-

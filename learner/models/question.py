@@ -5,8 +5,10 @@ import numpy as np
 
 from teaching.models.teaching_engine import TeachingEngine
 from teaching_material.models import Kanji, Meaning
+
+from experimental_condition.models.session import Session
+
 from learner.models.user import User
-from . session import Session
 
 
 class QuestionManager(models.Manager):

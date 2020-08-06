@@ -1,28 +1,33 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
+from learner.models.user import User
+
 import numpy as np
-from scipy.special import logsumexp
 
 EPS = np.finfo(np.float).eps
 
 
 class ExpDecayManager(models.Manager):
 
-    def create(self, n_item, bounds, grid_size, is_item_specific):
+    def create(self, user, n_item):
 
-        n_pres = np.zeros(n_item, dtype=int)
+        n_pres = list(np.zeros(n_item, dtype=int))
         last_pres = [None for _ in range(n_item)]
+        seen = list(np.zeros(n_item))
 
         obj = super().create(
-            seen=list(np.zeros(n_item)),
-            n_pres=list(n_pres),
+            user=user,
+            seen=seen,
+            n_pres=n_pres,
             last_pres=last_pres,
             n_item=n_item)
         return obj
 
 
 class ExpDecay(models.Model):
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     n_item = models.IntegerField()
 
@@ -37,6 +42,11 @@ class ExpDecay(models.Model):
     last_pres = ArrayField(models.BigIntegerField(), default=list)
 
     objects = ExpDecayManager()
+
+    class Meta:
+
+        db_table = 'exp_decay'
+        app_label = 'teaching'
 
     def p_seen(self, param, now):
 

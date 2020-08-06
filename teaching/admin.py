@@ -1,37 +1,35 @@
 from django.contrib import admin
 
-from . models import Leitner
-from . models.threshold import Threshold
-from . models.psychologist import Psychologist
-from . models.mcts import MCTSTeacher
+from teaching.models.teacher.leitner import Leitner
+from teaching.models.teacher.threshold import Threshold
+from teaching.models.teacher.mcts import MCTSTeacher
+from teaching.models.teacher.sampling import Sampling
+
+from teaching.models.psychologist.bayesian_grid import Psychologist
+
+from teaching.models.teaching_engine import TeachingEngine
 
 
-# Register your models here.
-class LeitnerAdmin(admin.ModelAdmin):
-    list_display = (
-        "user", "delay_factor", "_material",
-        "n_item", "id_items", "box", "due")
+class TeachingEngineAdmin(admin.ModelAdmin):
+    list_display = [f.name for f in TeachingEngine._meta.fields] + ["_material", ]
 
     @staticmethod
     def _material(obj):
         return ", ".join([m.value for m in obj.material.all()])
+
+
+class LeitnerAdmin(admin.ModelAdmin):
+    list_display = (
+        "delay_factor", "delay_min", "n_item", "box", "due")
 
 
 class ThresholdAdmin(admin.ModelAdmin):
 
-    list_display = [f.name for f in Threshold._meta.fields ] + ["_material", ]
-
-    @staticmethod
-    def _material(obj):
-        return ", ".join([m.value for m in obj.material.all()])
+    list_display = [f.name for f in Threshold._meta.fields ]
 
 
 class MCTSAdmin(admin.ModelAdmin):
-    list_display = [f.name for f in MCTSTeacher._meta.fields] + ["_material", ]
-
-    @staticmethod
-    def _material(obj):
-        return ", ".join([m.value for m in obj.material.all()])
+    list_display = [f.name for f in MCTSTeacher._meta.fields]
 
 
 class PsychologistAdmin(admin.ModelAdmin):
@@ -39,8 +37,14 @@ class PsychologistAdmin(admin.ModelAdmin):
     list_display = [f.name for f in Psychologist._meta.fields]
 
 
+class SamplingAdmin(admin.ModelAdmin):
+
+    list_display = [f.name for f in Sampling._meta.fields]
+
 
 admin.site.register(Leitner, LeitnerAdmin)
 admin.site.register(Threshold, ThresholdAdmin)
 admin.site.register(Psychologist, PsychologistAdmin)
 admin.site.register(MCTSTeacher, MCTSAdmin)
+admin.site.register(TeachingEngine, TeachingEngineAdmin)
+admin.site.register(Sampling, SamplingAdmin)

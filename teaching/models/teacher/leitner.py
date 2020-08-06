@@ -1,32 +1,30 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-import datetime
+
+from learner.models.user import User
 
 import numpy as np
 
 
 class LeitnerManager(models.Manager):
 
-    def create(self, material, delay_factor, delay_min, user):
+    def create(self, delay_factor, delay_min, n_item, user):
 
-        n_item = material.count()
-        id_items = [m.id for m in material]
         box = [-1 for _ in range(n_item)]
         due = [None for _ in range(n_item)]
 
         obj = super().create(n_item=n_item,
-                             id_items=id_items,
                              box=box,
                              due=due,
                              delay_min=delay_min,
                              delay_factor=delay_factor,
                              user=user)
-
-        obj.material.set(material)
         return obj
 
 
 class Leitner(models.Model):
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     delay_factor = models.IntegerField()
     delay_min = models.IntegerField()
@@ -41,7 +39,7 @@ class Leitner(models.Model):
     class Meta:
 
         db_table = 'leitner'
-        app_label = 'teacher'
+        app_label = 'teaching'
 
     def _update_box_and_due_time(
             self, last_idx, last_was_success, last_time_reply):

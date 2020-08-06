@@ -13,10 +13,10 @@ from experimental_condition.experimental_condition import Condition
 def main():
     for (email, condition) in (
             ("leitner@test.com", Condition.LEITNER),
-            ("mcts@test.com", Condition.MCTS),
-            ("mcts_sp@test.com", Condition.MCTS_ITEM_SPECIFIC),
-            ("threshold@test.com", Condition.THRESHOLD),
-            ("threshold_sp@test.com", Condition.THRESHOLD_ITEM_SPECIFIC)
+            # ("mcts@test.com", Condition.MCTS),
+            # ("mcts_sp@test.com", Condition.MCTS_ITEM_SPECIFIC),
+            ("thr@test.com", Condition.THRESHOLD),
+            # ("threshold_sp@test.com", Condition.THRESHOLD_ITEM_SPECIFIC)
     ):
 
         User.objects.filter(email=email).delete()

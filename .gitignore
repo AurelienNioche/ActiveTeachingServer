@@ -125,7 +125,7 @@ analysis/data/
 data/simsearch/pickle/
 data/word2vec/pickle/
 data/word2vec/word_vectors/
-<<<<<<< HEAD
+
 /data/Pilot20190902/pickle/*
 
 # Credentials
@@ -136,10 +136,10 @@ ActiveTeachingServer/credentials.py
 teacher/.DS_Store
 teaching_material/.DS_Store
 
-=======
 /data/Pilot20190902/pickle/fit/
 /ActiveTeachingServer/credentials.py
-.DS_Store
-teacher/.DS_Store
-teaching_material/.DS_Store
->>>>>>> master
+
+*/.DS_Store
+
+/data/wanikani.json
+teaching/migrations/0001_initial.py

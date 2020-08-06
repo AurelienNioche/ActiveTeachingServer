@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
+from learner.models.user import User
+
 import numpy as np
 from scipy.special import expit
 import math
@@ -10,14 +12,16 @@ EPS = np.finfo(np.float).eps
 
 class Walsh2018Manager(models.Manager):
 
-    def create(self, n_item):
+    def create(self, user, n_item):
 
-        obj = super().create(n_item=n_item,
+        obj = super().create(user=user, n_item=n_item,
                              seen=list(np.zeros(n_item)))
         return obj
 
 
 class Walsh2018(models.Model):
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     n_item = models.IntegerField()
 
@@ -30,6 +34,11 @@ class Walsh2018(models.Model):
     seen_item = ArrayField(models.IntegerField(), default=list)
 
     objects = Walsh2018Manager()
+
+    class Meta:
+
+        db_table = 'walsh'
+        app_label = 'teaching'
 
     def p(self, item, param, now):
 
