@@ -13,9 +13,12 @@ from experimental_condition.experimental_condition import Condition
 def main():
     for (email, condition) in (
             ("leitner@test.com", Condition.LEITNER),
+            ("exp_decay_thr_grid@test.com", Condition.EXP_DECAY_THR_GRID),
+            ("walsh_thr_grid@test.com", Condition.WALSH_THR_GRID),
+            ("exp_decay_samp_grid@test.com", Condition.EXP_DECAY_SAMP_GRID),
+            ("walsh_samp_grid@test.com", Condition.WALSH_SAMP_GRID)
             # ("mcts@test.com", Condition.MCTS),
             # ("mcts_sp@test.com", Condition.MCTS_ITEM_SPECIFIC),
-            ("thr@test.com", Condition.THRESHOLD),
             # ("threshold_sp@test.com", Condition.THRESHOLD_ITEM_SPECIFIC)
     ):
 

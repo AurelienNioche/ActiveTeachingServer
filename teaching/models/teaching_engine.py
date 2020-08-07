@@ -9,6 +9,7 @@ from user.models.user import User
 from teaching.models.teacher.leitner import Leitner
 from teaching.models.teacher.threshold import Threshold
 from teaching.models.teacher.mcts import MCTSTeacher
+from teaching.models.teacher.sampling import Sampling
 
 from teaching.models.psychologist.bayesian_grid import Psychologist
 
@@ -48,6 +49,10 @@ class TeachingEngine(models.Model):
         Threshold,
         on_delete=models.CASCADE, null=True)
 
+    sampling = models.OneToOneField(
+        Sampling,
+        on_delete=models.CASCADE, null=True)
+
     mcts = models.OneToOneField(
         MCTSTeacher,
         on_delete=models.CASCADE, null=True)
@@ -58,6 +63,10 @@ class TeachingEngine(models.Model):
 
     exp_decay = models.OneToOneField(
         ExpDecay,
+        on_delete=models.CASCADE, null=True)
+
+    walsh = models.OneToOneField(
+        Walsh2018,
         on_delete=models.CASCADE, null=True)
 
     objects = TeachingEngineManager()
@@ -78,6 +87,9 @@ class TeachingEngine(models.Model):
         elif self.mcts is not None:
             return self.mcts
 
+        elif self.sampling is not None:
+            return self.sampling
+
         else:
             raise Exception
 
@@ -88,8 +100,10 @@ class TeachingEngine(models.Model):
     def _get_learner(self):
         if self.exp_decay is not None:
             return self.exp_decay
+        elif self.walsh is not None:
+            return self.walsh
 
-    def ask(self):
+    def ask(self, session):
 
         last_q_entry = self.question_set.order_by("id").reverse().first()
         if last_q_entry is None:
@@ -124,8 +138,14 @@ class TeachingEngine(models.Model):
                         idx_last_q=idx_last_q)
 
                 param = psychologist.inferred_learner_param(learner=learner)
-                question_idx = teacher.ask(learner=learner, param=param,
-                                           now=now)
+                if hasattr(teacher, "_revise_goal"):
+                    question_idx = teacher.ask(
+                        learner=learner, param=param,
+                        now=now,
+                        session=session)
+                else:
+                    question_idx = teacher.ask(learner=learner, param=param,
+                                               now=now)
 
             else:
                 question_idx = teacher.ask(now=now)

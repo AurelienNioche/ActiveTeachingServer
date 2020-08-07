@@ -83,7 +83,7 @@ class Question(models.Model):
                 teaching_engine.question_set.filter(user_reply=None).first()
 
             if question is None:
-                item = teaching_engine.ask()
+                item = teaching_engine.ask(session=session)
                 hist_question = \
                     teaching_engine.question_set.exclude(user_reply=None)
 
@@ -150,6 +150,5 @@ class Question(models.Model):
                 set_replies,
                 size=Question.N_POSSIBLE_REPLIES - 1, replace=False))
         id_possible_replies = np.array(id_possible_replies)
-        np.random.shuffle(id_possible_replies)
-
-        return Meaning.objects.filter(id__in=id_possible_replies)
+        meanings = list(Meaning.objects.filter(id__in=id_possible_replies))
+        return meanings

@@ -8,6 +8,8 @@ from experimental_condition.models.session import Session
 
 from utils.time import datetime_to_sting
 
+from random import shuffle
+
 
 class Subject:
 
@@ -60,12 +62,15 @@ def treat_request(r):
         if q is None:
             return {"session_done": True}  # End of the session
         else:
+            pr = list(q.possible_replies.all())
+            shuffle(pr)
+
             return {
                 "question_id": q.id,
-                "id_possible_replies": [p.id for p in q.possible_replies.all()],
+                "id_possible_replies": [p.id for p in pr],
                 "id_correct_reply": q.item.meaning.id,
                 "question": q.item.value,
-                "possible_replies": [p.meaning for p in q.possible_replies.all()],
+                "possible_replies": [p.meaning for p in pr],
                 "is_new_question": q.new,
                 "n_iteration": q.session.n_iteration,
                 "iter": q.session.iter

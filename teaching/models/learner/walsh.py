@@ -40,12 +40,12 @@ class Walsh2018(models.Model):
         db_table = 'walsh'
         app_label = 'teaching'
 
-    def p(self, item, param, now):
+    def p(self, item, param, now, hist, ts):
 
         self.set_param(param=param)
 
-        relevant = self.hist == item
-        rep = self.ts[relevant]
+        relevant = hist == item
+        rep = ts[relevant]
         n = len(rep)
         delta = (now - rep)
 
@@ -82,6 +82,9 @@ class Walsh2018(models.Model):
 
         seen = np.zeros(self.n_item, dtype=bool)
         seen[np.unique(hist)] = True
+
+        ts = np.asarray(ts)
+        hist = np.asarray(hist)
 
         n_seen = np.sum(seen)
         n = np.zeros(n_seen)
@@ -123,8 +126,11 @@ class Walsh2018(models.Model):
 
     def log_lik_grid(self, item, grid_param, response, timestamp):
         p = np.zeros(len(grid_param))
+        hist = np.asarray(self.hist)
+        ts = np.asarray(self.ts)
         for i, param in enumerate(grid_param):
-            p[i] = self.p(item=item, param=param, now=timestamp)
+            p[i] = self.p(item=item, param=param, now=timestamp,
+                          hist=hist, ts=ts)
         p = p if response else 1 - p
         return np.log(p+EPS)
 
@@ -182,7 +188,7 @@ class Walsh2018(models.Model):
         self.ts.append(last_time_reply)
 
         self.n_seen = np.sum(self.seen)
-        self.seen_item = np.flatnonzero(self.seen)
+        self.seen_item = list(np.flatnonzero(self.seen))
 
         self.save()
 

@@ -53,6 +53,7 @@ class ExpDecay(models.Model):
         seen = np.asarray(self.seen)
         n_pres = np.asarray(self.n_pres)
         last_pres = np.asarray(self.last_pres, dtype=float)
+        param = np.asarray(param)
 
         if len(param.shape) > 1:  # Is item specific
             init_forget = param[seen, 0]
@@ -73,6 +74,10 @@ class ExpDecay(models.Model):
         seen = np.zeros(self.n_item, dtype=bool)
         seen[np.unique(hist)] = True
 
+        param = np.asarray(param)
+        hist = np.asarray(hist)
+        ts = np.asarray(ts)
+
         if len(param.shape) > 1:  # Is item specific
             init_forget = param[seen, 0]
             rep_effect = param[seen, 1]
@@ -89,7 +94,7 @@ class ExpDecay(models.Model):
 
         fr = init_forget * (1-rep_effect) ** (n_pres[seen] - 1)
 
-        delta = now - last_pres
+        delta = now - last_pres[seen]
         p = np.exp(-fr * delta)
         return p, seen
 

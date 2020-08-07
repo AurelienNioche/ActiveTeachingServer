@@ -105,52 +105,51 @@ class MCTSTeacher(models.Model):
 
     iter_limit = models.IntegerField()
     time_limit = models.FloatField()
-    time_per_iter = models.IntegerField()
-    horizon = models.IntegerField()
-    iter = models.IntegerField()
 
-    ss_n_iter = models.IntegerField()
-    ss_n_iter_between = models.IntegerField()
+    time_per_iter = models.IntegerField()
+
+    horizon = models.IntegerField()
 
     # So need to set them at creation ---
-    ss_it = models.IntegerField(default=0)
+    plan_it = models.IntegerField(default=0)
 
     class Meta:
 
         db_table = 'mcts'
         app_label = 'teaching'
 
-    def _revise_goal(self, now):
+    def _revise_goal(self, now, session):
 
-        self.ss_it += 1
-        if self.ss_it == self.ss_n_iter - 1:
-            self.ss_it = 0
+        next_ss_available = session.next_available_time.timestamp()
+        ss_n_iter = session.n_iteration
+        ss_it = session.iter
 
-        remain = self.ss_n_iter - self.ss_it
+        assert self.horizon <= ss_n_iter, "Case not handled!"
 
-        self.iter += 1
-        if self.iter == self.horizon:
-            self.iter = 0
+        remain = ss_n_iter - ss_it
+
+        self.plan_it += 1
+        if self.plan_it == self.horizon:
+            self.plan_it = 0
             h = self.horizon
         else:
-            h = self.horizon - self.iter
+            h = self.horizon - self.plan_it
 
-        # delta in timestep (number of iteration)
-        delta_ts = np.arange(h + 1, dtype=int)
+        timestamps = now + np.arange(h + 1, dtype=int) * self.time_per_iter
 
         if remain < h + 1:
-            delta_ts[remain:] += self.ss_n_iter_between
-            assert h - remain <= self.ss_n_iter, "case not handled!"
+            pred_no_break_time = now + remain * self.time_per_iter
+            delay = max(0, next_ss_available - pred_no_break_time)
 
-        timestamps = now + delta_ts * self.time_per_iter
+            timestamps[remain:] += delay
 
         return h, timestamps
 
-    def _select_item(self, learner, param, now):
+    def _select_item(self, learner, param, now, session):
 
         m = MCTS(iteration_limit=self.iter_limit, time_limit=self.time_limit)
 
-        horizon, timestamps = self._revise_goal(now)
+        horizon, timestamps = self._revise_goal(now, session)
 
         learner_state = LearnerState(
             param=LearnerStateParam(
@@ -168,5 +167,6 @@ class MCTSTeacher(models.Model):
         item_idx = m.run(initial_state=learner_state)
         return item_idx
 
-    def ask(self, learner, param, now):
-        return self._select_item(learner=learner, param=param, now=now)
+    def ask(self, learner, param, now, session):
+        return self._select_item(learner=learner, param=param, now=now,
+                                 session=session)

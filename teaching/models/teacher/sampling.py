@@ -14,64 +14,56 @@ class Sampling(models.Model):
     learnt_threshold = models.FloatField()
 
     iter_limit = models.IntegerField()
-    time_limit = models.IntegerField()
 
     time_per_iter = models.IntegerField()
     horizon = models.IntegerField()
 
-    ss_n_iter = models.IntegerField()
-    ss_n_iter_between = models.IntegerField()
-
     # So need to set them at creation ---
-    ss_it = models.IntegerField(default=0)
+    plan_it = models.IntegerField(default=0)
 
     class Meta:
 
         db_table = 'sampling'
         app_label = 'teaching'
 
-    def _revise_goal(self, now):
+    def _revise_goal(self, now, session):
 
-        self.ss_it += 1
-        if self.ss_it == self.ss_n_iter - 1:
-            self.ss_it = 0
+        next_ss_available = session.next_available_time.timestamp()
+        ss_n_iter = session.n_iteration
+        ss_it = session.iter
 
-        remain = self.ss_n_iter - self.ss_it
+        assert self.horizon <= ss_n_iter, "Case not handled!"
 
-        self.iter += 1
-        if self.iter == self.horizon:
-            self.iter = 0
+        remain = ss_n_iter - ss_it
+
+        self.plan_it += 1
+        if self.plan_it == self.horizon:
+            self.plan_it = 0
             h = self.horizon
         else:
-            h = self.horizon - self.iter
+            h = self.horizon - self.plan_it
 
-        # delta in timestep (number of iteration)
-        delta_ts = np.arange(h + 1, dtype=int)
+        timestamps = now + np.arange(h + 1, dtype=int) * self.time_per_iter
 
         if remain < h + 1:
-            delta_ts[remain:] += self.ss_n_iter_between
-            assert h - remain <= self.ss_n_iter, "case not handled!"
+            pred_no_break_time = now + remain * self.time_per_iter
+            delay = max(0, next_ss_available - pred_no_break_time)
 
-        timestamps = now + delta_ts * self.time_per_iter
+            timestamps[remain:] += delay
 
         return h, timestamps
 
-    def _select_item(self, learner, param, now):
+    def _select_item(self, learner, param, now, session):
 
-        horizon, timestamps = self._revise_goal(now)
-        # print("h", horizon, "ts", len(timestamps))
+        horizon, timestamps = self._revise_goal(now, session)
 
-        ts = np.asarray(learner.ts)
-        ts = ts[ts != -1]
         new_ts = \
-            np.hstack((ts, timestamps[:-1]))
+            np.hstack((learner.ts, timestamps[:-1]))
         eval_ts = timestamps[-1]
 
-        items = np.hstack((learner.seen_item,
-                           [learner.n_seen, ]))
+        items = np.hstack((learner.seen_item, [learner.n_seen, ]))
 
-        n_item = len(items)
-        n_perm = n_item ** horizon
+        n_perm = self.n_item ** horizon
 
         if n_perm < self.iter_limit:
 
@@ -98,10 +90,10 @@ class Sampling(models.Model):
 
         return item_idx
 
-    def _value_future(self, learner, future, param, new_ts, eval_ts):
-        hist = learner.hist
-        hist = hist[hist != -1]
-        new_hist = np.hstack((hist, future))
+    @staticmethod
+    def _value_future(learner, future, param, new_ts, eval_ts):
+
+        new_hist = np.hstack((learner.hist, future))
 
         p_seen, seen = learner.p_seen_spec_hist(
             param=param, hist=new_hist,
@@ -110,7 +102,8 @@ class Sampling(models.Model):
         )
         return np.sum(p_seen)
 
-    def ask(self, learner, param, now):
+    def ask(self, learner, param, now, session):
 
-        item_idx = self._select_item(learner=learner, param=param, now=now)
+        item_idx = self._select_item(learner=learner, param=param, now=now,
+                                     session=session)
         return item_idx

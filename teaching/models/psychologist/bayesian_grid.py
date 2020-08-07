@@ -5,7 +5,6 @@ from user.models.user import User
 
 import numpy as np
 from scipy.special import logsumexp
-from itertools import product
 
 
 EPS = np.finfo(np.float).eps
@@ -44,12 +43,30 @@ class PsychologistManager(models.Manager):
         return obj
 
     @staticmethod
-    def cp_grid_param(grid_size, bounds):
+    def cartesian_product(*arrays):
+        la = len(arrays)
+        dtype = np.result_type(*arrays)
+        arr = np.empty([len(a) for a in arrays] + [la], dtype=dtype)
+        for i, a in enumerate(np.ix_(*arrays)):
+            arr[..., i] = a
+        return arr.reshape(-1, la)
 
-        return np.asarray(list(
-            product(*[
-                np.linspace(*b, grid_size)
-                for b in bounds])))
+    @classmethod
+    def cp_grid_param(cls, grid_size, bounds):
+        bounds = np.asarray(bounds)
+        diff = bounds[:, 1] - bounds[:, 0] > 0
+        not_diff = np.invert(diff)
+
+        values = np.atleast_2d([np.linspace(*b, num=grid_size)
+                                for b in bounds[diff]])
+        var = cls.cartesian_product(*values)
+        grid = np.zeros((max(1, len(var)), len(bounds)))
+        if np.sum(diff):
+            grid[:, diff] = var
+        if np.sum(not_diff):
+            grid[:, not_diff] = bounds[not_diff, 0]
+
+        return grid
 
 
 class Psychologist(models.Model):
@@ -82,7 +99,7 @@ class Psychologist(models.Model):
         timestamp = last_time_reply
 
         if self.n_pres[item] == 0:
-            pass
+            print("First presentation, no update")
         else:
             gp = np.reshape(self.grid_param, (-1, self.n_param))
             log_lik = learner.log_lik_grid(
@@ -104,6 +121,7 @@ class Psychologist(models.Model):
                 lp += log_lik
                 lp -= logsumexp(lp)
                 self.log_post = list(lp)
+            print("Posterior of parametrization updated")
 
         self.n_pres[item] += 1
         self.save()
@@ -120,9 +138,12 @@ class Psychologist(models.Model):
             param[rep] = gp[lp[rep].argmax(axis=-1)]
 
         else:
-            param = gp[np.argmax(self.log_post)] \
-                if np.min(self.n_pres) > 1 \
-                else self.get_init_guess()
+            if np.max(self.n_pres) > 1:
+                print("Using argmax of posterior")
+                param = gp[np.argmax(self.log_post)]
+            else:
+                print("Using init guess")
+                param = self.get_init_guess()
 
         return param
 
