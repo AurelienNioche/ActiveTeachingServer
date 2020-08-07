@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from learner.models.user import User
-from learner.models.question import Question
+from user.models.user import User
+from user.models.question import Question
 
 
 class UserAdmin(admin.ModelAdmin):

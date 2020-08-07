@@ -37,7 +37,7 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     'experimental_condition.apps.ExperimentalConditionConfig',
     'teaching.apps.TeachingConfig',
-    'learner.apps.UserConfig',
+    'user.apps.UserConfig',
     'teaching_material.apps.TeachingMaterialConfig',
     'reception_desk.apps.TaskConfig',
     'channels',
@@ -147,7 +147,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 # Channels
 ASGI_APPLICATION = 'ActiveTeachingServer.routing.application'
 
-AUTH_USER_MODEL = 'learner.User'
+AUTH_USER_MODEL = 'user.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

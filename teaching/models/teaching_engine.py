@@ -3,12 +3,17 @@ from django.contrib.postgres.fields import ArrayField
 from django.utils import timezone
 
 from teaching_material.models import Kanji
-from learner.models.user import User
+
+from user.models.user import User
+
 from teaching.models.teacher.leitner import Leitner
 from teaching.models.teacher.threshold import Threshold
 from teaching.models.teacher.mcts import MCTSTeacher
+
 from teaching.models.psychologist.bayesian_grid import Psychologist
+
 from teaching.models.learner.exp_decay import ExpDecay
+from teaching.models.learner.walsh import Walsh2018
 
 
 class TeachingEngineManager(models.Manager):
@@ -110,13 +115,15 @@ class TeachingEngine(models.Model):
                 psychologist.update(
                     last_was_success=last_was_success,
                     last_time_reply=last_time_reply,
-                    idx_last_q=idx_last_q)
+                    idx_last_q=idx_last_q,
+                    learner=learner
+                )
 
                 learner.update(
                         last_time_reply=last_time_reply,
                         idx_last_q=idx_last_q)
 
-                param = psychologist.inferred_learner_param()
+                param = psychologist.inferred_learner_param(learner=learner)
                 question_idx = teacher.ask(learner=learner, param=param,
                                            now=now)
 

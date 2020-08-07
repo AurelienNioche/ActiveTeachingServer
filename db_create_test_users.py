@@ -4,8 +4,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE",
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
-from learner.authentication import sign_up
-from learner.models.user import User
+from user.authentication import sign_up
+from user.models.user import User
 
 from experimental_condition.experimental_condition import Condition
 

@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
-from learner.models.user import User
+from user.models.user import User
 
 import numpy as np
 from scipy.special import logsumexp
@@ -29,6 +29,8 @@ class PsychologistManager(models.Manager):
         else:
             log_post = lp
 
+        n_pres = np.zeros(n_item, dtype=int)
+
         obj = super().create(
             user=user,
             log_post=list(log_post),
@@ -36,6 +38,7 @@ class PsychologistManager(models.Manager):
             n_param=len(bounds),
             n_item=n_item,
             bounds=list(np.asarray(bounds).flatten()),
+            n_pres=list(n_pres),
             is_item_specific=is_item_specific
         )
         return obj
@@ -63,6 +66,8 @@ class Psychologist(models.Model):
 
     is_item_specific = models.BooleanField()
 
+    n_pres = ArrayField(models.IntegerField(), default=list)
+
     objects = PsychologistManager()
 
     class Meta:
@@ -76,7 +81,7 @@ class Psychologist(models.Model):
         response = last_was_success
         timestamp = last_time_reply
 
-        if learner.seen[item] == 0:
+        if self.n_pres[item] == 0:
             pass
         else:
             gp = np.reshape(self.grid_param, (-1, self.n_param))
@@ -100,6 +105,7 @@ class Psychologist(models.Model):
                 lp -= logsumexp(lp)
                 self.log_post = list(lp)
 
+        self.n_pres[item] += 1
         self.save()
 
     def inferred_learner_param(self, learner):
@@ -112,9 +118,10 @@ class Psychologist(models.Model):
             lp = np.reshape(self.log_post, (self.n_item, -1))
             rep = np.asarray(learner.seen)
             param[rep] = gp[lp[rep].argmax(axis=-1)]
+
         else:
             param = gp[np.argmax(self.log_post)] \
-                if np.sum(learner.seen) \
+                if np.min(self.n_pres) > 1 \
                 else self.get_init_guess()
 
         return param

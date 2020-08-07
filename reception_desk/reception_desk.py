@@ -1,8 +1,8 @@
 from django.utils import timezone
 
-from learner.models.user import User
-from learner.models.question import Question
-import learner.authentication
+from user.models.user import User
+from user.models.question import Question
+from user.authentication import login
 
 from experimental_condition.models.session import Session
 
@@ -20,17 +20,16 @@ class Subject:
 def treat_request(r):
 
     if r["subject"] == Subject.LOGIN:
-        user = learner.authentication.login(email=r["email"],
-                                            password=r["password"])
-        if user is not None:
-            return {"ok": True, "user_id": user.id}
+        u = login(email=r["email"], password=r["password"])
+        if u is not None:
+            return {"ok": True, "user_id": u.id}
         else:
             return {"ok": False}
 
     elif r["subject"] == Subject.SESSION:
 
-        user = User.objects.get(id=r["user_id"])
-        session = Session.get_user_session(user=user)
+        u = User.objects.get(id=r["user_id"])
+        session = Session.get_user_session(user=u)
 
         if session is None:
             return {"end": True,
@@ -46,7 +45,7 @@ def treat_request(r):
 
         a = timezone.now()
 
-        user = User.objects.get(id=r["user_id"])
+        u = User.objects.get(id=r["user_id"])
         previous_q = Question.objects.filter(id=r["question_id"]).first()
         if previous_q is not None:
             previous_q.register_user_reply(
@@ -55,7 +54,7 @@ def treat_request(r):
                 time_reply=r["time_reply"],
                 success=r["success"])
 
-        q = Question.next_question(user, previous_question=previous_q)
+        q = Question.next_question(u, previous_question=previous_q)
         b = timezone.now()
         print(f"Time to generate the question {b-a}")
         if q is None:

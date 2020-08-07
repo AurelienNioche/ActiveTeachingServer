@@ -6,7 +6,7 @@ application = get_wsgi_application()
 
 from ActiveTeachingServer.settings \
     import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
-from learner.models.user import User
+from user.models.user import User
 
 
 def create_super_user():

@@ -1,7 +1,8 @@
 from django.db import models
 from django.utils import timezone
 
-from learner.models.user import User
+from user.models.user import User
+
 from teaching.models.teaching_engine import TeachingEngine
 
 from experimental_condition import experimental_condition
@@ -22,7 +23,7 @@ class Session(models.Model):
 
     class Meta:
         db_table = 'session'
-        app_label = 'learner'
+        app_label = 'user'
 
     @property
     def done(self):

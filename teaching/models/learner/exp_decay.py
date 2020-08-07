@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
-from learner.models.user import User
+from user.models.user import User
 
 import numpy as np
 
@@ -50,7 +50,9 @@ class ExpDecay(models.Model):
 
     def p_seen(self, param, now):
 
-        seen = self.n_pres >= 1
+        seen = np.asarray(self.seen)
+        n_pres = np.asarray(self.n_pres)
+        last_pres = np.asarray(self.last_pres, dtype=float)
 
         if len(param.shape) > 1:  # Is item specific
             init_forget = param[seen, 0]
@@ -58,9 +60,9 @@ class ExpDecay(models.Model):
         else:
             init_forget, rep_effect = param
 
-        fr = init_forget * (1 - rep_effect) ** (self.n_pres[seen] - 1)
+        fr = init_forget * (1 - rep_effect) ** (n_pres[seen] - 1)
 
-        last_pres = self.last_pres[seen]
+        last_pres = last_pres[seen]
         delta = now - last_pres
 
         p = np.exp(-fr * delta)
@@ -78,11 +80,11 @@ class ExpDecay(models.Model):
             init_forget, rep_effect = param
 
         seen_item = sorted(np.flatnonzero(seen))
-        n_pres = np.zeros(len(seen))
-        last_pres = np.zeros(len(seen))
+        n_pres = np.zeros(self.n_item)
+        last_pres = np.zeros(self.n_item)
         for i, item in enumerate(seen_item):
             is_item = hist == item
-            n_pres = np.sum(is_item)
+            n_pres[i] = np.sum(is_item)
             last_pres[i] = np.max(ts[is_item])
 
         fr = init_forget * (1-rep_effect) ** (n_pres[seen] - 1)
@@ -106,14 +108,16 @@ class ExpDecay(models.Model):
 
     def update(self, idx_last_q, last_time_reply):
 
-        self.last_pres[idx_last_q] = last_time_reply
+        ltr = int(last_time_reply)
+
+        self.last_pres[idx_last_q] = ltr
         self.n_pres[idx_last_q] += 1
 
         self.seen[idx_last_q] = True
         self.hist.append(idx_last_q)
-        self.ts.append(last_time_reply)
+        self.ts.append(ltr)
 
         self.n_seen = np.sum(self.seen)
-        self.seen_item = np.flatnonzero(self.seen)
+        self.seen_item = list(np.flatnonzero(self.seen))
 
         self.save()

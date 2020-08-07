@@ -1,6 +1,6 @@
 from django.db import models
 
-from learner.models.user import User
+from user.models.user import User
 
 import numpy as np
 

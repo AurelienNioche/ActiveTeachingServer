@@ -4,7 +4,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.db import IntegrityError
 
-from learner.models.user import User
+from user.models.user import User
 
 
 def login(email, password):
@@ -21,7 +21,7 @@ def sign_up(email, password, gender, age,
     """
 
     try:
-        user = User.objects.create_user(
+        u = User.objects.create_user(
             email=email,
             password=password,
             gender=gender,
@@ -34,7 +34,7 @@ def sign_up(email, password, gender, age,
     except IntegrityError as e:
         raise e
 
-    return user
+    return u
 
 
 def send_email(email_address):

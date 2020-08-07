@@ -3,7 +3,7 @@ from django.db import models
 import numpy as np
 import itertools as it
 
-from learner.models.user import User
+from user.models.user import User
 
 
 class Sampling(models.Model):

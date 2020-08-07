@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
-from learner.models.user import User
+from user.models.user import User
 
 import numpy as np
 from scipy.special import expit

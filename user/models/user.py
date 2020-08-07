@@ -70,4 +70,4 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         db_table = 'user'
-        app_label = 'learner'
+        app_label = 'user'

@@ -8,7 +8,7 @@ from teaching_material.models import Kanji, Meaning
 
 from experimental_condition.models.session import Session
 
-from learner.models.user import User
+from user.models.user import User
 
 
 class QuestionManager(models.Manager):
@@ -55,7 +55,7 @@ class Question(models.Model):
     class Meta:
 
         db_table = 'question'
-        app_label = 'learner'
+        app_label = 'user'
 
     def register_user_reply(self, id_user_reply,
                             time_display,

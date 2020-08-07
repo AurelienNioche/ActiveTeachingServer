@@ -1,6 +1,7 @@
 from django.utils import timezone
 import datetime
 
+
 class Condition:
     LEITNER = 0
     THRESHOLD = 1
