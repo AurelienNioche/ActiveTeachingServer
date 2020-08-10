@@ -18,6 +18,8 @@ class Session(models.Model):
     n_iteration = models.IntegerField()
     close = models.BooleanField(default=False)
 
+    is_evaluation = models.BooleanField(default=False)
+
     teaching_engine = models.ForeignKey(TeachingEngine,
                                         on_delete=models.CASCADE)
 

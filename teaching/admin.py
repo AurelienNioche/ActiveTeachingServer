@@ -2,8 +2,8 @@ from django.contrib import admin
 
 from teaching.models.teacher.leitner import Leitner
 from teaching.models.teacher.threshold import Threshold
-from teaching.models.teacher.mcts import MCTSTeacher
 from teaching.models.teacher.sampling import Sampling
+from teaching.models.teacher.evaluator import Evaluator
 
 from teaching.models.psychologist.bayesian_grid import Psychologist
 
@@ -32,10 +32,6 @@ class ThresholdAdmin(admin.ModelAdmin):
     list_display = [f.name for f in Threshold._meta.fields]
 
 
-class MCTSAdmin(admin.ModelAdmin):
-    list_display = [f.name for f in MCTSTeacher._meta.fields]
-
-
 class SamplingAdmin(admin.ModelAdmin):
 
     list_display = [f.name for f in Sampling._meta.fields]
@@ -56,11 +52,26 @@ class WalshAdmin(admin.ModelAdmin):
     list_display = [f.name for f in Walsh2018._meta.fields]
 
 
+class EvaluatorAdmin(admin.ModelAdmin):
+
+    list_display = [f.name for f in Evaluator._meta.fields]
+
+
+admin.site.register(TeachingEngine, TeachingEngineAdmin)
+
+admin.site.register(Psychologist, PsychologistAdmin)
+
 admin.site.register(Leitner, LeitnerAdmin)
 admin.site.register(Threshold, ThresholdAdmin)
-admin.site.register(Psychologist, PsychologistAdmin)
-admin.site.register(MCTSTeacher, MCTSAdmin)
-admin.site.register(TeachingEngine, TeachingEngineAdmin)
 admin.site.register(Sampling, SamplingAdmin)
+
 admin.site.register(ExpDecay, ExpDecayAdmin)
 admin.site.register(Walsh2018, WalshAdmin)
+
+admin.site.register(Evaluator, EvaluatorAdmin)
+
+# from teaching.models.teacher.mcts import MCTSTeacher
+# class MCTSAdmin(admin.ModelAdmin):
+#     list_display = [f.name for f in MCTSTeacher._meta.fields]
+
+# admin.site.register(MCTSTeacher, MCTSAdmin)

@@ -8,8 +8,9 @@ from user.models.user import User
 
 from teaching.models.teacher.leitner import Leitner
 from teaching.models.teacher.threshold import Threshold
-from teaching.models.teacher.mcts import MCTSTeacher
 from teaching.models.teacher.sampling import Sampling
+from teaching.models.teacher.evaluator import Evaluator
+# from teaching.models.teacher.mcts import MCTSTeacher
 
 from teaching.models.psychologist.bayesian_grid import Psychologist
 
@@ -19,7 +20,7 @@ from teaching.models.learner.walsh import Walsh2018
 
 class TeachingEngineManager(models.Manager):
 
-    def create(self, material, *args, **kwargs):
+    def create(self, material, evaluator, *args, **kwargs):
 
         n_item = material.count()
         id_items = [m.id for m in material]
@@ -27,6 +28,7 @@ class TeachingEngineManager(models.Manager):
         obj = super().create(
             n_item=n_item,
             id_items=id_items,
+            evaluator=evaluator,
             *args, **kwargs)
         obj.material.set(material)
         return obj
@@ -53,9 +55,9 @@ class TeachingEngine(models.Model):
         Sampling,
         on_delete=models.CASCADE, null=True)
 
-    mcts = models.OneToOneField(
-        MCTSTeacher,
-        on_delete=models.CASCADE, null=True)
+    # mcts = models.OneToOneField(
+    #     MCTSTeacher,
+    #     on_delete=models.CASCADE, null=True)
 
     psychologist = models.OneToOneField(
         Psychologist,
@@ -67,6 +69,10 @@ class TeachingEngine(models.Model):
 
     walsh = models.OneToOneField(
         Walsh2018,
+        on_delete=models.CASCADE, null=True)
+
+    evaluator = models.OneToOneField(
+        Evaluator,
         on_delete=models.CASCADE, null=True)
 
     objects = TeachingEngineManager()
@@ -84,8 +90,8 @@ class TeachingEngine(models.Model):
         elif self.threshold is not None:
             return self.threshold
 
-        elif self.mcts is not None:
-            return self.mcts
+        # elif self.mcts is not None:
+        #     return self.mcts
 
         elif self.sampling is not None:
             return self.sampling
@@ -107,50 +113,65 @@ class TeachingEngine(models.Model):
 
         last_q_entry = self.question_set.order_by("id").reverse().first()
         if last_q_entry is None:
-            question_idx = 0
+            q_idx = 0
 
         else:
             last_was_success = last_q_entry.success
             last_time_reply = last_q_entry.time_reply.timestamp()
             idx_last_q = self.id_items.index(last_q_entry.item.id)
 
-            teacher = self._get_teacher()
-            if hasattr(teacher, "update"):
-                teacher.update(
-                    last_was_success=last_was_success,
-                    last_time_reply=last_time_reply,
-                    idx_last_q=idx_last_q)
+            self.evaluator.update(idx_last_q=idx_last_q)
 
-            psychologist = self._get_psychologist()
-            learner = self._get_learner()
-            now = int(timezone.now().timestamp())
-            if psychologist is not None:
-                assert learner is not None
-                psychologist.update(
-                    last_was_success=last_was_success,
-                    last_time_reply=last_time_reply,
-                    idx_last_q=idx_last_q,
-                    learner=learner
-                )
-
-                learner.update(
-                        last_time_reply=last_time_reply,
-                        idx_last_q=idx_last_q)
-
-                param = psychologist.inferred_learner_param(learner=learner)
-                if hasattr(teacher, "_revise_goal"):
-                    question_idx = teacher.ask(
-                        learner=learner, param=param,
-                        now=now,
-                        session=session)
-                else:
-                    question_idx = teacher.ask(learner=learner, param=param,
-                                               now=now)
-
+            if session.is_evaluation:
+                q_idx = self.evaluator.ask()
             else:
-                question_idx = teacher.ask(now=now)
+                q_idx = self.teach(idx_last_q=idx_last_q,
+                                   last_time_reply=last_time_reply,
+                                   last_was_success=last_was_success,
+                                   session=session)
 
-        item = self.material.get(id=self.id_items[question_idx])
+        item = self.material.get(id=self.id_items[q_idx])
 
         self.save()
         return item
+
+    def teach(self, last_was_success, last_time_reply, idx_last_q,
+              session):
+
+        teacher = self._get_teacher()
+        if hasattr(teacher, "update"):
+            teacher.update(
+                last_was_success=last_was_success,
+                last_time_reply=last_time_reply,
+                idx_last_q=idx_last_q)
+
+        psychologist = self._get_psychologist()
+        learner = self._get_learner()
+        now = int(timezone.now().timestamp())
+        if psychologist is not None:
+            assert learner is not None
+            psychologist.update(
+                last_was_success=last_was_success,
+                last_time_reply=last_time_reply,
+                idx_last_q=idx_last_q,
+                learner=learner
+            )
+
+            learner.update(
+                last_time_reply=last_time_reply,
+                idx_last_q=idx_last_q)
+
+            param = psychologist.inferred_learner_param(learner=learner)
+            if hasattr(teacher, "_revise_goal"):
+                question_idx = teacher.ask(
+                    learner=learner, param=param,
+                    now=now,
+                    session=session)
+            else:
+                question_idx = teacher.ask(learner=learner, param=param,
+                                           now=now)
+
+        else:
+            question_idx = teacher.ask(now=now)
+
+        return question_idx

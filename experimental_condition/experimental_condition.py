@@ -17,13 +17,13 @@ def user_creation(user):
 
     from teaching.models.teacher.leitner import Leitner
     from teaching.models.teacher.threshold import Threshold
-    from teaching.models.teacher.mcts import MCTSTeacher
     from teaching.models.teacher.sampling import Sampling
     from teaching_material.models import Kanji
     from teaching.models.teaching_engine import TeachingEngine
     from teaching.models.psychologist.bayesian_grid import Psychologist
     from teaching.models.learner.exp_decay import ExpDecay
     from teaching.models.learner.walsh import Walsh2018
+    from teaching.models.teacher.evaluator import Evaluator
 
     material = Kanji.objects.all()[0:50]
 
@@ -46,11 +46,10 @@ def user_creation(user):
     sampling_iter_limit = 500
     sampling_horizon = 15
 
-    mcts_horizon = 10
-    mcts_time_limit = None
-
     leitner_delay_factor = 2
     leitner_delay_min = 2
+
+    eval_n_repetition = 2
 
     n_item = material.count()
 
@@ -58,14 +57,22 @@ def user_creation(user):
 
         leitner = Leitner.objects.create(
             user=user,
-            n_item=material.count(),
+            n_item=n_item,
             delay_factor=leitner_delay_factor,
             delay_min=leitner_delay_min)
+
+        ev = Evaluator.objects.create(
+            user=user,
+            n_item=n_item,
+            n_repetition=eval_n_repetition
+        )
 
         TeachingEngine.objects.create(
             user=user,
             material=material,
-            leitner=leitner)
+            leitner=leitner,
+            evaluator=ev
+        )
 
     elif user.condition == Condition.EXP_DECAY_THR_GRID:
         is_item_specific = False
@@ -86,12 +93,20 @@ def user_creation(user):
             n_item=n_item,
             user=user)
 
+        ev = Evaluator.objects.create(
+            user=user,
+            n_item=n_item,
+            n_repetition=eval_n_repetition
+        )
+
         TeachingEngine.objects.create(
             user=user,
             material=material,
             threshold=threshold,
             psychologist=psy,
-            exp_decay=learner)
+            exp_decay=learner,
+            evaluator=ev
+        )
 
     elif user.condition == Condition.WALSH_THR_GRID:
 
@@ -113,12 +128,20 @@ def user_creation(user):
             n_item=n_item,
             user=user)
 
+        ev = Evaluator.objects.create(
+            user=user,
+            n_item=n_item,
+            n_repetition=eval_n_repetition
+        )
+
         TeachingEngine.objects.create(
             user=user,
             material=material,
             threshold=threshold,
             psychologist=psy,
-            walsh=learner)
+            walsh=learner,
+            evaluator=ev
+        )
 
     elif user.condition == Condition.EXP_DECAY_SAMP_GRID:
 
@@ -143,12 +166,20 @@ def user_creation(user):
             n_item=n_item,
             user=user)
 
+        ev = Evaluator.objects.create(
+            user=user,
+            n_item=n_item,
+            n_repetition=eval_n_repetition
+        )
+
         TeachingEngine.objects.create(
             user=user,
             material=material,
             sampling=sampling,
             psychologist=psy,
-            exp_decay=exp_decay)
+            exp_decay=exp_decay,
+            evaluator=ev
+        )
 
     elif user.condition == Condition.WALSH_SAMP_GRID:
 
@@ -173,12 +204,20 @@ def user_creation(user):
             n_item=n_item,
             user=user)
 
+        ev = Evaluator.objects.create(
+            user=user,
+            n_item=n_item,
+            n_repetition=eval_n_repetition
+        )
+
         TeachingEngine.objects.create(
             user=user,
             material=material,
             sampling=sampling,
             psychologist=psy,
-            walsh=walsh)
+            walsh=walsh,
+            evaluator=ev
+        )
 
     # elif user.condition == Condition.THRESHOLD_ITEM_SPECIFIC:
     #     is_item_specific = True

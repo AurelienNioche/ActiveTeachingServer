@@ -24,9 +24,15 @@ def treat_request(r):
     if r["subject"] == Subject.LOGIN:
         u = login(email=r["email"], password=r["password"])
         if u is not None:
-            return {"ok": True, "user_id": u.id}
+            return {
+                "subject": Subject.LOGIN,
+                "ok": True, "user_id": u.id
+            }
         else:
-            return {"ok": False}
+            return {
+                "subject": Subject.LOGIN,
+                "ok": False
+            }
 
     elif r["subject"] == Subject.SESSION:
 
@@ -34,14 +40,22 @@ def treat_request(r):
         session = Session.get_user_session(user=u)
 
         if session is None:
-            return {"end": True,
-                    "available": False}
+            return {
+                "subject": Subject.SESSION,
+                "end": True,
+                "available": False
+            }
         elif session.is_available():
-            return {"available": True}
+            return {
+                "subject": Subject.SESSION,
+                "available": True
+            }
         else:
             return {
+                "subject": Subject.SESSION,
                 "available": False,
-                "available_time": datetime_to_sting(session.available_time)}
+                "available_time": datetime_to_sting(session.available_time)
+            }
 
     elif r["subject"] == Subject.QUESTION:
 
@@ -60,12 +74,16 @@ def treat_request(r):
         b = timezone.now()
         print(f"Time to generate the question {b-a}")
         if q is None:
-            return {"session_done": True}  # End of the session
+            return {
+                "subject": Subject.QUESTION,
+                "session_done": True
+            }  # End of the session
         else:
             pr = list(q.possible_replies.all())
             shuffle(pr)
 
             return {
+                "subject": Subject.QUESTION,
                 "question_id": q.id,
                 "id_possible_replies": [p.id for p in pr],
                 "id_correct_reply": q.item.meaning.id,
@@ -79,7 +97,6 @@ def treat_request(r):
     else:
         raise ValueError(
             f"Subject of the request not recognized: '{r['subject']}'")
-
 
 
 # def to_json_serializable_dic(obj):

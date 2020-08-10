@@ -83,7 +83,9 @@ class Question(models.Model):
                 teaching_engine.question_set.filter(user_reply=None).first()
 
             if question is None:
+
                 item = teaching_engine.ask(session=session)
+
                 hist_question = \
                     teaching_engine.question_set.exclude(user_reply=None)
 

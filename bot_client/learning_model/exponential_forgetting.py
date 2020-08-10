@@ -3,89 +3,39 @@ import numpy as np
 from . generic import Learner
 
 
-class ExponentialForgetting(Learner):
+EPS = np.finfo(np.float).eps
 
-    version = 1.0
-    bounds = ('alpha', 0., 1.), ('beta', 0., 1.)
 
-    def __init__(self, param, n_item, **kwargs):
+class ExponentialNDelta(Learner):
 
-        super().__init__(**kwargs)
+    def __init__(self, param):
 
-        self.alpha = None
-        self.beta = None
+        self.n_pres = dict()
+        self.last_pres = dict()
 
-        self.set_cognitive_parameters(param)
+        super().__init__(param)
 
-        self.n_pres = np.zeros(n_item)
-        self.last_pres = np.zeros(n_item)
+    def p(self, question_id, timestamp, is_item_specific=False):
 
-        self.t = 0
-
-    def p_recall(self, item, time=None):
-
-        if self.n_pres[item] == 0:
+        if question_id not in self.n_pres:
             return 0
 
-        fr = self.alpha * (1 - self.beta) ** (self.n_pres[item] - 1)
+        if is_item_specific:
+            init_forget = self.param[question_id, 0]
+            rep_effect = self.param[question_id, 1]
+        else:
+            init_forget, rep_effect = self.param
 
-        p = np.exp(- fr * (self.t - self.last_pres[item]))
-        return p
+        fr = init_forget * (1 - rep_effect) ** (self.n_pres[question_id] - 1)
 
-    def learn(self, item, time=None, success=None):
+        delta = timestamp - self.last_pres[question_id]
+        return np.exp(- fr * delta)
 
-        self.n_pres[item] += 1
-        self.last_pres[item] = self.t
-        self.t += 1
+    def update(self, question_id, timestamp):
 
-    def unlearn(self):
-        raise NotImplementedError
+        self.last_pres[question_id] = timestamp
 
-
-class ExponentialForgettingAsymmetric(Learner):
-
-    version = 1.0
-    bounds = ('alpha', 0., 1.), ('beta_minus', 0., 1.), \
-             ('beta_plus', 0., 1.)
-
-    def __init__(self, param, n_item, **kwargs):
-
-        super().__init__(**kwargs)
-
-        self.alpha = None
-        self.beta_minus = None
-        self.beta_plus = None
-
-        self.set_cognitive_parameters(param)
-
-        self.n_pres = np.zeros(n_item)
-        self.n_success = np.zeros(n_item)
-        self.last_pres = np.zeros(n_item)
-
-        self.t = 0
-
-    def p_recall(self, item, time=None):
-
-        if self.n_pres[item] == 0:
-            return 0
-
-        fr = self.alpha \
-            * (1 - self.beta_minus) ** \
-            (self.n_pres[item] - self.n_success[item] - 1) \
-            * (1 - self.beta_plus) ** \
-            self.n_success[item]
-
-        p = np.exp(- fr * (self.t - self.last_pres[item]))
-        return p
-
-    def learn(self, item, time=None, success=None):
-
-        self.n_pres[item] += 1
-        self.last_pres[item] = self.t
-        self.t += 1
-
-        if self.n_pres[item] > 1:
-            self.n_success[item] += int(success)
-
-    def unlearn(self):
-        raise NotImplementedError
+        if question_id in self.n_pres:
+            self.n_pres[question_id] += 1
+        else:
+            self.n_pres[question_id] = 1
