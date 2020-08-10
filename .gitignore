@@ -127,3 +127,5 @@ ActiveTeachingServer/credentials.py
 # Credentials
 /ActiveTeachingServer/credentials.py
 
+# Old things
+teaching/models/teacher/.old/*
