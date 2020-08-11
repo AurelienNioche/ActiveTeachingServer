@@ -1,9 +1,9 @@
 from django.db import models
 from django.utils import timezone
 
+from teaching.models.teaching_engine import TeachingEngine
 from user.models.user import User
 
-from teaching.models.teaching_engine import TeachingEngine
 
 from experimental_condition import experimental_condition
 

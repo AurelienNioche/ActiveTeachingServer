@@ -56,7 +56,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     mother_tongue = models.TextField(blank=True, null=True)
     other_language = models.TextField(blank=True, null=True)
 
-    condition = models.IntegerField(blank=True, null=True)
+    condition = models.TextField(blank=True, null=True)
 
     is_staff = models.BooleanField(default=False)
 

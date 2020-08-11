@@ -1,4 +1,3 @@
-# Create your models here.
 from django.db import models
 from utils.time import string_to_datetime
 import numpy as np
@@ -6,7 +5,7 @@ import numpy as np
 from teaching.models.teaching_engine import TeachingEngine
 from teaching_material.models import Kanji, Meaning
 
-from experimental_condition.models.session import Session
+from user.models.session import Session
 
 from user.models.user import User
 

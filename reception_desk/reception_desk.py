@@ -2,9 +2,9 @@ from django.utils import timezone
 
 from user.models.user import User
 from user.models.question import Question
+from user.models.session import Session
 from user.authentication import login
 
-from experimental_condition.models.session import Session
 
 from utils.time import datetime_to_sting
 

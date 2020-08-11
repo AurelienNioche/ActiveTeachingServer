@@ -7,16 +7,16 @@ application = get_wsgi_application()
 from user.authentication import sign_up
 from user.models.user import User
 
-from experimental_condition.experimental_condition import Condition
+from experimental_condition.models.test_leitner import TestLeitner
 
 
 def main():
     for (email, condition) in (
-            ("leitner@test.com", Condition.LEITNER),
-            ("exp_decay_thr_grid@test.com", Condition.EXP_DECAY_THR_GRID),
-            ("walsh_thr_grid@test.com", Condition.WALSH_THR_GRID),
-            ("exp_decay_samp_grid@test.com", Condition.EXP_DECAY_SAMP_GRID),
-            ("walsh_samp_grid@test.com", Condition.WALSH_SAMP_GRID)
+            ("leitner@test.com", TestLeitner.__name__),
+            # ("exp_decay_thr_grid@test.com", Condition.EXP_DECAY_THR_GRID),
+            # ("walsh_thr_grid@test.com", Condition.WALSH_THR_GRID),
+            # ("exp_decay_samp_grid@test.com", Condition.EXP_DECAY_SAMP_GRID),
+            # ("walsh_samp_grid@test.com", Condition.WALSH_SAMP_GRID)
             # ("mcts@test.com", Condition.MCTS),
             # ("mcts_sp@test.com", Condition.MCTS_ITEM_SPECIFIC),
             # ("threshold_sp@test.com", Condition.THRESHOLD_ITEM_SPECIFIC)

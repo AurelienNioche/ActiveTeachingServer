@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from user.models.user import User
 from user.models.question import Question
+from user.models.session import Session
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -30,5 +31,11 @@ class QuestionAdmin(admin.ModelAdmin):
         return obj.kanji.meaning.meaning
 
 
+class SessionAdmin(admin.ModelAdmin):
+    list_display = (
+        "user", "date_creation", "available_time", "n_iteration", "close")
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Question, QuestionAdmin)
+admin.site.register(Session, SessionAdmin)
