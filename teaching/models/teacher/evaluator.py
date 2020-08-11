@@ -35,6 +35,8 @@ class Evaluator(models.Model):
     evaluation_schedule = ArrayField(models.IntegerField(), default=list)
     iter = models.IntegerField(default=0)
 
+    eval_done = models.BooleanField(default=False)
+
     objects = EvaluatorManager()
 
     class Meta:
@@ -43,10 +45,12 @@ class Evaluator(models.Model):
         app_label = 'teaching'
 
     def ask(self):
-        if not self.evaluation_schedule:
+        if self.iter == 0:
             self.make_evaluation_schedule()
         item = self.evaluation_schedule[self.iter]
         self.iter += 1
+        if self.iter == self.n_eval:
+            self.eval_done = True
         self.save()
         return item
 

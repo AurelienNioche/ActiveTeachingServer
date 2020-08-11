@@ -14,7 +14,7 @@ class Session(models.Model):
 
     date_creation = models.DateTimeField(auto_now_add=True)
     available_time = models.DateTimeField()
-    next_available_time = models.DateTimeField()
+    next_available_time = models.DateTimeField(null=True)
     n_iteration = models.IntegerField()
     close = models.BooleanField(default=False)
 
