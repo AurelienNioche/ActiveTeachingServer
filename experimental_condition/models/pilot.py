@@ -14,21 +14,49 @@ from teaching.models.teacher.threshold import Threshold
 from teaching.models.teacher.sampling import Sampling
 from teaching.models.psychologist.bayesian_grid import Psychologist
 
+from teaching_material.models.kanji import Kanji
+
 from teaching.models.learner.exp_decay import ExpDecay
 from teaching.models.learner.walsh import Walsh2018
 
 
 class PilotManager(models.Manager):
 
-    def create(self, user, material, leitner_delay_factor,
-               leitner_delay_min, eval_n_repetition,
-               n_iter_ss, n_ss,
-               learnt_threshold, sampling_iter_limit,
-               sampling_horizon, time_per_iter,
-               exp_decay_grid_size, exp_decay_bounds,
+    def create(self, user,
+               psychologist_model,
+               teacher_model,
+               learner_model,
+               exp_decay_grid_size=20,
+               exp_decay_bounds=((0.001, 0.04), (0.2, 0.5)),
+               walsh_grid_size=10,
+               walsh_bounds=(
+                (0.8, 1.2),
+                (0.03, 0.05),
+                (0.005, 0.20),
+                (0.005, 0.20),
+                (0.1, 0.1),
+                (0.6, 0.6)),
+               leitner_delay_factor=2,
+               leitner_delay_min=2,
+               eval_n_repetition=2,
+               n_item=50,
+               n_iter_ss=15,
+               n_ss=2,
+               learnt_threshold=0.90,
+               sampling_iter_limit=500,
+               sampling_horizon=10,
+               time_per_iter=2,
+               first_session=datetime.time(hour=10, minute=0, second=0),
+               second_session=datetime.time(hour=10, minute=10, second=0),
                is_item_specific=False):
 
-        n_item = material.count()
+        material = list(Kanji.objects.all())
+        total_n_item = len(material)
+        selection = np.random.choice(
+            np.arange(total_n_item), size=n_item*2,
+            replace=False)
+
+        leitner_material = material[:50]
 
         leitner = Leitner.objects.create(
             user=user,
@@ -49,24 +77,46 @@ class PilotManager(models.Manager):
             evaluator=ev
         )
 
-        sampling = Sampling.objects.create(
-            user=user,
-            n_item=n_item,
-            learnt_threshold=learnt_threshold,
-            iter_limit=sampling_iter_limit,
-            horizon=sampling_horizon,
-            time_per_iter=time_per_iter)
+        if teacher_model == Sampling.__name__:
 
-        psy = Psychologist.objects.create(
-            user=user,
-            n_item=n_item,
-            is_item_specific=is_item_specific,
-            grid_size=exp_decay_grid_size,
-            bounds=exp_decay_bounds)
+            sampling = Sampling.objects.create(
+                user=user,
+                n_item=n_item,
+                learnt_threshold=learnt_threshold,
+                iter_limit=sampling_iter_limit,
+                horizon=sampling_horizon,
+                time_per_iter=time_per_iter)
+            teacher_kwarg = {"sampling": sampling}
 
-        exp_decay = ExpDecay.objects.create(
-            n_item=n_item,
-            user=user)
+        elif teacher_model == Threshold.__name__:
+
+            threshold = Threshold.objects.create(
+                    user=user,
+                    n_item=n_item,
+                    learnt_threshold=learnt_threshold)
+            teacher_kwarg = {"threshold": threshold}
+
+        else:
+            raise ValueError("Model not recognized")
+
+        if psychologist_model == Psychologist.__name__:
+            psy = Psychologist.objects.create(
+                user=user,
+                n_item=n_item,
+                is_item_specific=is_item_specific,
+                grid_size=exp_decay_grid_size,
+                bounds=exp_decay_bounds)
+            psy_kwarg = {"psychologist": psy}
+        else:
+            raise ValueError("Model not recognized")
+
+        if learner_model == ExpDecay.__name__:
+            exp_decay = ExpDecay.objects.create(
+                n_item=n_item,
+                user=user)
+            learner_kwarg = {"exp_decay": exp_decay}
+        else:
+            raise ValueError("Model not recognized")
 
         ev = Evaluator.objects.create(
             user=user,
@@ -74,21 +124,21 @@ class PilotManager(models.Manager):
             n_repetition=eval_n_repetition
         )
 
-        exp_decay_te = TeachingEngine.objects.create(
+        active_teaching_te = TeachingEngine.objects.create(
             user=user,
             material=material,
-            sampling=sampling,
-            psychologist=psy,
-            exp_decay=exp_decay,
-            evaluator=ev
+            evaluator=ev,
+            **psy_kwarg, **learner_kwarg, **teacher_kwarg
         )
 
         obj = super().create(
             user=user,
             leitner_teaching_engine=leitner_te,
-            active_teaching_engine=exp_decay_te,
+            active_teaching_engine=active_teaching_te,
             n_iter_ss=n_iter_ss,
-            n_ss=n_ss
+            n_ss=n_ss,
+            first_session=first_session,
+            second_session=second_session
         )
         return obj
 
@@ -109,8 +159,6 @@ class Pilot(models.Model):
     first_session = models.TimeField()
     second_session = models.TimeField()
 
-    n_ss_open_today = models.IntegerField()
-
     objects = PilotManager()
 
     def new_session(self):
@@ -130,21 +178,24 @@ class Pilot(models.Model):
             if available_time < timezone.now():
                 available_time += datetime.timedelta(days=1)
 
-        elif last_session.available_time.time() == self.first_session:
+            next_available_time = available_time.replace(
+                hour=self.second_session.hour,
+                minute=self.second_session.minute
+            ) + datetime.timedelta(days=1)
+
+        elif last_session.available_time.time() == self.second_session:
 
             # First session => use same teacher as last session
             te = last_session.teaching_engine
-            available_time = timezone.now().replace(
+            available_time = last_session.available_time.replace(
                 hour=self.first_session.hour,
-                minute=self.first_session.minute)
-            if last_session.available_time.date() == timezone.now().date():
-                available_time += datetime.timedelta(days=1)
+                minute=self.first_session.minute) \
+                + datetime.timedelta(days=1)
 
             next_available_time = available_time.replace(
                 hour=self.second_session.hour,
                 minute=self.second_session.minute
-            )
-            next_available_time += datetime.timedelta(days=1)
+            ) + datetime.timedelta(days=1)
 
         else:
             # Second session => change teacher
@@ -159,8 +210,7 @@ class Pilot(models.Model):
             next_available_time = available_time.replace(
                 hour=self.first_session.hour,
                 minute=self.first_session.minute
-            )
-            next_available_time += datetime.timedelta(days=1)
+            ) + datetime.timedelta(days=1)
 
         is_evaluation = te.session_set.count() == self.n_ss
 
@@ -172,13 +222,11 @@ class Pilot(models.Model):
                 next_available_time = None
         else:
             n_iteration = self.n_iter_ss
-            next_available_time = None
 
         obj = Session.objects.create(
             user=self.user,
             available_time=available_time,
             next_available_time=next_available_time,
-            # + datetime.timedelta(minutes=0),
             n_iteration=n_iteration,
             teaching_engine=te)
 
