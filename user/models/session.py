@@ -16,7 +16,7 @@ class Session(models.Model):
     available_time = models.DateTimeField()
     next_available_time = models.DateTimeField(null=True)
     n_iteration = models.IntegerField()
-    close = models.BooleanField(default=False)
+    open = models.BooleanField(default=True)
 
     is_evaluation = models.BooleanField(default=False)
 
@@ -31,7 +31,7 @@ class Session(models.Model):
     def done(self):
         n_question = self.question_set.exclude(user_reply=None).count()
         if n_question == self.n_iteration:
-            self.close = True
+            self.open = False
             self.save()
             return True
         else:
@@ -48,7 +48,7 @@ class Session(models.Model):
     @classmethod
     def get_user_session(cls, user):
 
-        session = user.session_set.filter(close=False).first()
+        session = user.session_set.filter(open=True).first()
         if session is None:
             session = experimental_condition.session_creation(user=user)
 

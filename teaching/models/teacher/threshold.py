@@ -21,7 +21,9 @@ class Threshold(models.Model):
 
         p, seen = learner.p_seen(param=param, now=now)
         min_p = np.min(p)
-
+        print("param", param)
+        print("p", p)
+        print()
         if np.sum(seen) == self.n_item or min_p <= self.learnt_threshold:
             item_idx = np.arange(self.n_item)[seen][np.argmin(p)]
 

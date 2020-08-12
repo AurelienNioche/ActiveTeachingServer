@@ -51,6 +51,8 @@ def treat_request(r):
                 "available": True
             }
         else:
+            print("Now: ", timezone.now())
+            print("Available", session.available_time)
             return {
                 "subject": Subject.SESSION,
                 "available": False,
@@ -59,7 +61,7 @@ def treat_request(r):
 
     elif r["subject"] == Subject.QUESTION:
 
-        a = timezone.now()
+        t1 = timezone.now()
 
         u = User.objects.get(id=r["user_id"])
         previous_q = Question.objects.filter(id=r["question_id"]).first()
@@ -71,8 +73,8 @@ def treat_request(r):
                 success=r["success"])
 
         q = Question.next_question(u, previous_question=previous_q)
-        b = timezone.now()
-        print(f"Time to generate the question {b-a}")
+        t2 = timezone.now()
+        print(f"Time to generate the question {t2-t1}")
         if q is None:
             return {
                 "subject": Subject.QUESTION,

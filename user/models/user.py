@@ -39,8 +39,6 @@ class UserManager(BaseUserManager):
         user = self._create_user(email=email,
                                  password=password,
                                  condition=condition, **extra_fields)
-        from experimental_condition import experimental_condition
-        experimental_condition.user_creation(user=user)
         return user
 
 

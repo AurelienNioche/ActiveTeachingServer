@@ -15,15 +15,11 @@ class QuestionAdmin(admin.ModelAdmin):
     list_display = (
         "id", "user", "item", "correct_reply", "new",
         "user_reply", "success",
-        "time_display", "time_reply", "_possible_replies")
+        "time_display", "time_reply", "_possible_replies", "teaching_engine")
 
     @staticmethod
     def _possible_replies(obj):
         return ", ".join([p.meaning for p in obj.possible_replies.all()])
-
-    @staticmethod
-    def user(obj):
-        return obj.leitner.user
 
     @staticmethod
     def correct_reply(obj):
@@ -33,7 +29,8 @@ class QuestionAdmin(admin.ModelAdmin):
 
 class SessionAdmin(admin.ModelAdmin):
     list_display = (
-        "user", "date_creation", "available_time", "n_iteration", "close")
+        "user", "date_creation", "available_time", "next_available_time",
+        "n_iteration", "open", "is_evaluation", "teaching_engine")
 
 
 admin.site.register(User, UserAdmin)

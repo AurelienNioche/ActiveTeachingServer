@@ -9,12 +9,14 @@ from user.models.user import User
 
 from experimental_condition.models.test_leitner import TestLeitner
 from experimental_condition.models.pilot import Pilot
+from experimental_condition.models.test_active import TestActive
 
 
 def main():
     for (email, condition) in (
             ("leitner@test.com", TestLeitner.__name__),
-            ("pilot@test.com", Pilot.__name__)
+            ("pilot@test.com", Pilot.__name__),
+            ("active@test.com", TestActive.__name__)
             # ("exp_decay_thr_grid@test.com", Condition.EXP_DECAY_THR_GRID),
             # ("walsh_thr_grid@test.com", Condition.WALSH_THR_GRID),
             # ("exp_decay_samp_grid@test.com", Condition.EXP_DECAY_SAMP_GRID),
@@ -33,8 +35,7 @@ def main():
             age=33,
             mother_tongue="french",
             other_language="english",
-            condition=condition
-        )
+            condition=condition)
 
         if user is not None:
             print("Success!")

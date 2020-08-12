@@ -54,6 +54,11 @@ class TestLeitner(models.Model):
     n_iter_ss = models.IntegerField()
     objects = TestLeitnerManager()
 
+    class Meta:
+
+        db_table = 'test_leitner'
+        app_label = 'experimental_condition'
+
     def new_session(self):
         from user.models.session import Session
 

@@ -40,9 +40,10 @@ class Walsh2018(models.Model):
         db_table = 'walsh'
         app_label = 'teaching'
 
-    def p(self, item, param, now, hist, ts):
+    @staticmethod
+    def p(item, param, now, hist, ts):
 
-        self.set_param(param=param)
+        tau, s, b, m, c, x = param
 
         relevant = hist == item
         rep = ts[relevant]
@@ -55,19 +56,19 @@ class Walsh2018(models.Model):
             return 1
         else:
 
-            w = delta ** -self.x
+            w = delta ** -x
             w /= np.sum(w)
 
             _t_ = np.sum(w * delta)
             if n > 1:
                 lag = rep[1:] - rep[:-1]
-                d = self.b + self.m * np.mean(1/np.log(lag + math.e))
+                d = b + m * np.mean(1/np.log(lag + math.e))
             else:
-                d = self.b
+                d = b
 
-            _m_ = n ** self.c * _t_ ** -d
+            _m_ = n ** c * _t_ ** -d
 
-            v = (-self.tau + _m_) / self.s
+            v = (-tau + _m_) / s
             p = expit(v)
             return p
 
@@ -78,10 +79,21 @@ class Walsh2018(models.Model):
 
     def p_seen_spec_hist(self, param, now, hist, ts):
 
-        self.set_param(param=param)
-
         seen = np.zeros(self.n_item, dtype=bool)
         seen[np.unique(hist)] = True
+
+        param = np.asarray(param)
+        is_item_specific = len(param.shape) > 1
+        if is_item_specific:
+            tau = param[seen, 0]
+            s = param[seen, 1]
+            b = param[seen, 2]
+            m = param[seen, 3]
+            c = param[seen, 4]
+            x = param[seen, 5]
+
+        else:
+            tau, s, b, m, c, x = param
 
         ts = np.asarray(ts)
         hist = np.asarray(hist)
@@ -93,6 +105,11 @@ class Walsh2018(models.Model):
 
         for i_it, item in enumerate(np.flatnonzero(seen)):
 
+            if is_item_specific:
+                _x = x[i_it]
+            else:
+                _x = x
+
             is_item = hist == item
             rep = ts[is_item]
 
@@ -100,7 +117,7 @@ class Walsh2018(models.Model):
 
             delta = (now - rep)
 
-            w = delta ** -self.x
+            w = delta ** -_x
             w /= np.sum(w)
 
             _t_it = np.sum(w * delta)
@@ -114,17 +131,28 @@ class Walsh2018(models.Model):
 
         one_view = n == 1
         more_than_one = np.invert(one_view)
+
+        if is_item_specific:
+            b_one_view = b[one_view]
+            b_more_than_one = b[more_than_one]
+            c = c[more_than_one]
+            m = m[more_than_one]
+        else:
+            b_one_view = b_more_than_one = b
+
         _m_ = np.zeros(n_seen)
-        _m_[one_view] = _t_[one_view] ** - self.b
-        _m_[more_than_one] = n[more_than_one] ** self.c \
-            * _t_[more_than_one] ** - (self.b + self.m * mean_lag[more_than_one])
+        _m_[one_view] = _t_[one_view] ** - b_one_view
+        _m_[more_than_one] = n[more_than_one] ** c \
+            * _t_[more_than_one] ** - (b_more_than_one +
+                                       m * mean_lag[more_than_one])
 
         with np.errstate(divide="ignore", invalid="ignore"):
-            v = (-self.tau + _m_) / self.s
+            v = (-tau + _m_) / s
             p = expit(v)
         return p, seen
 
     def log_lik_grid(self, item, grid_param, response, timestamp):
+
         p = np.zeros(len(grid_param))
         hist = np.asarray(self.hist)
         ts = np.asarray(self.ts)
@@ -133,53 +161,6 @@ class Walsh2018(models.Model):
                           hist=hist, ts=ts)
         p = p if response else 1 - p
         return np.log(p+EPS)
-
-    @staticmethod
-    def log_lik(param, hist, success, timestamp):
-        if isinstance(param, dict):
-            tau, s, b, m, c, x = \
-                param["tau"], param["s"], param["b"], \
-                param["m"], param["c"], param["x"]
-        else:
-            tau, s, b, m, c, x = param
-
-        _m_ = np.zeros(len(hist))
-
-        for item in np.unique(hist):
-
-            is_item = hist == item
-            rep = timestamp[is_item]
-            n = len(rep)
-
-            _m_item = np.zeros(n)
-
-            _m_item[0] = - np.inf  # To adapt for xp
-            if n > 1:
-                _m_item[1] = (rep[1]-rep[0])**-b
-            for i in range(2, n):
-                delta = rep[i] - rep[:i]
-
-                w = delta ** -x
-                w /= np.sum(w)
-
-                _t_ = np.sum(w * delta)
-
-                lag = rep[1:i+1] - rep[:i]
-                d = b + m * np.mean(1 / np.log(lag + math.e))
-                _m_item[i] = i ** c * _t_ ** -d
-
-            _m_[is_item] = _m_item
-
-        with np.errstate(divide="ignore", invalid="ignore"):
-            v = (-tau + _m_) / s
-
-        p = expit(v)
-        failure = np.invert(success)
-        p[failure] = 1 - p[failure]
-        # print("hist", hist, "success", success)
-        # print("param", param, "p", p)
-        log_lik = np.log(p + EPS)
-        return log_lik.sum()
 
     def update(self, idx_last_q, last_time_reply):
 
@@ -192,10 +173,57 @@ class Walsh2018(models.Model):
 
         self.save()
 
-    def set_param(self, param):
+    # def set_param(self, param):
+    #
+    #     if isinstance(param, dict):
+    #         for k, v in param.items():
+    #             setattr(self, k, v)
+    #     else:
+    #         self.tau, self.s, self.b, self.m, self.c, self.x = param
 
-        if isinstance(param, dict):
-            for k, v in param.items():
-                setattr(self, k, v)
-        else:
-            self.tau, self.s, self.b, self.m, self.c, self.x = param
+    # @staticmethod
+    # def log_lik(param, hist, success, timestamp):
+    #     if isinstance(param, dict):
+    #         tau, s, b, m, c, x = \
+    #             param["tau"], param["s"], param["b"], \
+    #             param["m"], param["c"], param["x"]
+    #     else:
+    #         tau, s, b, m, c, x = param
+    #
+    #     _m_ = np.zeros(len(hist))
+    #
+    #     for item in np.unique(hist):
+    #
+    #         is_item = hist == item
+    #         rep = timestamp[is_item]
+    #         n = len(rep)
+    #
+    #         _m_item = np.zeros(n)
+    #
+    #         _m_item[0] = - np.inf  # To adapt for xp
+    #         if n > 1:
+    #             _m_item[1] = (rep[1] - rep[0]) ** -b
+    #         for i in range(2, n):
+    #             delta = rep[i] - rep[:i]
+    #
+    #             w = delta ** -x
+    #             w /= np.sum(w)
+    #
+    #             _t_ = np.sum(w * delta)
+    #
+    #             lag = rep[1:i + 1] - rep[:i]
+    #             d = b + m * np.mean(1 / np.log(lag + math.e))
+    #             _m_item[i] = i ** c * _t_ ** -d
+    #
+    #         _m_[is_item] = _m_item
+    #
+    #     with np.errstate(divide="ignore", invalid="ignore"):
+    #         v = (-tau + _m_) / s
+    #
+    #     p = expit(v)
+    #     failure = np.invert(success)
+    #     p[failure] = 1 - p[failure]
+    #     # print("hist", hist, "success", success)
+    #     # print("param", param, "p", p)
+    #     log_lik = np.log(p + EPS)
+    #     return log_lik.sum()

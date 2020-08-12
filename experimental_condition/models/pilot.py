@@ -40,14 +40,14 @@ class PilotManager(models.Manager):
                leitner_delay_min=2,
                eval_n_repetition=2,
                n_item=50,
-               n_iter_ss=15,
-               n_ss=2,
+               n_iter_ss=150,
+               n_ss=6,
                learnt_threshold=0.90,
                sampling_iter_limit=500,
                sampling_horizon=10,
                time_per_iter=2,
-               first_session=datetime.time(hour=10, minute=0, second=0),
-               second_session=datetime.time(hour=10, minute=10, second=0),
+               first_session=datetime.time(hour=7, minute=0, second=0, microsecond=0),
+               second_session=datetime.time(hour=7, minute=5, second=0, microsecond=0),
                is_item_specific=False):
 
         material = list(Kanji.objects.all())
@@ -67,15 +67,13 @@ class PilotManager(models.Manager):
         ev = Evaluator.objects.create(
             user=user,
             n_item=n_item,
-            n_repetition=eval_n_repetition
-        )
+            n_repetition=eval_n_repetition)
 
         leitner_te = TeachingEngine.objects.create(
             user=user,
             material=leitner_material,
             leitner=leitner,
-            evaluator=ev
-        )
+            evaluator=ev)
 
         if teacher_model == Sampling.__name__:
 
@@ -129,15 +127,13 @@ class PilotManager(models.Manager):
         ev = Evaluator.objects.create(
             user=user,
             n_item=n_item,
-            n_repetition=eval_n_repetition
-        )
+            n_repetition=eval_n_repetition)
 
         active_teaching_te = TeachingEngine.objects.create(
             user=user,
             material=active_teaching_material,
             evaluator=ev,
-            **psy_kwarg, **learner_kwarg, **teacher_kwarg
-        )
+            **psy_kwarg, **learner_kwarg, **teacher_kwarg)
 
         obj = super().create(
             user=user,
@@ -146,8 +142,7 @@ class PilotManager(models.Manager):
             n_iter_ss=n_iter_ss,
             n_ss=n_ss,
             first_session=first_session,
-            second_session=second_session
-        )
+            second_session=second_session)
         return obj
 
 
@@ -173,6 +168,11 @@ class Pilot(models.Model):
 
     objects = PilotManager()
 
+    class Meta:
+
+        db_table = 'pilot'
+        app_label = 'experimental_condition'
+
     def new_session(self):
         from user.models.session import Session
 
@@ -186,13 +186,15 @@ class Pilot(models.Model):
 
             available_time = timezone.now().replace(
                 hour=self.first_session.hour,
-                minute=self.first_session.minute)
+                minute=self.first_session.minute,
+                microsecond=self.first_session.microsecond)
             if available_time < timezone.now():
                 available_time += datetime.timedelta(days=1)
 
             next_available_time = available_time.replace(
                 hour=self.second_session.hour,
-                minute=self.second_session.minute
+                minute=self.second_session.minute,
+                microsecond=self.second_session.microsecond
             ) + datetime.timedelta(days=1)
 
         elif last_session.available_time.time() == self.second_session:
@@ -201,13 +203,15 @@ class Pilot(models.Model):
             te = last_session.teaching_engine
             available_time = last_session.available_time.replace(
                 hour=self.first_session.hour,
-                minute=self.first_session.minute) \
+                minute=self.first_session.minute,
+                microsecond=self.first_session.microsecond) \
                 + datetime.timedelta(days=1)
 
             next_available_time = available_time.replace(
                 hour=self.second_session.hour,
-                minute=self.second_session.minute
-            ) + datetime.timedelta(days=1)
+                minute=self.second_session.minute,
+                microsecond=self.second_session.microsecond) \
+                + datetime.timedelta(days=1)
 
         else:
             # Second session => change teacher

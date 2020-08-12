@@ -1,22 +1,15 @@
 from experimental_condition.models.test_leitner import TestLeitner
 from experimental_condition.models.pilot import Pilot
+from experimental_condition.models.test_active import TestActive
 
 CONDITION = {cls.__name__: cls for cls in (
-    TestLeitner, Pilot
+    TestLeitner, Pilot, TestActive
 )}
 
 
-def user_creation(user):
+def user_creation(user, *args, **kwargs):
 
-    if user.condition == TestLeitner.__name__:
-        TestLeitner.objects.create(user=user)
-
-    elif user.condition == Pilot.__name__:
-        Pilot.objects.create(user=user)
-
-    else:
-        msg = f"Condition '{user.condition}' not recognized"
-        raise ValueError(msg)
+    CONDITION[user.condition].objects.create(user=user, *args, **kwargs)
 
 
 def session_creation(user):

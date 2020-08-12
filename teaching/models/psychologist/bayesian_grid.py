@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.utils import timezone
 
 from user.models.user import User
 
@@ -12,34 +13,44 @@ EPS = np.finfo(np.float).eps
 
 class PsychologistManager(models.Manager):
 
-    def create(self, user, n_item, bounds, grid_size, is_item_specific):
+    def create(self, user, n_item, bounds, grid_size, is_item_specific,
+               init_guess=None):
 
-        grid_param = self.cp_grid_param(grid_size=grid_size,
+        gp = self.cp_grid_param(grid_size=grid_size,
                                         bounds=bounds)
-        n_param_set = grid_param.shape[0]
-        grid_param = grid_param.flatten()
+
+        n_param_set, n_param = gp.shape
+        grid_param = gp.flatten()
 
         lp = np.ones(n_param_set)
         lp -= logsumexp(lp)
+        if init_guess is None:
+            init_guess = np.dot(np.exp(lp), gp)
+
         if is_item_specific:
             log_post = np.zeros((n_item, n_param_set))
             log_post[:] = lp
             log_post = log_post.flatten()
+
+            ep = np.zeros((n_item, n_param))
+            ep[:] = init_guess
+            est_param = ep.flatten()
         else:
             log_post = lp
+            est_param = init_guess
 
         n_pres = np.zeros(n_item, dtype=int)
 
         obj = super().create(
             user=user,
             log_post=list(log_post),
+            est_param=list(est_param),
             grid_param=list(grid_param),
-            n_param=len(bounds),
+            n_param=n_param,
             n_item=n_item,
             bounds=list(np.asarray(bounds).flatten()),
             n_pres=list(n_pres),
-            is_item_specific=is_item_specific
-        )
+            is_item_specific=is_item_specific)
         return obj
 
     @staticmethod
@@ -85,6 +96,8 @@ class Psychologist(models.Model):
 
     n_pres = ArrayField(models.IntegerField(), default=list)
 
+    est_param = ArrayField(models.FloatField(), default=list)
+
     objects = PsychologistManager()
 
     class Meta:
@@ -93,6 +106,8 @@ class Psychologist(models.Model):
         app_label = 'teaching'
 
     def update(self, learner, idx_last_q, last_was_success, last_time_reply):
+
+        t1 = timezone.now()
 
         item = idx_last_q
         response = last_was_success
@@ -116,37 +131,38 @@ class Psychologist(models.Model):
                 lp -= logsumexp(lp)
                 log_post[item] = lp
                 self.log_post = list(log_post.flatten())
+
+                est_param = np.reshape(self.est_param, (self.n_item, -1))
+                est_param[item] = np.dot(np.exp(lp), gp)
+                self.est_param = list(est_param.flatten())
+
             else:
                 lp = np.asarray(self.log_post)
                 lp += log_lik
                 lp -= logsumexp(lp)
                 self.log_post = list(lp)
+
+                est_param = np.dot(np.exp(lp), gp)  # gp[np.argmax(self.log_post)]
+                self.est_param = list(est_param)
             print("Posterior of parametrization updated")
 
         self.n_pres[item] += 1
         self.save()
 
-    def inferred_learner_param(self, learner):
+        t2 = timezone.now()
+        print(f"Time to update the post dist of parameter values {t2-t1}")
 
-        gp = np.reshape(self.grid_param, (-1, self.n_param))
+    def inferred_learner_param(self):
+
+        t1 = timezone.now()
+
         if self.is_item_specific:
-
-            param = np.zeros((self.n_item, self.n_param))
-            param[:] = self.get_init_guess()
-            lp = np.reshape(self.log_post, (self.n_item, -1))
-            rep = np.asarray(learner.seen)
-            param[rep] = gp[lp[rep].argmax(axis=-1)]
+            param = np.reshape(self.est_param, (self.n_item, -1))
 
         else:
-            if np.max(self.n_pres) > 1:
-                print("Using argmax of posterior")
-                param = gp[np.argmax(self.log_post)]
-            else:
-                print("Using init guess")
-                param = self.get_init_guess()
+            param = np.asarray(self.est_param)
 
+        t2 = timezone.now()
+        print(f"Time to infer the best parameters given post dist {t2-t1}")
         return param
 
-    def get_init_guess(self):
-        bounds = np.reshape(self.bounds, (-1, 2))
-        return [np.mean(b) for b in bounds]

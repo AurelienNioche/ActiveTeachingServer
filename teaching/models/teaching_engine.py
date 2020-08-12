@@ -22,7 +22,7 @@ class TeachingEngineManager(models.Manager):
 
     def create(self, material, evaluator, *args, **kwargs):
 
-        n_item = material.count()
+        n_item = len(material)
         id_items = [m.id for m in material]
 
         obj = super().create(
@@ -161,7 +161,7 @@ class TeachingEngine(models.Model):
                 last_time_reply=last_time_reply,
                 idx_last_q=idx_last_q)
 
-            param = psychologist.inferred_learner_param(learner=learner)
+            param = psychologist.inferred_learner_param()
             if hasattr(teacher, "_revise_goal"):
                 question_idx = teacher.ask(
                     learner=learner, param=param,
