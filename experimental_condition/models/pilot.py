@@ -23,9 +23,9 @@ from teaching.models.learner.walsh import Walsh2018
 class PilotManager(models.Manager):
 
     def create(self, user,
-               psychologist_model,
-               teacher_model,
-               learner_model,
+               psychologist_model="Psychologist",
+               teacher_model="Threshold",
+               learner_model="Walsh2018",
                exp_decay_grid_size=20,
                exp_decay_bounds=((0.001, 0.04), (0.2, 0.5)),
                walsh_grid_size=10,
@@ -51,12 +51,12 @@ class PilotManager(models.Manager):
                is_item_specific=False):
 
         material = list(Kanji.objects.all())
-        total_n_item = len(material)
         selection = np.random.choice(
-            np.arange(total_n_item), size=n_item*2,
+            material, size=n_item*2,
             replace=False)
 
-        leitner_material = material[:50]
+        leitner_material = selection[:n_item]
+        active_teaching_material = selection[n_item:]
 
         leitner = Leitner.objects.create(
             user=user,
@@ -72,7 +72,7 @@ class PilotManager(models.Manager):
 
         leitner_te = TeachingEngine.objects.create(
             user=user,
-            material=material,
+            material=leitner_material,
             leitner=leitner,
             evaluator=ev
         )
@@ -99,22 +99,30 @@ class PilotManager(models.Manager):
         else:
             raise ValueError("Model not recognized")
 
-        if psychologist_model == Psychologist.__name__:
-            psy = Psychologist.objects.create(
-                user=user,
-                n_item=n_item,
-                is_item_specific=is_item_specific,
-                grid_size=exp_decay_grid_size,
-                bounds=exp_decay_bounds)
-            psy_kwarg = {"psychologist": psy}
-        else:
-            raise ValueError("Model not recognized")
-
         if learner_model == ExpDecay.__name__:
             exp_decay = ExpDecay.objects.create(
                 n_item=n_item,
                 user=user)
             learner_kwarg = {"exp_decay": exp_decay}
+            grid_kwarg = {"grid_size": exp_decay_grid_size,
+                          "bounds": exp_decay_bounds}
+        elif learner_model == Walsh2018.__name__:
+            walsh = Walsh2018.objects.create(
+                n_item=n_item,
+                user=user)
+            learner_kwarg = {"walsh": walsh}
+            grid_kwarg = {"grid_size": walsh_grid_size,
+                          "bounds": walsh_bounds}
+        else:
+            raise ValueError("Model not recognized")
+
+        if psychologist_model == Psychologist.__name__:
+            psy = Psychologist.objects.create(
+                user=user,
+                n_item=n_item,
+                is_item_specific=is_item_specific,
+                **grid_kwarg)
+            psy_kwarg = {"psychologist": psy}
         else:
             raise ValueError("Model not recognized")
 
@@ -126,7 +134,7 @@ class PilotManager(models.Manager):
 
         active_teaching_te = TeachingEngine.objects.create(
             user=user,
-            material=material,
+            material=active_teaching_material,
             evaluator=ev,
             **psy_kwarg, **learner_kwarg, **teacher_kwarg
         )
@@ -147,11 +155,15 @@ class Pilot(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    leitner_teaching_engine = models.OneToOneField(TeachingEngine,
-                                                   on_delete=models.CASCADE)
+    leitner_teaching_engine = models.OneToOneField(
+        TeachingEngine,
+        on_delete=models.CASCADE,
+        related_name="leitner_teaching_engine")
 
-    active_teaching_engine = models.OneToOneField(TeachingEngine,
-                                                  on_delete=models.CASCADE)
+    active_teaching_engine = models.OneToOneField(
+        TeachingEngine,
+        on_delete=models.CASCADE,
+        related_name="active_teaching_engine")
 
     n_iter_ss = models.IntegerField()
     n_ss = models.IntegerField()

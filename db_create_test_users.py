@@ -8,11 +8,13 @@ from user.authentication import sign_up
 from user.models.user import User
 
 from experimental_condition.models.test_leitner import TestLeitner
+from experimental_condition.models.pilot import Pilot
 
 
 def main():
     for (email, condition) in (
             ("leitner@test.com", TestLeitner.__name__),
+            ("pilot@test.com", Pilot.__name__)
             # ("exp_decay_thr_grid@test.com", Condition.EXP_DECAY_THR_GRID),
             # ("walsh_thr_grid@test.com", Condition.WALSH_THR_GRID),
             # ("exp_decay_samp_grid@test.com", Condition.EXP_DECAY_SAMP_GRID),
