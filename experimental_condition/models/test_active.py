@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
-import datetime
+# import datetime
 import numpy as np
 
 from user.models.user import User
@@ -24,11 +24,11 @@ class TestActiveManager(models.Manager):
     def create(self, user,
                psychologist_model="Psychologist",
                teacher_model="Threshold",
-               learner_model="ExpDecay",
-               exp_init_guess=(0.2, 0.0),
+               learner_model="Walsh2018",
+               # exp_init_guess=(0.2, 0.0),
                exp_decay_grid_size=20,
                exp_decay_bounds=((0.001, 0.2), (0.00, 0.5)),
-               walsh_init_guess=(1.5, 0.1, 0.2, 0.2, 0.1, 0.6),
+               # walsh_init_guess=(1.5, 0.1, 0.2, 0.2, 0.1, 0.6),
                walsh_grid_size=10,
                walsh_bounds=(
                 (0.5, 1.5),
@@ -83,7 +83,7 @@ class TestActiveManager(models.Manager):
             learner_kwarg = {"exp_decay": exp_decay}
             grid_kwarg = {"grid_size": exp_decay_grid_size,
                           "bounds": exp_decay_bounds,
-                          "init_guess": exp_init_guess}
+                          "init_guess": None}
         elif learner_model == Walsh2018.__name__:
             walsh = Walsh2018.objects.create(
                 n_item=n_item,
@@ -91,7 +91,7 @@ class TestActiveManager(models.Manager):
             learner_kwarg = {"walsh": walsh}
             grid_kwarg = {"grid_size": walsh_grid_size,
                           "bounds": walsh_bounds,
-                          "init_guess": walsh_init_guess}
+                          "init_guess": None}
         else:
             raise ValueError("Model not recognized")
 

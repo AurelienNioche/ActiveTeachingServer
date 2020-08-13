@@ -12,6 +12,8 @@ from teaching.models.learner.walsh import Walsh2018
 
 from teaching.models.teaching_engine import TeachingEngine
 
+from teaching.models.psychologist.psy_tools.psy_tools import Param, LogPost
+
 
 class TeachingEngineAdmin(admin.ModelAdmin):
     list_display = [f.name for f in TeachingEngine._meta.fields] \
@@ -56,6 +58,20 @@ class EvaluatorAdmin(admin.ModelAdmin):
 
     list_display = [f.name for f in Evaluator._meta.fields]
 
+
+class ParamAdmin(admin.ModelAdmin):
+
+    list_display = [f.name for f in Param._meta.fields]
+
+
+class LogPostAdmin(admin.ModelAdmin):
+
+    list_display = [f.name for f in LogPost._meta.fields]
+
+
+admin.site.register(LogPost, LogPostAdmin)
+
+admin.site.register(Param, ParamAdmin)
 
 admin.site.register(TeachingEngine, TeachingEngineAdmin)
 

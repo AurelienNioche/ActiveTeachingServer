@@ -17,7 +17,7 @@ class PsychologistManager(models.Manager):
                init_guess=None):
 
         gp = self.cp_grid_param(grid_size=grid_size,
-                                        bounds=bounds)
+                                bounds=bounds)
 
         n_param_set, n_param = gp.shape
         grid_param = gp.flatten()
