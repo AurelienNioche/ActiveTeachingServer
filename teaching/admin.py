@@ -5,14 +5,13 @@ from teaching.models.teacher.threshold import Threshold
 from teaching.models.teacher.sampling import Sampling
 from teaching.models.teacher.evaluator import Evaluator
 
-from teaching.models.psychologist.bayesian_grid import Psychologist
+from teaching.models.psychologist.bayesian_grid \
+    import Psychologist, Param, LogPost
 
 from teaching.models.learner.exp_decay import ExpDecay
 from teaching.models.learner.walsh import Walsh2018
 
 from teaching.models.teaching_engine import TeachingEngine
-
-from teaching.models.psychologist.psy_tools.psy_tools import Param, LogPost
 
 
 class TeachingEngineAdmin(admin.ModelAdmin):
