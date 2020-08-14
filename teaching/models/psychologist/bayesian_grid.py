@@ -38,26 +38,28 @@ class PsychologistManager(models.Manager):
             n_pres=list(n_pres),
             is_item_specific=is_item_specific)
 
+        lp_list = list(lp)
+        init_guest_list = list(init_guess)
+
         if is_item_specific:
-            log_post = np.zeros((n_item, n_param_set))
-            log_post[:] = lp
             lp_obj = [
-                LogPost(user=user, psychologist=obj, value=v, item=i)
-                for (i, v) in enumerate(log_post)
+                LogPost(user=user, psychologist=obj, value=lp_list,
+                        item=i)
+                for i in range(n_item)
             ]
             LogPost.objects.bulk_create(lp_obj)
 
-            ep = np.zeros((n_item, n_param))
-            ep[:] = init_guess
-
             ep_obj = [
-                Param(user=user, psychologist=obj, value=v, item=i)
-                for (i, v) in enumerate(ep)
+                Param(user=user, psychologist=obj, value=init_guest_list,
+                      item=i)
+                for i in range(n_item)
             ]
             Param.objects.bulk_create(ep_obj)
         else:
-            LogPost.objects.create(v=lp, user=user, psychologist=obj)
-            Param.objects.create(v=init_guess, user=user, psychologist=obj)
+            LogPost.objects.create(value=lp_list, user=user,
+                                   psychologist=obj)
+            Param.objects.create(value=init_guest_list, user=user,
+                                 psychologist=obj)
 
         return obj
 
@@ -104,7 +106,8 @@ class Psychologist(models.Model):
 
     n_pres = ArrayField(models.IntegerField(), default=list)
 
-    # est_param = ArrayField(Param)# ArrayField(models.FloatField(), default=list)
+    # est_param = ArrayField(Param)
+    # ArrayField(models.FloatField(), default=list)
 
     objects = PsychologistManager()
 
@@ -136,7 +139,7 @@ class Psychologist(models.Model):
                 # log_post = np.reshape(self.log_post, (self.n_item, -1))
                 # lp = log_post[item]
 
-                log_post = self.logpost_set.filter(item=item)
+                log_post = self.logpost_set.get(item=item)
 
                 lp = np.array(log_post.value)
                 lp += log_lik
@@ -170,7 +173,8 @@ class Psychologist(models.Model):
                 pr = self.param_set.first()
                 pr.value = list(np.dot(np.exp(lp), gp))
                 pr.save()
-                # est_param = np.dot(np.exp(lp), gp)  # gp[np.argmax(self.log_post)]
+                # est_param = np.dot(np.exp(lp), gp)
+                # gp[np.argmax(self.log_post)]
                 # self.est_param = list(est_param)
             print("Posterior of parametrization updated")
 
@@ -187,7 +191,7 @@ class Psychologist(models.Model):
         if self.is_item_specific:
             param = np.array(self.param_set.order_by('item')
                              .values_list('value', flat=True))
-            #np.reshape(self.est_param, (self.n_item, -1))
+            # np.reshape(self.est_param, (self.n_item, -1))
 
         else:
             param = np.asarray(self.param_set.first())

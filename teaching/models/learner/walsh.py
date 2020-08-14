@@ -40,38 +40,6 @@ class Walsh2018(models.Model):
         db_table = 'walsh'
         app_label = 'teaching'
 
-    @staticmethod
-    def p(item, param, now, hist, ts):
-
-        tau, s, b, m, c, x = param
-
-        relevant = hist == item
-        rep = ts[relevant]
-        n = len(rep)
-        delta = (now - rep)
-
-        if n == 0:
-            return 0
-        elif np.min(delta) == 0:
-            return 1
-        else:
-
-            w = delta ** -x
-            w /= np.sum(w)
-
-            _t_ = np.sum(w * delta)
-            if n > 1:
-                lag = rep[1:] - rep[:-1]
-                d = b + m * np.mean(1/np.log(lag + math.e))
-            else:
-                d = b
-
-            _m_ = n ** c * _t_ ** -d
-
-            v = (-tau + _m_) / s
-            p = expit(v)
-            return p
-
     def p_seen(self, param, now):
 
         return self.p_seen_spec_hist(
@@ -110,12 +78,18 @@ class Walsh2018(models.Model):
             else:
                 _x = x
 
+            print("_x", x)
+
             is_item = hist == item
             rep = ts[is_item]
 
             n_it = len(rep)
 
-            delta = (now - rep)
+            print("rep")
+
+            delta = now - rep
+
+            print("delta", delta)
 
             w = delta ** -_x
             w /= np.sum(w)
@@ -145,10 +119,13 @@ class Walsh2018(models.Model):
         _m_[more_than_one] = n[more_than_one] ** c \
             * _t_[more_than_one] ** - (b_more_than_one +
                                        m * mean_lag[more_than_one])
-
+        print("_m_", _m_,)
+        print("b_one_view", b_one_view)
+        print("_t_", _t_)
         with np.errstate(divide="ignore", invalid="ignore"):
             v = (-tau + _m_) / s
             p = expit(v)
+        print("p")
         return p, seen
 
     def log_lik_grid(self, item, grid_param, response, timestamp):
@@ -157,8 +134,8 @@ class Walsh2018(models.Model):
         hist = np.asarray(self.hist)
         ts = np.asarray(self.ts)
         for i, param in enumerate(grid_param):
-            p[i] = self.p(item=item, param=param, now=timestamp,
-                          hist=hist, ts=ts)
+            p[i] = self._p(item=item, param=param, now=timestamp,
+                           hist=hist, ts=ts)
         p = p if response else 1 - p
         return np.log(p+EPS)
 
@@ -172,6 +149,38 @@ class Walsh2018(models.Model):
         self.seen_item = list(np.flatnonzero(self.seen))
 
         self.save()
+
+    @staticmethod
+    def _p(item, param, now, hist, ts):
+
+        tau, s, b, m, c, x = param
+
+        relevant = hist == item
+        rep = ts[relevant]
+        n = len(rep)
+        delta = (now - rep)
+
+        if n == 0:
+            return 0
+        elif np.min(delta) == 0:
+            return 1
+        else:
+
+            w = delta ** -x
+            w /= np.sum(w)
+
+            _t_ = np.sum(w * delta)
+            if n > 1:
+                lag = rep[1:] - rep[:-1]
+                d = b + m * np.mean(1/np.log(lag + math.e))
+            else:
+                d = b
+
+            _m_ = n ** c * _t_ ** -d
+
+            v = (-tau + _m_) / s
+            p = expit(v)
+            return p
 
     # def set_param(self, param):
     #

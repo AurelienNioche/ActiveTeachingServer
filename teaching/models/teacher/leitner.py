@@ -32,7 +32,7 @@ class Leitner(models.Model):
     n_item = models.IntegerField()
 
     box = ArrayField(models.IntegerField(), default=list)
-    due = ArrayField(models.BigIntegerField(), default=list)
+    due = ArrayField(models.FloatField(), default=list)
 
     objects = LeitnerManager()
 

@@ -147,7 +147,8 @@ class TeachingEngine(models.Model):
 
         psychologist = self._get_psychologist()
         learner = self._get_learner()
-        now = int(timezone.now().timestamp())
+        now = timezone.now()
+        now_ts = now.timestamp()
         if psychologist is not None:
             assert learner is not None
             psychologist.update(
@@ -165,13 +166,13 @@ class TeachingEngine(models.Model):
             if hasattr(teacher, "_revise_goal"):
                 question_idx = teacher.ask(
                     learner=learner, param=param,
-                    now=now,
+                    now=now_ts,
                     session=session)
             else:
                 question_idx = teacher.ask(learner=learner, param=param,
-                                           now=now)
+                                           now=now_ts)
 
         else:
-            question_idx = teacher.ask(now=now)
+            question_idx = teacher.ask(now=now_ts)
 
         return question_idx
