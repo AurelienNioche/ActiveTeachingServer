@@ -63,7 +63,8 @@ class Evaluator(models.Model):
         items_to_eval = np.flatnonzero(self.seen)
         n_seen = np.sum(self.seen)
         self.evaluation_schedule = list(np.hstack(
-            [np.random.choice(items_to_eval, replace=False, size=n_seen)]))
+            [np.random.choice(items_to_eval, replace=False, size=n_seen)
+             for _ in range(self.n_repetition)]))
         self.save()
 
     def update(self, idx_last_q):

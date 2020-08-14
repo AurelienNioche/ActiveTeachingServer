@@ -78,18 +78,12 @@ class Walsh2018(models.Model):
             else:
                 _x = x
 
-            print("_x", x)
-
             is_item = hist == item
             rep = ts[is_item]
 
             n_it = len(rep)
 
-            print("rep")
-
             delta = now - rep
-
-            print("delta", delta)
 
             w = delta ** -_x
             w /= np.sum(w)
@@ -119,13 +113,11 @@ class Walsh2018(models.Model):
         _m_[more_than_one] = n[more_than_one] ** c \
             * _t_[more_than_one] ** - (b_more_than_one +
                                        m * mean_lag[more_than_one])
-        print("_m_", _m_,)
-        print("b_one_view", b_one_view)
-        print("_t_", _t_)
+
         with np.errstate(divide="ignore", invalid="ignore"):
             v = (-tau + _m_) / s
             p = expit(v)
-        print("p")
+
         return p, seen
 
     def log_lik_grid(self, item, grid_param, response, timestamp):

@@ -14,7 +14,7 @@ class TestLeitnerManager(models.Manager):
 
     def create(self, user, n_item=50, leitner_delay_factor=2,
                leitner_delay_min=2, eval_n_repetition=2,
-               n_iter_ss=15):
+               n_iter_ss=15, n_ss=2):
 
         material = Kanji.objects.all()[:n_item]
 
@@ -39,7 +39,7 @@ class TestLeitnerManager(models.Manager):
 
         obj = super().create(user=user,
                              teaching_engine=te,
-                             n_iter_ss=n_iter_ss)
+                             n_iter_ss=n_iter_ss, n_ss=n_ss)
         return obj
 
 
@@ -52,6 +52,8 @@ class TestLeitner(models.Model):
                                            on_delete=models.CASCADE)
 
     n_iter_ss = models.IntegerField()
+    n_ss = models.IntegerField()
+
     objects = TestLeitnerManager()
 
     class Meta:
@@ -62,11 +64,22 @@ class TestLeitner(models.Model):
     def new_session(self):
         from user.models.session import Session
 
+        if self.teaching_engine.evaluator.eval_done:
+            return None
+
+        is_evaluation = self.teaching_engine.session_set.count() == self.n_ss
+
+        if is_evaluation:
+            n_iteration = self.teaching_engine.evaluator.n_eval
+        else:
+            n_iteration = self.n_iter_ss
+
         obj = Session.objects.create(
             user=self.user,
             available_time=timezone.now(),
-            next_available_time=timezone.now(),
-            n_iteration=self.n_iter_ss,
-            teaching_engine=self.teaching_engine)
+            next_available_time=None,
+            n_iteration=n_iteration,
+            teaching_engine=self.teaching_engine,
+            is_evaluation=is_evaluation)
 
         return obj

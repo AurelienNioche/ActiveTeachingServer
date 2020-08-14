@@ -39,7 +39,7 @@ class ExpDecay(models.Model):
     seen_item = ArrayField(models.IntegerField(), default=list)
 
     n_pres = ArrayField(models.IntegerField(), default=list)
-    last_pres = ArrayField(models.BigIntegerField(), default=list)
+    last_pres = ArrayField(models.FloatField(), default=list)
 
     objects = ExpDecayManager()
 

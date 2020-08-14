@@ -228,22 +228,26 @@ class Pilot(models.Model):
                 minute=self.first_session.minute
             ) + datetime.timedelta(days=1)
 
-        is_evaluation = te.session_set.count() == self.n_ss
-
-        if is_evaluation:
-            if te.evaluator.eval_done:
-                return None
-            else:
-                n_iteration = te.evaluator.n_eval
-                next_available_time = None
+        if te.evaluator.eval_done:
+            return None
         else:
-            n_iteration = self.n_iter_ss
+            is_evaluation = te.session_set.count() == self.n_ss
 
-        obj = Session.objects.create(
-            user=self.user,
-            available_time=available_time,
-            next_available_time=next_available_time,
-            n_iteration=n_iteration,
-            teaching_engine=te)
+            if is_evaluation:
+                if te.evaluator.eval_done:
+                    return None
+                else:
+                    n_iteration = te.evaluator.n_eval
+                    next_available_time = None
+            else:
+                n_iteration = self.n_iter_ss
 
-        return obj
+            obj = Session.objects.create(
+                user=self.user,
+                available_time=available_time,
+                next_available_time=next_available_time,
+                n_iteration=n_iteration,
+                teaching_engine=te,
+                is_evaluation=is_evaluation)
+
+            return obj

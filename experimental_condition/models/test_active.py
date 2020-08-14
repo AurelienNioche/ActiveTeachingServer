@@ -23,7 +23,7 @@ class TestActiveManager(models.Manager):
 
     def create(self, user,
                psychologist_model="Psychologist",
-               teacher_model="Threshold",
+               teacher_model="Sampling",
                learner_model="Walsh2018",
                # exp_init_guess=(0.2, 0.0),
                exp_decay_grid_size=20,
@@ -39,11 +39,11 @@ class TestActiveManager(models.Manager):
                 (0.6, 0.6)),
                eval_n_repetition=2,
                n_item=50,
-               n_iter_ss=150,
-               n_ss=2,
+               n_iter_ss=100,
+               n_ss=1,
                learnt_threshold=0.90,
                sampling_iter_limit=500,
-               sampling_horizon=10,
+               sampling_horizon=100,
                time_per_iter=2,
                is_item_specific=True):
 
@@ -82,16 +82,14 @@ class TestActiveManager(models.Manager):
                 user=user)
             learner_kwarg = {"exp_decay": exp_decay}
             grid_kwarg = {"grid_size": exp_decay_grid_size,
-                          "bounds": exp_decay_bounds,
-                          "init_guess": None}
+                          "bounds": exp_decay_bounds}
         elif learner_model == Walsh2018.__name__:
             walsh = Walsh2018.objects.create(
                 n_item=n_item,
                 user=user)
             learner_kwarg = {"walsh": walsh}
             grid_kwarg = {"grid_size": walsh_grid_size,
-                          "bounds": walsh_bounds,
-                          "init_guess": None}
+                          "bounds": walsh_bounds}
         else:
             raise ValueError("Model not recognized")
 
@@ -147,19 +145,17 @@ class TestActive(models.Model):
     def new_session(self):
         from user.models.session import Session
 
+        if self.teaching_engine.evaluator.eval_done:
+            return None
+
         available_time = timezone.now()
         next_available_time = timezone.now()
-
-        print("creating sesssion available at", available_time)
 
         is_evaluation = self.teaching_engine.session_set.count() == self.n_ss
 
         if is_evaluation:
-            if self.teaching_engine.evaluator.eval_done:
-                return None
-            else:
-                n_iteration = self.teaching_engine.evaluator.n_eval
-                next_available_time = None
+            n_iteration = self.teaching_engine.evaluator.n_eval
+            next_available_time = None
         else:
             n_iteration = self.n_iter_ss
 
@@ -168,6 +164,7 @@ class TestActive(models.Model):
             available_time=available_time,
             next_available_time=next_available_time,
             n_iteration=n_iteration,
-            teaching_engine=self.teaching_engine)
+            teaching_engine=self.teaching_engine,
+            is_evaluation=is_evaluation)
 
         return obj
