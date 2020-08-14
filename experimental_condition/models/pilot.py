@@ -24,14 +24,14 @@ class PilotManager(models.Manager):
 
     def create(self, user,
                psychologist_model="Psychologist",
-               teacher_model="Threshold",
+               teacher_model="Sampling",
                learner_model="Walsh2018",
                exp_decay_grid_size=20,
                exp_decay_bounds=((0.001, 0.04), (0.2, 0.5)),
                walsh_grid_size=10,
                walsh_bounds=(
-                (0.8, 1.2),
-                (0.03, 0.05),
+                (0.5, 1.5),
+                (0.005, 0.10),
                 (0.005, 0.20),
                 (0.005, 0.20),
                 (0.1, 0.1),
@@ -39,16 +39,18 @@ class PilotManager(models.Manager):
                leitner_delay_factor=2,
                leitner_delay_min=2,
                eval_n_repetition=2,
-               n_item=50,
-               n_iter_ss=150,
+               n_item=100,
+               n_iter_ss=100,
                n_ss=6,
                learnt_threshold=0.90,
                sampling_iter_limit=500,
-               sampling_horizon=10,
+               sampling_horizon=100,
                time_per_iter=2,
-               first_session=datetime.time(hour=7, minute=0, second=0, microsecond=0),
-               second_session=datetime.time(hour=7, minute=5, second=0, microsecond=0),
-               is_item_specific=False):
+               first_session=datetime.time(hour=7, minute=0, second=0,
+                                           microsecond=0),
+               second_session=datetime.time(hour=7, minute=5, second=0,
+                                            microsecond=0),
+               is_item_specific=True):
 
         material = list(Kanji.objects.all())
         selection = np.random.choice(
