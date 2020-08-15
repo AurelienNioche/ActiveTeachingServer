@@ -7,9 +7,9 @@ application = get_wsgi_application()
 from user.authentication import sign_up
 from user.models.user import User
 
-from experimental_condition.models.test_leitner import TestLeitner
 from experimental_condition.models.pilot import Pilot
-from experimental_condition.models.test_active import TestActive
+# from experimental_condition.models.test_active import TestActive
+# from experimental_condition.models.test_leitner import TestLeitner
 
 
 def main():

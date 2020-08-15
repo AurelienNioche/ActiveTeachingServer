@@ -46,9 +46,9 @@ class PilotManager(models.Manager):
                sampling_iter_limit=500,
                sampling_horizon=100,
                time_per_iter=2,
-               first_session=datetime.time(hour=7, minute=0, second=0,
+               first_session=datetime.time(hour=12, minute=30, second=0,
                                            microsecond=0),
-               second_session=datetime.time(hour=7, minute=5, second=0,
+               second_session=datetime.time(hour=12, minute=35, second=0,
                                             microsecond=0),
                is_item_specific=True):
 
@@ -181,54 +181,47 @@ class Pilot(models.Model):
         user_sessions = \
             self.user.session_set.order_by("available_time").reverse()
 
+        fs, ss = self.first_session, self.second_session
+
         last_session = user_sessions.first()
         if last_session is None:
             te = self.active_teaching_engine if np.random.choice([0, 1]) \
                 else self.leitner_teaching_engine
 
-            available_time = timezone.now().replace(
-                hour=self.first_session.hour,
-                minute=self.first_session.minute,
-                microsecond=self.first_session.microsecond)
+            available_time = self.set_time(timezone.now(), fs)
+
             if available_time < timezone.now():
                 available_time += datetime.timedelta(days=1)
 
-            next_available_time = available_time.replace(
-                hour=self.second_session.hour,
-                minute=self.second_session.minute,
-                microsecond=self.second_session.microsecond
-            ) + datetime.timedelta(days=1)
+            next_available_time = self.set_time(available_time, ss) \
+                + datetime.timedelta(days=1)
 
         elif last_session.available_time.time() == self.second_session:
 
             # First session => use same teacher as last session
             te = last_session.teaching_engine
-            available_time = last_session.available_time.replace(
-                hour=self.first_session.hour,
-                minute=self.first_session.minute,
-                microsecond=self.first_session.microsecond) \
+            available_time = self.set_time(
+                last_session.available_time, fs) \
                 + datetime.timedelta(days=1)
 
-            next_available_time = available_time.replace(
-                hour=self.second_session.hour,
-                minute=self.second_session.minute,
-                microsecond=self.second_session.microsecond) \
+            next_available_time = self.set_time(available_time, ss) \
                 + datetime.timedelta(days=1)
 
-        else:
+        elif last_session.available_time.time() == self.first_session:
             # Second session => change teacher
             if last_session.teaching_engine == self.leitner_teaching_engine:
                 te = self.active_teaching_engine
             else:
                 te = self.leitner_teaching_engine
 
-            available_time = last_session.available_time.replace(
-                hour=self.second_session.hour,
-                minute=self.second_session.minute)
-            next_available_time = available_time.replace(
-                hour=self.first_session.hour,
-                minute=self.first_session.minute
-            ) + datetime.timedelta(days=1)
+            available_time = \
+                self.set_time(last_session.available_time, ss)
+            next_available_time = \
+                self.set_time(available_time, fs) \
+                + datetime.timedelta(days=1)
+
+        else:
+            raise ValueError("Last session available time doesn't make sense!")
 
         if te.evaluator.eval_done:
             return None
@@ -253,3 +246,11 @@ class Pilot(models.Model):
                 is_evaluation=is_evaluation)
 
             return obj
+
+    @staticmethod
+    def set_time(datetime_obj, time_obj):
+        return datetime_obj.replace(
+            hour=time_obj.hour,
+            minute=time_obj.minute,
+            second=time_obj.second,
+            microsecond=time_obj.microsecond)
