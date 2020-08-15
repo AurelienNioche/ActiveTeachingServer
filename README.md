@@ -247,7 +247,7 @@ In case of permission errors:
         User=www-data
         WorkingDirectory=/var/www/html/ActiveTeachingServer
         ExecStart=/var/www/html/ActiveTeachingServer/venv/bin/python /var/www/html/ActiveTeachingServer/venv/bin/daphne -p 8001 ActiveTeachingServer.asgi:application
-        Restart=always
+   @     Restart=always
         
         [Install]
         WantedBy=multi-user.target

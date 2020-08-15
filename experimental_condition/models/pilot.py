@@ -46,9 +46,9 @@ class PilotManager(models.Manager):
                sampling_iter_limit=500,
                sampling_horizon=100,
                time_per_iter=2,
-               first_session=datetime.time(hour=12, minute=30, second=0,
+               first_session=datetime.time(hour=7, minute=0, second=0,
                                            microsecond=0),
-               second_session=datetime.time(hour=12, minute=35, second=0,
+               second_session=datetime.time(hour=7, minute=0, second=0,
                                             microsecond=0),
                is_item_specific=True):
 
