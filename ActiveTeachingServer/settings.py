@@ -35,6 +35,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'graphic_interface.apps.GraphicInterfaceConfig',
     'experimental_condition.apps.ExperimentalConditionConfig',
     'teaching.apps.TeachingConfig',
     'user.apps.UserConfig',
