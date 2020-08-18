@@ -1,9 +1,10 @@
 pytz
 python-dateutil
-Django
+django
 numpy
 pandas
 scipy
 websocket-client
 requests
 channels
+whitenoise
