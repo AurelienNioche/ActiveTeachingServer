@@ -30,7 +30,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
-    "195.148.124.155",
     "activeteaching.research.comnet.aalto.fi"]
 
 # Application definition
