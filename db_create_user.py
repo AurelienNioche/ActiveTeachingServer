@@ -28,6 +28,8 @@ def main():
         erase_user = input("erase existing user (enter 'yes' or 'y' to continue)?")
         if erase_user:
             User.objects.filter(email=email).first().delete()
+            print("previous user erased")
+            print(f"email:{email}")
         else:
             print("can not create user with same email. Operation canceled")
             exit(0)
