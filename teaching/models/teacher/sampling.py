@@ -61,7 +61,11 @@ class Sampling(models.Model):
             np.hstack((learner.ts, timestamps[:-1]))
         eval_ts = timestamps[-1]
 
-        items = np.hstack((learner.seen_item, [learner.n_seen, ]))
+        if learner.n_seen < self.n_item:
+            items = np.hstack((learner.seen_item,
+                               [learner.n_seen, ]))
+        else:
+            items = np.arange(self.n_item)
 
         n_perm = self.n_item ** horizon
 
