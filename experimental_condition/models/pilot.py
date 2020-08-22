@@ -48,9 +48,13 @@ class PilotManager(models.Manager):
                time_per_iter=2,
                first_session=datetime.time(hour=7, minute=0, second=0,
                                            microsecond=0),
-               second_session=datetime.time(hour=7, minute=0, second=0,
+               second_session=datetime.time(hour=7, minute=5, second=0,
                                             microsecond=0),
                is_item_specific=True):
+
+        assert first_session != second_session, \
+            "Scheduled times for first session and " \
+            "second session have to be different"
 
         material = list(Kanji.objects.all())
         selection = np.random.choice(

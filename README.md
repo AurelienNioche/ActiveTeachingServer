@@ -190,6 +190,11 @@ Remove the db
 
 * Clone repository in /var/www/html/
 
+* Give permissions to read/write/execute to the dedicated folder 
+(here: `/var/www/html/`):
+
+    sudo chmod -R o+rwx /var/www/html/
+ 
 * Create a virtual environment
 
 
@@ -198,18 +203,27 @@ Remove the db
         virtualenv -p python3 venv
         source venv/bin/activate
         pip install -r requirements.txt
-        
-In case of permission errors:
 
-    sudo chmod -R o+rwx /var
+* Create the database and make the migrations
+
+
+        createdb ActiveTeachingServer --owner postgres
+        python3 manage.py makemigrations
+        python3 manage.py migrate
+
+* 'Collect' the static files
+
+    
+    python3 manage.py collectstatic
+ 
     
 * Install Apache2
 
-
-        sudo apt install apache2 libapache2-mod-wsgi-py3
-        a2enmod rewrite
-        a2enmod proxy_http
-        a2enmod proxy_wstunnel
+    
+    sudo apt install apache2 libapache2-mod-wsgi-py3
+    a2enmod rewrite
+    a2enmod proxy_http
+    a2enmod proxy_wstunnel
    
 * Edit apache2 config file `/etc/apache2/sites-enabled/000-default.conf`:
 
@@ -218,22 +232,22 @@ In case of permission errors:
     
         ....
             
+        Alias /static /var/www/html/ActiveTeachingServer/static
+
+        <Directory /var/www/html/ActiveTeachingServer/static>
+                Require all granted
+        </Directory>
+
+        ProxyPass "/admin" "http://127.0.0.1:8001/admin"
+        ProxyPassReverse "/admin" "http://127.0.0.1:8001/admin"
+
         RewriteEngine on
         RewriteCond %{HTTP:UPGRADE} ^WebSocket$ [NC,OR]
         RewriteCond %{HTTP:CONNECTION} ^Upgrade$ [NC]
-        RewriteRule .* ws://127.0.0.1:8001%{REQUEST_URI} [P,QSA,L]
-    
-    
-        WSGIDaemonProcess active-teaching python-home=/var/www/html/ActiveTeachingServer/venv python-path=/var/www/html/ActiveTeachingServer
-        WSGIProcessGroup active-teaching
-    
-        WSGIScriptAlias /admin /var/www/html/ActiveTeachingServer/ActiveTeachingServer/wsgi.py process-group=active-teaching
-    
-        <Directory /var/www/html/ActiveTeachingServer/ActiveTeachingServer>
-            <Files wsgi.py>
-                Require all granted
-            </Files>
-        </Directory>
+        RewriteRule .* ws://0.0.0.0:8001%{REQUEST_URI} [P,QSA,L]
+
+    </VirtualHost>
+
     
 * Create Daphne daemon file `/etc/systemd/system/daphne.service`
 
@@ -246,15 +260,26 @@ In case of permission errors:
         Type=simple
         User=www-data
         WorkingDirectory=/var/www/html/ActiveTeachingServer
+        Environment=DJANGO_SETTINGS_MODULE=ActiveTeachingServer.settings
         ExecStart=/var/www/html/ActiveTeachingServer/venv/bin/python /var/www/html/ActiveTeachingServer/venv/bin/daphne -p 8001 ActiveTeachingServer.asgi:application
-   @     Restart=always
+        Restart=always
         
         [Install]
         WantedBy=multi-user.target
-        
-    * Run `sudo systemctl daemon-reload`
-    * `sudo systemctl start daphne.service`
-    * Check with `sudo systemctl status daphne.service`
+
+* Launch Daphne and Apache:
+    
+    
+    sudo systemctl daemon-reload
+    sudo systemctl start daphne.service
+    sudo systemctl start apache2.service
+
+    
+* [Optional] Check that everything is fine for Daphne/Apache: 
+
+    
+    sudo systemctl status daphne.service
+    sudo systemctl status apache2.service
     
     
 ### Build Unity

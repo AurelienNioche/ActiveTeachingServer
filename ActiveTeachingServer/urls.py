@@ -15,12 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from django.conf.urls import url
-from django.views.generic.base import RedirectView
-from django.shortcuts import render
+# from django.conf.urls import url
+# from django.views.generic.base import RedirectView
+# from django.shortcuts import render
 
 
 urlpatterns = [
-    path('', admin.site.urls),
+    path('admin/', admin.site.urls),
+    # path('', include('graphic_interface.urls')),
     # url(r'^$', RedirectView.as_view(url='/admin')),
 ]

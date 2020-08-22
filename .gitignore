@@ -129,3 +129,5 @@ ActiveTeachingServer/credentials.py
 
 # Old things
 teaching/models/teacher/.old/*
+
+static/

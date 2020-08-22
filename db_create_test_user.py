@@ -15,7 +15,7 @@ from experimental_condition.models.pilot import Pilot
 def main():
     for (email, condition) in (
             # ("leitner@test.com", TestLeitner.__name__),
-            ("carlos@test.com", Pilot.__name__),
+            ("pilot@test.com", Pilot.__name__),
             # ("active@test.com", TestActive.__name__)
             # ("exp_decay_thr_grid@test.com", Condition.EXP_DECAY_THR_GRID),
             # ("walsh_thr_grid@test.com", Condition.WALSH_THR_GRID),
