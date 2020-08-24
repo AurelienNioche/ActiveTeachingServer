@@ -13,6 +13,11 @@ from experimental_condition.models.pilot import Pilot
 # from experimental_condition.models.test_active import TestActive
 # from experimental_condition.models.test_leitner import TestLeitner
 
+from teaching.models.learner.walsh import Walsh2018
+from teaching.models.learner.exp_decay import ExpDecay
+
+LEARNER_MODELS = (Walsh2018.__name__, ExpDecay.__name__)
+
 
 def main():
 
@@ -35,6 +40,9 @@ def main():
             exit(0)
 
     password = input("password:")
+
+    learner_model = input(f"learner model ({' or '.join(LEARNER_MODELS)}):")
+
     gender = input("gender (enter '0' for female and '1' for male):")
     if gender not in ('0', '1'):
         raise ValueError
@@ -65,7 +73,8 @@ def main():
         other_language=other_language,
         condition=condition,
         first_session=first_session,
-        second_session=second_session
+        second_session=second_session,
+        learner_model=learner_model
     )
 
     if user is not None:
