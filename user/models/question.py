@@ -98,6 +98,7 @@ class Question(models.Model):
                 #     teacher.user.session_set.filter(close=False).first()
 
                 question = cls.objects.create(
+                    user=user,
                     teaching_engine=teaching_engine,
                     session=session,
                     item=item,

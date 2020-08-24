@@ -52,8 +52,8 @@ def main():
             }
             row_list.append(row)
 
-    pd.DataFrame(row_list).to_csv(os.path.join("results.csv"))
-
+    df = pd.DataFrame(row_list)
+    df.to_csv(os.path.join("results.csv"))
 
 if __name__ == "__main__":
 
