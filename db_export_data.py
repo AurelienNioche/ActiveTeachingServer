@@ -5,6 +5,8 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 import pandas as pd
+from tqdm import tqdm
+
 from user.models.user import User
 from user.models.question import Question
 
@@ -13,7 +15,7 @@ def main():
     row_list = []
 
     users = User.objects.filter(is_superuser=False)
-    for u in users:
+    for u in tqdm(users):
 
         qs = Question.objects.filter(user=u).order_by("time_display")
         for q in qs:
@@ -52,6 +54,7 @@ def main():
 
     df = pd.DataFrame(row_list)
     df.to_csv(os.path.join("results.csv"))
+
 
 if __name__ == "__main__":
 
