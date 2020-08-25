@@ -27,7 +27,7 @@ class PilotManager(models.Manager):
                teacher_model="Sampling",
                learner_model="Walsh2018",
                exp_decay_grid_size=20,
-               exp_decay_bounds=((0.001, 0.04), (0.2, 0.5)),
+               exp_decay_bounds=((0.001, 0.2), (0.00, 0.5)),
                walsh_grid_size=10,
                walsh_bounds=(
                 (0.5, 1.5),
@@ -56,7 +56,13 @@ class PilotManager(models.Manager):
             "Scheduled times for first session and " \
             "second session have to be different"
 
-        material = list(Kanji.objects.all())
+        u = User.objects.filter(email="carlos@test.com").first()
+        m = []
+        for te in u.teachingengine_set.all():
+            for m_id in list(te.material.values_list('id', flat=True)):
+                m.append(m_id)
+
+        material = list(Kanji.objects.exclude(id__in=m))
         selection = np.random.choice(
             material, size=n_item*2,
             replace=False)
