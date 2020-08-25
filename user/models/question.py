@@ -12,9 +12,11 @@ from user.models.user import User
 
 class QuestionManager(models.Manager):
 
-    def create(self, teaching_engine, session, item, new, possible_replies):
+    def create(self, user, teaching_engine,
+               session, item, new, possible_replies):
 
         obj = super().create(
+            user=user,
             session=session,
             item=item,
             new=new, teaching_engine=teaching_engine)
