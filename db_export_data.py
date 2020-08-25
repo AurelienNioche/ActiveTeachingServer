@@ -8,8 +8,6 @@ import pandas as pd
 from user.models.user import User
 from user.models.question import Question
 
-from experimental_condition.models.pilot import Pilot
-
 
 def main():
     row_list = []
@@ -58,3 +56,4 @@ def main():
 if __name__ == "__main__":
 
     main()
+    print("Done!")
