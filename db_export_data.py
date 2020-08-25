@@ -33,7 +33,7 @@ def main():
             elif te.walsh is not None:
                 learner_md = "walsh"
             else:
-                raise ValueError
+                learner_md = None
 
             row = {
                 "user": u.email,
