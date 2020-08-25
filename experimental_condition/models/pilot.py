@@ -56,13 +56,15 @@ class PilotManager(models.Manager):
             "Scheduled times for first session and " \
             "second session have to be different"
 
-        u = User.objects.filter(email="carlos@test.com").first()
-        m = []
-        for te in u.teachingengine_set.all():
-            for m_id in list(te.material.values_list('id', flat=True)):
-                m.append(m_id)
+        # u = User.objects.filter(email="carlos@test.com").first()
+        # m = []
+        # for te in u.teachingengine_set.all():
+        #     for m_id in list(te.material.values_list('id', flat=True)):
+        #         m.append(m_id)
+        # material = list(Kanji.objects.exclude(id__in=m))
 
-        material = list(Kanji.objects.exclude(id__in=m))
+        material = list(Kanji.objects.all())
+
         selection = np.random.choice(
             material, size=n_item*2,
             replace=False)
