@@ -12,9 +12,10 @@ EPS = np.finfo(np.float).eps
 
 class Walsh2018Manager(models.Manager):
 
-    def create(self, user, n_item):
+    def create(self, user, n_item, cst_time):
 
         obj = super().create(user=user, n_item=n_item,
+                             cst_time=cst_time,
                              seen=list(np.zeros(n_item)))
         return obj
 
@@ -24,10 +25,11 @@ class Walsh2018(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     n_item = models.IntegerField()
+    cst_time = models.FloatField()
 
     seen = ArrayField(models.BooleanField(), default=list)
 
-    ts = ArrayField(models.BigIntegerField(), default=list)
+    ts = ArrayField(models.FloatField(), default=list)
     hist = ArrayField(models.IntegerField(), default=list)
 
     n_seen = models.IntegerField(default=0)
@@ -63,8 +65,11 @@ class Walsh2018(models.Model):
         else:
             tau, s, b, m, c, x = param
 
-        ts = np.asarray(ts)
-        hist = np.asarray(hist)
+        ts = np.array(ts)
+        hist = np.array(hist)
+
+        ts *= self.cst_time
+        now *= self.cst_time
 
         n_seen = np.sum(seen)
         n = np.zeros(n_seen)
@@ -123,8 +128,11 @@ class Walsh2018(models.Model):
     def log_lik_grid(self, item, grid_param, response, timestamp):
 
         p = np.zeros(len(grid_param))
-        hist = np.asarray(self.hist)
-        ts = np.asarray(self.ts)
+        hist = np.array(self.hist)
+        ts = np.array(self.ts)
+
+        ts *= self.cst_time
+
         for i, param in enumerate(grid_param):
             p[i] = self._p(item=item, param=param, now=timestamp,
                            hist=hist, ts=ts)
@@ -144,6 +152,9 @@ class Walsh2018(models.Model):
 
     @staticmethod
     def _p(item, param, now, hist, ts):
+        """
+        warning ts should be already scaled here by cst_time
+        """
 
         tau, s, b, m, c, x = param
 

@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
-# import datetime
+import datetime
 import numpy as np
 
 from user.models.user import User
@@ -25,25 +25,24 @@ class TestActiveManager(models.Manager):
                psychologist_model="Psychologist",
                teacher_model="Sampling",
                learner_model="Walsh2018",
-               # exp_init_guess=(0.2, 0.0),
                exp_decay_grid_size=20,
                exp_decay_bounds=((0.001, 0.2), (0.00, 0.5)),
-               # walsh_init_guess=(1.5, 0.1, 0.2, 0.2, 0.1, 0.6),
+               exp_cst_time=1 / (24 * 60**2),
                walsh_grid_size=10,
                walsh_bounds=(
-                (0.5, 1.5),
-                (0.005, 0.10),
-                (0.005, 0.20),
-                (0.005, 0.20),
-                (0.1, 0.1),
-                (0.6, 0.6)),
+                       (0.5, 1.5),
+                       (0.001, 0.10),
+                       (0.001, 0.20),
+                       (0.001, 0.20),
+                       (0.1, 0.1),
+                       (0.6, 0.6)),
+               walsh_cst_time=1 / (24 * 60**2),
                eval_n_repetition=2,
                n_item=50,
                n_iter_ss=100,
                n_ss=1,
                learnt_threshold=0.90,
-               sampling_iter_limit=500,
-               sampling_horizon=100,
+               sampling_n_sample=500,
                time_per_iter=2,
                is_item_specific=True):
 
@@ -60,8 +59,7 @@ class TestActiveManager(models.Manager):
                 user=user,
                 n_item=n_item,
                 learnt_threshold=learnt_threshold,
-                iter_limit=sampling_iter_limit,
-                horizon=sampling_horizon,
+                n_sample=sampling_n_sample,
                 time_per_iter=time_per_iter)
             teacher_kwarg = {"sampling": sampling}
 
@@ -79,14 +77,17 @@ class TestActiveManager(models.Manager):
         if learner_model == ExpDecay.__name__:
             exp_decay = ExpDecay.objects.create(
                 n_item=n_item,
-                user=user)
+                user=user,
+                cst_time=exp_cst_time)
             learner_kwarg = {"exp_decay": exp_decay}
             grid_kwarg = {"grid_size": exp_decay_grid_size,
                           "bounds": exp_decay_bounds}
+
         elif learner_model == Walsh2018.__name__:
             walsh = Walsh2018.objects.create(
                 n_item=n_item,
-                user=user)
+                user=user,
+                cst_time=walsh_cst_time)
             learner_kwarg = {"walsh": walsh}
             grid_kwarg = {"grid_size": walsh_grid_size,
                           "bounds": walsh_bounds}
@@ -149,7 +150,7 @@ class TestActive(models.Model):
             return None
 
         available_time = timezone.now()
-        next_available_time = timezone.now()
+        next_available_time = timezone.now() + datetime.timedelta(days=1)
 
         is_evaluation = self.teaching_engine.session_set.count() == self.n_ss
 

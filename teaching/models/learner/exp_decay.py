@@ -10,7 +10,7 @@ EPS = np.finfo(np.float).eps
 
 class ExpDecayManager(models.Manager):
 
-    def create(self, user, n_item):
+    def create(self, user, n_item, cst_time):
 
         n_pres = list(np.zeros(n_item, dtype=int))
         last_pres = [None for _ in range(n_item)]
@@ -21,7 +21,8 @@ class ExpDecayManager(models.Manager):
             seen=seen,
             n_pres=n_pres,
             last_pres=last_pres,
-            n_item=n_item)
+            n_item=n_item,
+            cst_time=cst_time)
         return obj
 
 
@@ -30,9 +31,11 @@ class ExpDecay(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     n_item = models.IntegerField()
+    cst_time = models.FloatField()
 
     seen = ArrayField(models.BooleanField(), default=list)
-    ts = ArrayField(models.BigIntegerField(), default=list)
+
+    ts = ArrayField(models.FloatField(), default=list)
     hist = ArrayField(models.IntegerField(), default=list)
 
     n_seen = models.IntegerField(default=0)
@@ -66,6 +69,8 @@ class ExpDecay(models.Model):
         last_pres = last_pres[seen]
         delta = now - last_pres
 
+        delta *= self.cst_time
+
         p = np.exp(-fr * delta)
         return p, seen
 
@@ -95,6 +100,8 @@ class ExpDecay(models.Model):
         fr = init_forget * (1-rep_effect) ** (n_pres[seen] - 1)
 
         delta = now - last_pres[seen]
+        delta *= self.cst_time
+
         p = np.exp(-fr * delta)
         return p, seen
 
@@ -104,6 +111,8 @@ class ExpDecay(models.Model):
             * (1 - grid_param[:, 1]) ** (self.n_pres[item] - 1)
 
         delta = timestamp - self.last_pres[item]
+        delta *= self.cst_time
+
         p_success = np.exp(- fr * delta)
 
         p = p_success if response else 1 - p_success
@@ -113,14 +122,12 @@ class ExpDecay(models.Model):
 
     def update(self, idx_last_q, last_time_reply):
 
-        ltr = int(last_time_reply)
-
-        self.last_pres[idx_last_q] = ltr
+        self.last_pres[idx_last_q] = last_time_reply
         self.n_pres[idx_last_q] += 1
 
         self.seen[idx_last_q] = True
         self.hist.append(idx_last_q)
-        self.ts.append(ltr)
+        self.ts.append(last_time_reply)
 
         self.n_seen = np.sum(self.seen)
         self.seen_item = list(np.flatnonzero(self.seen))

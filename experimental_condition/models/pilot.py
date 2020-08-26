@@ -28,14 +28,16 @@ class PilotManager(models.Manager):
                learner_model="Walsh2018",
                exp_decay_grid_size=20,
                exp_decay_bounds=((0.001, 0.2), (0.00, 0.5)),
+               exp_cst_time=(1/60**2)/24,
                walsh_grid_size=10,
                walsh_bounds=(
-                (0.5, 1.5),
-                (0.005, 0.10),
-                (0.005, 0.20),
-                (0.005, 0.20),
-                (0.1, 0.1),
-                (0.6, 0.6)),
+                       (0.5, 1.5),
+                       (0.001, 0.10),
+                       (0.001, 0.20),
+                       (0.001, 0.20),
+                       (0.1, 0.1),
+                       (0.6, 0.6)),
+               walsh_cst_time=1/(24 * 60**2),
                leitner_delay_factor=2,
                leitner_delay_min=2,
                eval_n_repetition=2,
@@ -43,8 +45,7 @@ class PilotManager(models.Manager):
                n_iter_ss=100,
                n_ss=6,
                learnt_threshold=0.90,
-               sampling_iter_limit=500,
-               sampling_horizon=100,
+               sampling_n_sample=500,
                time_per_iter=2,
                first_session=datetime.time(hour=7, minute=0, second=0,
                                            microsecond=0),
@@ -95,8 +96,7 @@ class PilotManager(models.Manager):
                 user=user,
                 n_item=n_item,
                 learnt_threshold=learnt_threshold,
-                iter_limit=sampling_iter_limit,
-                horizon=sampling_horizon,
+                n_sample=sampling_n_sample,
                 time_per_iter=time_per_iter)
             teacher_kwarg = {"sampling": sampling}
 
@@ -114,14 +114,16 @@ class PilotManager(models.Manager):
         if learner_model == ExpDecay.__name__:
             exp_decay = ExpDecay.objects.create(
                 n_item=n_item,
-                user=user)
+                user=user,
+                cst_time=exp_cst_time)
             learner_kwarg = {"exp_decay": exp_decay}
             grid_kwarg = {"grid_size": exp_decay_grid_size,
                           "bounds": exp_decay_bounds}
         elif learner_model == Walsh2018.__name__:
             walsh = Walsh2018.objects.create(
                 n_item=n_item,
-                user=user)
+                user=user,
+                cst_time=walsh_cst_time)
             learner_kwarg = {"walsh": walsh}
             grid_kwarg = {"grid_size": walsh_grid_size,
                           "bounds": walsh_bounds}

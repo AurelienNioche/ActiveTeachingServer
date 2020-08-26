@@ -30,13 +30,13 @@ class Question(models.Model):
     N_POSSIBLE_REPLIES = 6
 
     # Set at the moment of the creation ----------------------------------
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     teaching_engine = models.ForeignKey(TeachingEngine,
-                                        on_delete=models.CASCADE, null=True)
+                                        on_delete=models.CASCADE)
 
-    session = models.ForeignKey(Session, on_delete=models.CASCADE, null=True)
-    item = models.ForeignKey(Kanji, on_delete=models.SET_NULL, null=True)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    item = models.ForeignKey(Kanji, on_delete=models.PROTECT)
 
     possible_replies = models.ManyToManyField(Meaning,
                                               related_name="possible_replies")
