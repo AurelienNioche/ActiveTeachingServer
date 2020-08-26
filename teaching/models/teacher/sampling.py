@@ -72,7 +72,7 @@ class Sampling(models.Model):
                     new_ts=new_ts, eval_ts=eval_ts,
                     learner=learner)
 
-        if np.min(r1) != np.max(r1):
+        if np.all(r1 == r1[0]):
             r = r1
         else:
             r = r2
