@@ -3,6 +3,7 @@ from django.contrib import admin
 from teaching.models.teacher.leitner import Leitner
 from teaching.models.teacher.threshold import Threshold
 from teaching.models.teacher.sampling import Sampling
+from teaching.models.teacher.recursive import Recursive
 from teaching.models.teacher.evaluator import Evaluator
 
 from teaching.models.psychologist.bayesian_grid \
@@ -36,6 +37,11 @@ class ThresholdAdmin(admin.ModelAdmin):
 class SamplingAdmin(admin.ModelAdmin):
 
     list_display = [f.name for f in Sampling._meta.fields]
+
+
+class RecursiveAdmin(admin.ModelAdmin):
+
+    list_display = [f.name for f in Recursive._meta.fields]
 
 
 class PsychologistAdmin(admin.ModelAdmin):
@@ -79,6 +85,7 @@ admin.site.register(Psychologist, PsychologistAdmin)
 admin.site.register(Leitner, LeitnerAdmin)
 admin.site.register(Threshold, ThresholdAdmin)
 admin.site.register(Sampling, SamplingAdmin)
+admin.site.register(Recursive, RecursiveAdmin)
 
 admin.site.register(ExpDecay, ExpDecayAdmin)
 admin.site.register(Walsh2018, WalshAdmin)

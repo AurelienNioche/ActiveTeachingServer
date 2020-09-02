@@ -31,10 +31,10 @@ class ExperimentManager(models.Manager):
     GRID_SIZE = 20
     CST_TIME = 1
 
-    N_SESSION = 2
-    N_ITER_PER_SESSION = 4
+    N_SESSION = 6
+    N_ITER_PER_SESSION = 100
 
-    N_ITEM = 600
+    N_ITEM = 500
 
     LEARNT_THRESHOLD = 0.90
 
@@ -47,8 +47,8 @@ class ExperimentManager(models.Manager):
     LEITNER_DELAY_FACTOR = 2
     LEITNER_DELAY_MIN = 2
 
-    TIME_DELTA_TWO_TEACHERS = datetime.timedelta(seconds=2)#datetime.timedelta(minutes=5)
-    TIME_DELTA_TWO_SESSIONS = datetime.timedelta(seconds=10) ##days=1)
+    TIME_DELTA_TWO_TEACHERS = datetime.timedelta(minutes=5)
+    TIME_DELTA_TWO_SESSIONS = datetime.timedelta(days=1)
 
     def create(self, user,
                first_session=datetime.time(hour=7, minute=0, second=0,
