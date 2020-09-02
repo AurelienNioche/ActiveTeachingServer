@@ -21,6 +21,8 @@ LEARNER_MODELS = (Walsh2018.__name__, ExpDecay.__name__)
 
 def main():
 
+    print("WARNING!!!!! This is the creation script for PILOT!")
+
     condition = Pilot.__name__
 
     # input("condition (only current option is 'Pilot'):")

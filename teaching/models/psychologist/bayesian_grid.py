@@ -14,18 +14,18 @@ EPS = np.finfo(np.float).eps
 class PsychologistManager(models.Manager):
 
     def create(self, user, n_item, bounds, grid_size, is_item_specific,
-               init_guess=None):
+               grid_methods):
 
         gp = self.cp_grid_param(grid_size=grid_size,
-                                bounds=bounds)
+                                bounds=bounds, grid_methods=grid_methods)
 
         n_param_set, n_param = gp.shape
         grid_param = gp.flatten()
 
         lp = np.ones(n_param_set)
         lp -= logsumexp(lp)
-        if init_guess is None:
-            init_guess = np.dot(np.exp(lp), gp)
+
+        init_guess = np.dot(np.exp(lp), gp)
 
         n_pres = np.zeros(n_item, dtype=int)
 
@@ -73,13 +73,17 @@ class PsychologistManager(models.Manager):
         return arr.reshape(-1, la)
 
     @classmethod
-    def cp_grid_param(cls, grid_size, bounds):
+    def cp_grid_param(cls, grid_size, bounds, grid_methods):
         bounds = np.asarray(bounds)
+        grid_methods = np.asarray(grid_methods)
+
         diff = bounds[:, 1] - bounds[:, 0] > 0
         not_diff = np.invert(diff)
 
-        values = np.atleast_2d([np.linspace(*b, num=grid_size)
-                                for b in bounds[diff]])
+        values = np.atleast_2d(
+            [m(*b, num=grid_size) for (b, m) in
+             zip(bounds[diff], grid_methods[diff])])
+
         var = cls.cartesian_product(*values)
         grid = np.zeros((max(1, len(var)), len(bounds)))
         if np.sum(diff):

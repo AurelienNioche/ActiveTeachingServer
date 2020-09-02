@@ -72,7 +72,8 @@ class Question(models.Model):
     @classmethod
     def next_question(cls, user, previous_question):
 
-        if previous_question is not None and previous_question.session.done:
+        if previous_question is not None \
+                and not previous_question.session.is_still_open():
             question = None
 
         else:

@@ -246,7 +246,7 @@ class Pilot(models.Model):
                 if te.evaluator.eval_done:
                     return None
                 else:
-                    n_iteration = te.evaluator.n_eval
+                    n_iteration = te.evaluator.get_n_eval()
                     next_available_time = None
             else:
                 n_iteration = self.n_iter_ss

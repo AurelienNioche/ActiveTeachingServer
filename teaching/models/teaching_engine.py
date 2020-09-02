@@ -9,6 +9,7 @@ from user.models.user import User
 from teaching.models.teacher.leitner import Leitner
 from teaching.models.teacher.threshold import Threshold
 from teaching.models.teacher.sampling import Sampling
+from teaching.models.teacher.recursive import Recursive
 from teaching.models.teacher.evaluator import Evaluator
 # from teaching.models.teacher.mcts import MCTSTeacher
 
@@ -55,9 +56,9 @@ class TeachingEngine(models.Model):
         Sampling,
         on_delete=models.CASCADE, null=True)
 
-    # mcts = models.OneToOneField(
-    #     MCTSTeacher,
-    #     on_delete=models.CASCADE, null=True)
+    recursive = models.OneToOneField(
+        Recursive,
+        on_delete=models.CASCADE, null=True)
 
     psychologist = models.OneToOneField(
         Psychologist,
@@ -90,8 +91,8 @@ class TeachingEngine(models.Model):
         elif self.threshold is not None:
             return self.threshold
 
-        # elif self.mcts is not None:
-        #     return self.mcts
+        elif self.recursive is not None:
+            return self.recursive
 
         elif self.sampling is not None:
             return self.sampling
@@ -139,40 +140,61 @@ class TeachingEngine(models.Model):
               session):
 
         teacher = self._get_teacher()
-        if hasattr(teacher, "update"):
+        now = timezone.now()
+        now_ts = now.timestamp()
+
+        if teacher.__class__ == Leitner:
             teacher.update(
                 last_was_success=last_was_success,
                 last_time_reply=last_time_reply,
                 idx_last_q=idx_last_q)
+            question_idx = teacher.ask(now=now_ts)
+        else:
 
-        psychologist = self._get_psychologist()
-        learner = self._get_learner()
-        now = timezone.now()
-        now_ts = now.timestamp()
-        if psychologist is not None:
+            psychologist = self._get_psychologist()
+            learner = self._get_learner()
+
+            assert psychologist is not None
             assert learner is not None
             psychologist.update(
                 last_was_success=last_was_success,
                 last_time_reply=last_time_reply,
                 idx_last_q=idx_last_q,
-                learner=learner
-            )
+                learner=learner)
 
             learner.update(
                 last_time_reply=last_time_reply,
                 idx_last_q=idx_last_q)
 
             param = psychologist.inferred_learner_param()
-            if hasattr(teacher, "_revise_goal"):
+
+            if teacher.__class__ == Threshold:
+                question_idx = teacher.ask(learner=learner, param=param,
+                                           now=now_ts)
+
+            elif teacher.__class__ == Recursive:
+                assert learner.__class__ == ExpDecay
+                next_sessions = self.session_set.filter(
+                    open=True,
+                    is_evaluation=False,
+                ).exclude(id=session.id)
+                eval_time = \
+                    self.session_set.filter(is_evaluation=True).first()\
+                        .available_time
+                question_idx = teacher.ask(
+                    learner=learner,
+                    param=param,
+                    now=now_ts,
+                    session=session,
+                    next_sessions=next_sessions,
+                    eval_time=eval_time)
+
+            elif teacher.__class__ == Sampling:
                 question_idx = teacher.ask(
                     learner=learner, param=param,
                     now=now_ts,
                     session=session)
             else:
-                question_idx = teacher.ask(learner=learner, param=param,
-                                           now=now_ts)
-
-        else:
-            question_idx = teacher.ask(now=now_ts)
+                raise not NotImplementedError
 
         return question_idx

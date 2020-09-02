@@ -92,8 +92,8 @@ def treat_request(r):
                 "question": q.item.value,
                 "possible_replies": [p.meaning for p in pr],
                 "is_new_question": q.new,
-                "n_iteration": q.session.n_iteration,
-                "iter": q.session.iter
+                "n_iteration": int(q.session.get_n_iteration()),
+                "iter": q.session.get_iter()
             }
 
     else:

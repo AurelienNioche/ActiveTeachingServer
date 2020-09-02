@@ -155,7 +155,7 @@ class TestActive(models.Model):
         is_evaluation = self.teaching_engine.session_set.count() == self.n_ss
 
         if is_evaluation:
-            n_iteration = self.teaching_engine.evaluator.n_eval
+            n_iteration = self.teaching_engine.evaluator.get_n_eval()
             next_available_time = None
         else:
             n_iteration = self.n_iter_ss

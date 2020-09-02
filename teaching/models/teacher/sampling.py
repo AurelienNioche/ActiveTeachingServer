@@ -26,7 +26,7 @@ class Sampling(models.Model):
 
         next_ss_available = session.next_available_time.timestamp()
         ss_n_iter = session.n_iteration
-        ss_it = session.iter
+        ss_it = session.get_iter()
 
         h = ss_n_iter - ss_it
         ts = now + np.arange(h) * self.time_per_iter
@@ -88,8 +88,8 @@ class Sampling(models.Model):
         p_seen, seen = learner.p_seen_spec_hist(
             param=param, hist=new_hist,
             ts=new_ts,
-            now=eval_ts
-        )
+            now=eval_ts)
+
         return np.sum(p_seen > self.learnt_threshold), np.sum(p_seen)
 
     def ask(self, learner, param, now, session):

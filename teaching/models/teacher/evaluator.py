@@ -49,13 +49,12 @@ class Evaluator(models.Model):
             self.make_evaluation_schedule()
         item = self.evaluation_schedule[self.iter]
         self.iter += 1
-        if self.iter == self.n_eval:
+        if self.iter == self.get_n_eval():
             self.eval_done = True
         self.save()
         return item
 
-    @property
-    def n_eval(self):
+    def get_n_eval(self):
         return np.sum(self.seen) * self.n_repetition
 
     def make_evaluation_schedule(self):

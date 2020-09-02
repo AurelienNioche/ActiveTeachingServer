@@ -15,7 +15,7 @@ class Session(models.Model):
     date_creation = models.DateTimeField(auto_now_add=True)
     available_time = models.DateTimeField()
     next_available_time = models.DateTimeField(null=True)
-    n_iteration = models.IntegerField()
+    n_iteration = models.IntegerField(null=True)
     open = models.BooleanField(default=True)
 
     is_evaluation = models.BooleanField(default=False)
@@ -27,20 +27,33 @@ class Session(models.Model):
         db_table = 'session'
         app_label = 'user'
 
-    @property
-    def done(self):
-        n_question = self.question_set.exclude(user_reply=None).count()
-        if n_question == self.n_iteration:
-            self.open = False
-            self.save()
-            return True
+    def is_still_open(self):
+        if self.is_evaluation:
+            if self.teaching_engine.evaluator.eval_done:
+                self.open = False
+                self.save()
+            else:
+                return True
         else:
-            return False
+            n_question = self.question_set.exclude(user_reply=None).count()
+            if n_question == self.n_iteration:
+                self.open = False
+                self.save()
+                return False
+            else:
+                return True
 
-    @property
-    def iter(self):
+    def get_iter(self):
         n_question = self.question_set.exclude(user_reply=None).count()
         return n_question
+
+    def get_n_iteration(self):
+        if self.n_iteration is not None:
+            return self.n_iteration
+        elif self.is_evaluation:
+            return self.teaching_engine.evaluator.get_n_eval()
+        else:
+            raise ValueError
 
     def is_available(self):
         return self.available_time <= timezone.now()
@@ -48,7 +61,8 @@ class Session(models.Model):
     @classmethod
     def get_user_session(cls, user):
 
-        session = user.session_set.filter(open=True).first()
+        session = user.session_set.filter(open=True)\
+            .order_by("available_time").first()
         if session is None:
             session = experimental_condition.session_creation(user=user)
 
