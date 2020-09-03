@@ -8,13 +8,13 @@ application = get_wsgi_application()
 from user.authentication import sign_up
 from user.models.user import User
 
-from experimental_condition.models.experiment import Experiment
+from experimental_condition.models.experiment import RecursiveCondition
 
 
 def main():
 
-    email = "xp@test.com"
-    condition = Experiment.__name__
+    email = "recursive@test.com"
+    condition = RecursiveCondition.__name__
 
     User.objects.filter(email=email).delete()
 
@@ -26,8 +26,8 @@ def main():
         mother_tongue="french",
         other_language="english",
         condition=condition,
-        first_session=timezone.now()
-    )
+        first_session=timezone.now(),
+        begin_with_active=True)
 
     if user is not None:
         print("Success!")

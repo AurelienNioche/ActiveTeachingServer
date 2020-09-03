@@ -10,15 +10,35 @@ from pytz import timezone
 from user.authentication import sign_up
 from user.models.user import User
 
-from experimental_condition.models.experiment import Experiment
+from experimental_condition.models.experiment \
+    import ThresholdCondition, RecursiveCondition
 
 
 def main():
 
-    condition = Experiment.__name__
-
     print("WELCOME! This will help you to create a user!")
 
+    while True:
+        condition = input("condition (enter '0' for 'threshold' and '1' for 'recursive'):")
+        if condition not in ('0', '1'):
+            print("I did not get the answer! Try again!")
+        else:
+            break
+
+    condition = RecursiveCondition.__name__ if int(condition) \
+        else ThresholdCondition.__name__
+
+    print(f"condition selected: {condition}")
+
+    while True:
+        begin_with_active = input(
+            "teacher to begin with (enter '0' for 'leitner' and '1' for 'active'):")
+        if begin_with_active not in ('0', '1'):
+            print("I did not get the answer! Try again!")
+        else:
+            break
+
+    begin_with_active = bool(int(begin_with_active))
     # input("condition (only current option is 'Pilot'):")
     # if condition not in (Pilot.__name__, ):
     #     raise ValueError("Condition not recognized")
@@ -83,7 +103,8 @@ def main():
         mother_tongue=mother_tongue,
         other_language=other_language,
         condition=condition,
-        first_session=first_session)
+        first_session=first_session,
+        begin_with_active=begin_with_active)
 
     if user is not None:
         print("Success!")

@@ -24,12 +24,6 @@ from teaching.models.learner.exp_decay import ExpDecay
 # from django.contrib.postgres.fields import ArrayField
 
 
-class LeitnerParam:
-
-    LEITNER_DELAY_FACTOR = 2
-    LEITNER_DELAY_MIN = 2
-
-
 class Task:
 
     BOUNDS = [[0.0000001, 100.0], [0.0001, 0.99]]
@@ -44,23 +38,31 @@ class Task:
 
     LEARNT_THRESHOLD = 0.90
 
-    TIME_PER_ITER = 2
+    TIME_PER_ITER = 4
 
     IS_ITEM_SPECIFIC = True
 
     EVAL_N_REPETITION = 2
 
-    TIME_DELTA_TWO_TEACHERS = datetime.timedelta(minutes=5)
-    TIME_DELTA_TWO_SESSIONS = datetime.timedelta(days=1)
+    TIME_DELTA_TWO_TEACHERS = datetime.timedelta(
+        seconds=TIME_PER_ITER*N_ITER_PER_SESSION)
+    TIME_DELTA_TWO_SESSIONS = datetime.timedelta(
+        days=1)
+
+    LEITNER_DELAY_FACTOR = 2
+    LEITNER_DELAY_MIN = TIME_PER_ITER
 
     @classmethod
     def create_sessions(cls, active_teaching_engine,
                         leitner_teaching_engine,
-                        first_session, user):
+                        first_session, user,
+                        begin_with_active):
 
         from user.models.session import Session
 
         teaching_engines = [active_teaching_engine, leitner_teaching_engine]
+        if not begin_with_active:
+            teaching_engines.reverse()
 
         session_time = []
 
@@ -111,8 +113,8 @@ class Task:
         leitner = Leitner.objects.create(
             user=user,
             n_item=Task.N_ITEM,
-            delay_factor=LeitnerParam.LEITNER_DELAY_FACTOR,
-            delay_min=LeitnerParam.LEITNER_DELAY_MIN)
+            delay_factor=cls.LEITNER_DELAY_FACTOR,
+            delay_min=cls.LEITNER_DELAY_MIN)
 
         ev = Evaluator.objects.create(
             user=user,
@@ -221,15 +223,7 @@ class Task:
 
 class RecursiveConditionManager(models.Manager):
 
-    def create(self, user,
-               first_session=datetime.time(hour=7, minute=0, second=0,
-                                           microsecond=0),
-               second_session=datetime.time(hour=7, minute=5, second=0,
-                                            microsecond=0)):
-
-        assert first_session != second_session, \
-            "Scheduled times for first session and " \
-            "second session have to be different"
+    def create(self, user, first_session, begin_with_active):
 
         leitner_m, active_teaching_m = Task.create_material()
 
@@ -244,7 +238,8 @@ class RecursiveConditionManager(models.Manager):
         Task.create_sessions(
             active_teaching_engine=active_teaching_te,
             leitner_teaching_engine=leitner_te,
-            first_session=first_session, user=user)
+            first_session=first_session, user=user,
+            begin_with_active=begin_with_active)
 
         obj = super().create(user=user)
         return obj
@@ -267,15 +262,7 @@ class RecursiveCondition(models.Model):
 
 class ThresholdConditionManager(models.Manager):
 
-    def create(self, user,
-               first_session=datetime.time(hour=7, minute=0, second=0,
-                                           microsecond=0),
-               second_session=datetime.time(hour=7, minute=5, second=0,
-                                            microsecond=0)):
-
-        assert first_session != second_session, \
-            "Scheduled times for first session and " \
-            "second session have to be different"
+    def create(self, user, first_session, begin_with_active):
 
         leitner_m, active_teaching_m = Task.create_material()
 
@@ -290,7 +277,8 @@ class ThresholdConditionManager(models.Manager):
         Task.create_sessions(
             active_teaching_engine=active_teaching_te,
             leitner_teaching_engine=leitner_te,
-            first_session=first_session, user=user)
+            first_session=first_session, user=user,
+            begin_with_active=begin_with_active)
 
         obj = super().create(user=user)
         return obj
