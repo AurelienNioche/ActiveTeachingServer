@@ -13,7 +13,7 @@ from experimental_condition.models.experiment import ThresholdCondition
 
 def main():
 
-    email = "xp@test.com"
+    email = "thr@test.com"
     condition = ThresholdCondition.__name__
 
     User.objects.filter(email=email).delete()

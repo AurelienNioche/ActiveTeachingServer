@@ -13,7 +13,7 @@ from experimental_condition.models.experiment import RecursiveCondition
 
 def main():
 
-    email = "recursive@test.com"
+    email = "rec@test.com"
     condition = RecursiveCondition.__name__
 
     User.objects.filter(email=email).delete()
