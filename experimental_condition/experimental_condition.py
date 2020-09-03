@@ -1,10 +1,12 @@
 from experimental_condition.models.test_leitner import TestLeitner
 from experimental_condition.models.pilot import Pilot
-from experimental_condition.models.experiment import Experiment
+from experimental_condition.models.experiment import \
+    ThresholdCondition, RecursiveCondition
 from experimental_condition.models.test_active import TestActive
 
 CONDITION = {cls.__name__: cls for cls in (
-    TestLeitner, Pilot, TestActive, Experiment
+    TestLeitner, Pilot, TestActive,
+    ThresholdCondition, RecursiveCondition
 )}
 
 
