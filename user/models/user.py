@@ -46,6 +46,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     FEMALE = 0
     MALE = 1
+    OTHER = 2
 
     email = models.EmailField(unique=True)
 

@@ -27,7 +27,8 @@ def main():
         other_language="english",
         condition=condition,
         first_session=timezone.now(),
-        begin_with_active=True)
+        begin_with_active=True,
+        is_item_specific=True)
 
     if user is not None:
         print("Success!")

@@ -40,8 +40,6 @@ class Task:
 
     TIME_PER_ITER = 4
 
-    IS_ITEM_SPECIFIC = True
-
     EVAL_N_REPETITION = 2
 
     TIME_DELTA_TWO_TEACHERS = datetime.timedelta(
@@ -149,7 +147,8 @@ class Task:
         return leitner_m, active_teaching_m
 
     @classmethod
-    def create_exp_decay_recursive_engine(cls, user, material):
+    def create_exp_decay_recursive_engine(cls, user, material,
+                                          is_item_specific):
 
         exp_decay = ExpDecay.objects.create(
             n_item=cls.N_ITEM,
@@ -160,7 +159,7 @@ class Task:
         psy = Psychologist.objects.create(
             user=user,
             n_item=cls.N_ITEM,
-            is_item_specific=cls.IS_ITEM_SPECIFIC,
+            is_item_specific=is_item_specific,
             grid_size=cls.GRID_SIZE,
             grid_methods=cls.GRID_METHODS,
             bounds=cls.BOUNDS
@@ -187,7 +186,8 @@ class Task:
             psychologist=psy)
 
     @classmethod
-    def create_exp_decay_threshold_engine(cls, user, material):
+    def create_exp_decay_threshold_engine(cls, user, material,
+                                          is_item_specific):
 
         exp_decay = ExpDecay.objects.create(
             n_item=cls.N_ITEM,
@@ -197,7 +197,7 @@ class Task:
         psy = Psychologist.objects.create(
             user=user,
             n_item=cls.N_ITEM,
-            is_item_specific=cls.IS_ITEM_SPECIFIC,
+            is_item_specific=is_item_specific,
             grid_size=cls.GRID_SIZE,
             grid_methods=cls.GRID_METHODS,
             bounds=cls.BOUNDS)
@@ -223,7 +223,8 @@ class Task:
 
 class RecursiveConditionManager(models.Manager):
 
-    def create(self, user, first_session, begin_with_active):
+    def create(self, user, first_session, begin_with_active,
+               is_item_specific):
 
         leitner_m, active_teaching_m = Task.create_material()
 
@@ -233,7 +234,8 @@ class RecursiveConditionManager(models.Manager):
 
         active_teaching_te = Task.create_exp_decay_recursive_engine(
             user=user,
-            material=active_teaching_m)
+            material=active_teaching_m,
+            is_item_specific=is_item_specific)
 
         Task.create_sessions(
             active_teaching_engine=active_teaching_te,
@@ -262,7 +264,8 @@ class RecursiveCondition(models.Model):
 
 class ThresholdConditionManager(models.Manager):
 
-    def create(self, user, first_session, begin_with_active):
+    def create(self, user, first_session, begin_with_active,
+               is_item_specific):
 
         leitner_m, active_teaching_m = Task.create_material()
 
@@ -272,7 +275,8 @@ class ThresholdConditionManager(models.Manager):
 
         active_teaching_te = Task.create_exp_decay_threshold_engine(
             user=user,
-            material=active_teaching_m)
+            material=active_teaching_m,
+            is_item_specific=is_item_specific)
 
         Task.create_sessions(
             active_teaching_engine=active_teaching_te,

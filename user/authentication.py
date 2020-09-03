@@ -13,8 +13,10 @@ def login(email, password):
     return authenticate(email=email, password=password)
 
 
-def sign_up(email, password, gender, age,
-            mother_tongue, other_language, condition, *args, **kwargs):
+def sign_up(email, password, condition,
+            gender=None, age=None,
+            mother_tongue=None, other_language=None,
+            *args, **kwargs):
 
     """
         Creates a new learner and returns its id
