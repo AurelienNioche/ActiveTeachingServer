@@ -26,8 +26,8 @@ from teaching.models.learner.exp_decay import ExpDecay
 
 class Task:
 
-    BOUNDS = [[0.0000001, 100.0], [0.0001, 0.99]]
-    GRID_METHODS = [np.geomspace, np.linspace]
+    BOUNDS = [[0.0000001, 0.1], [0.0001, 0.9999]]
+    GRID_METHODS = [np.linspace, np.linspace]
     GRID_SIZE = 20
     CST_TIME = 1
 
