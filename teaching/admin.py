@@ -25,8 +25,8 @@ class TeachingEngineAdmin(admin.ModelAdmin):
 
 
 class LeitnerAdmin(admin.ModelAdmin):
-    list_display = (
-        "delay_factor", "delay_min", "n_item", "box", "due")
+    list_display = [f.name for f in Leitner._meta.fields]
+        # ("delay_factor", "delay_min", "n_item", "box", "due")
 
 
 class ThresholdAdmin(admin.ModelAdmin):
