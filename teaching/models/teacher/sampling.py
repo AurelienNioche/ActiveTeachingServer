@@ -13,7 +13,7 @@ class Sampling(models.Model):
     n_item = models.IntegerField()
     learnt_threshold = models.FloatField()
 
-    n_sample = models.IntegerField()
+    n_samples = models.IntegerField()
 
     time_per_iter = models.IntegerField()
 
@@ -47,7 +47,7 @@ class Sampling(models.Model):
 
         n_perm = self.n_item ** horizon
 
-        if n_perm < self.n_sample:
+        if n_perm < self.n_samples:
 
             r1 = np.zeros(n_perm)
             r2 = np.zeros(n_perm)
@@ -61,10 +61,10 @@ class Sampling(models.Model):
 
         else:
 
-            r1 = np.zeros(self.n_sample)
-            r2 = np.zeros(self.n_sample)
-            first = np.zeros(self.n_sample, dtype=int)
-            for i in range(self.n_sample):
+            r1 = np.zeros(self.n_samples)
+            r2 = np.zeros(self.n_samples)
+            first = np.zeros(self.n_samples, dtype=int)
+            for i in range(self.n_samples):
                 future = np.random.choice(items, replace=True, size=horizon)
                 first[i] = future[0]
                 r1[i], r2[i] = self._value_future(
