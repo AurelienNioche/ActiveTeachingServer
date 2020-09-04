@@ -9,6 +9,7 @@ from pytz import timezone
 import pandas as pd
 
 from user.authentication import sign_up
+from user.models.user import User
 
 from experimental_condition.models.experiment \
     import ThresholdCondition, RecursiveCondition
@@ -16,7 +17,9 @@ from experimental_condition.models.experiment \
 
 def main():
 
-    df = pd.read_csv("20200903-active-teaching-data.csv", index_col=[0])
+    df = pd.read_csv("20200904-active-teaching-data.csv", index_col=[0], sep=';')
+
+    assert len(df["AnonName"].unique()) == len(df["AnonName"])
 
     conditions = {
         0: (RecursiveCondition.__name__, True),
@@ -30,36 +33,42 @@ def main():
 
     for idx_row, row in df.iterrows():
 
-        day, month, year = row["StartDate"].split(".")
-        hour, minute = row["SessionStartTime"].split(":")
-
-        hour = f"{int(hour):02d}"
-        minute = f"{int(minute):02d}"
-
-        day = f"{int(day):02d}"
-        month = f"{int(month):02d}"
-
-        first_session_string = f"{year}-{month}-{day} {hour}:{minute}"
-        first_session = datetime.datetime.fromisoformat(first_session_string)
-        first_session = timezone("Europe/Helsinki").localize(first_session)
-        first_session = first_session.astimezone(timezone('UTC'))
-
         email = f"{row['AnonName']}@aalto.fi"
-        password = str(row["Password"])
-        cd, is_item_specific = conditions[cd_idx]
+        if User.objects.filter(email=email).first() is None:
 
-        user = sign_up(
-                    email=email,
-                    password=password,
-                    condition=cd,
-                    first_session=first_session,
-                    begin_with_active=begin_with_active,
-                    is_item_specific=is_item_specific)
+            day, month, year = row["StartDate"].split(".")
+            hour, minute = row["SessionStartTime"].split(":")
 
-        if user is not None:
-            print(f"User '{email}' created with success!")
+            hour = f"{int(hour):02d}"
+            minute = f"{int(minute):02d}"
+
+            day = f"{int(day):02d}"
+            month = f"{int(month):02d}"
+
+            first_session_string = f"{year}-{month}-{day} {hour}:{minute}"
+            first_session = datetime.datetime.fromisoformat(first_session_string)
+            first_session = timezone("Europe/Helsinki").localize(first_session)
+            first_session = first_session.astimezone(timezone('UTC'))
+
+            password = str(row["Password"])
+            cd, is_item_specific = conditions[cd_idx]
+
+            user = sign_up(
+                        email=email,
+                        password=password,
+                        condition=cd,
+                        first_session=first_session,
+                        begin_with_active=begin_with_active,
+                        is_item_specific=is_item_specific)
+
+            if user is not None:
+                print(f"User '{email}' created with success!")
+            else:
+                raise ValueError("WARNING!!! Something went wrong!")
+
         else:
-            raise ValueError("WARNING!!! Something went wrong!")
+            print(f"I will skip the user '{email}', "
+                  f"he/she is already existing!")
 
         cd_idx += 1
 

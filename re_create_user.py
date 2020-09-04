@@ -16,10 +16,10 @@ from experimental_condition.models.experiment import ThresholdCondition
 
 def main():
 
-    previous_email = "peacock@aalto.fi"
-    password = "5433"
+    previous_email = "name_to_replace@aalto.fi"
+    password = "password"
 
-    previous_u = User.objects.filter(email=previous_email).first()
+    previous_u = User.objects.get(email=previous_email)
     condition = previous_u.condition
 
     new_time = timezone("Europe/Helsinki")\
