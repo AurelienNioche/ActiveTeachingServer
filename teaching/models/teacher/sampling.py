@@ -14,7 +14,6 @@ class Sampling(models.Model):
     learnt_threshold = models.FloatField()
 
     n_sample = models.IntegerField()
-    iter_limit = models.IntegerField(null=True, blank=True)
 
     time_per_iter = models.IntegerField()
 
