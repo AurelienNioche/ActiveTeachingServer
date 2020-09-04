@@ -15,4 +15,4 @@ class Kanji(models.Model):
         app_label = 'teaching_material'
 
     def __str__(self):
-        return getattr(self, "kanji")
+        return getattr(self, "value")

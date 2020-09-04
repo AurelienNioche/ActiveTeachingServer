@@ -110,9 +110,6 @@ class Psychologist(models.Model):
 
     n_pres = ArrayField(models.IntegerField(), default=list)
 
-    # est_param = ArrayField(Param)
-    # ArrayField(models.FloatField(), default=list)
-
     objects = PsychologistManager()
 
     class Meta:
@@ -140,8 +137,6 @@ class Psychologist(models.Model):
 
             # Update prior
             if self.is_item_specific:
-                # log_post = np.reshape(self.log_post, (self.n_item, -1))
-                # lp = log_post[item]
 
                 log_post = self.logpost_set.get(item=item)
 
@@ -152,19 +147,11 @@ class Psychologist(models.Model):
                 log_post.value = list(lp)
                 log_post.save()
 
-                # log_post[item] = lp
-                # self.log_post = list(log_post.flatten())
-
-                # est_param = np.reshape(self.est_param, (self.n_item, -1))
-                # est_param[item] = np.dot(np.exp(lp), gp)
-                # self.est_param = list(est_param.flatten())
-
                 pr = self.param_set.get(item=item)
                 pr.value = list(np.dot(np.exp(lp), gp))
                 pr.save()
 
             else:
-                # lp = np.asarray(self.log_post)
                 log_post = self.logpost_set.first()
 
                 lp = np.array(log_post.value)
@@ -177,9 +164,6 @@ class Psychologist(models.Model):
                 pr = self.param_set.first()
                 pr.value = list(np.dot(np.exp(lp), gp))
                 pr.save()
-                # est_param = np.dot(np.exp(lp), gp)
-                # gp[np.argmax(self.log_post)]
-                # self.est_param = list(est_param)
             print("Posterior of parametrization updated")
 
         self.n_pres[item] += 1
@@ -195,10 +179,9 @@ class Psychologist(models.Model):
         if self.is_item_specific:
             param = np.array(self.param_set.order_by('item')
                              .values_list('value', flat=True))
-            # np.reshape(self.est_param, (self.n_item, -1))
 
         else:
-            param = np.asarray(self.param_set.first())
+            param = np.asarray(self.param_set.first().value)
 
         t2 = timezone.now()
         print(f"Time to infer the best parameters given post dist {t2-t1}")

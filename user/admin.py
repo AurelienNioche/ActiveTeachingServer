@@ -24,7 +24,7 @@ class QuestionAdmin(admin.ModelAdmin):
     @staticmethod
     def correct_reply(obj):
 
-        return obj.kanji.meaning.meaning
+        return obj.item.meaning.meaning
 
 
 class SessionAdmin(admin.ModelAdmin):
