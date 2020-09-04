@@ -2,8 +2,11 @@ import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE",
                       "ActiveTeachingServer.settings")
 from django.core.wsgi import get_wsgi_application
-from django.utils import timezone
+# from django.utils import timezone
 application = get_wsgi_application()
+
+import datetime
+from pytz import timezone
 
 from user.authentication import sign_up
 from user.models.user import User
@@ -13,21 +16,17 @@ from experimental_condition.models.experiment import ThresholdCondition
 
 def main():
 
-    email = "thr@test.com"
+    email = "peacock@aalto.fi"
     condition = ThresholdCondition.__name__
 
-    User.objects.filter(email=email).delete()
+    # User.objects.filter(email=email).delete()
 
     user = sign_up(
-        email=email,
-        password="1234",
-        gender=User.MALE,
-        age=33,
-        mother_tongue="french",
-        other_language="english",
-        condition=condition,
-        first_session=timezone.now(),
-        begin_with_active=True,
+        email="peacock2@aalto.fi",
+        password="5433",
+        condition=ThresholdCondition.__name__,
+        first_session=timezone("Europe/Helsinki").localize(datetime.datetime.fromisoformat("2020-09-05 08:00")).astimezone(timezone('UTC')),
+        begin_with_active=False,
         is_item_specific=False)
 
     if user is not None:

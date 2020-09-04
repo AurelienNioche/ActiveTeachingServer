@@ -126,16 +126,17 @@ class Task:
             evaluator=ev)
 
     @classmethod
-    def create_material(cls):
+    def create_material(cls, previous_email=None):
 
-        # u = User.objects.filter(email="carlos@test.com").first()
-        # m = []
-        # for te in u.teachingengine_set.all():
-        #     for m_id in list(te.material.values_list('id', flat=True)):
-        #         m.append(m_id)
-        # material = list(Kanji.objects.exclude(id__in=m))
-
-        material = list(Kanji.objects.all())
+        if previous_email is not None:
+            u = User.objects.filter(email=previous_email).first()
+            m = []
+            for te in u.teachingengine_set.all():
+                for m_id in list(te.material.values_list('id', flat=True)):
+                    m.append(m_id)
+            material = list(Kanji.objects.exclude(id__in=m))
+        else:
+            material = list(Kanji.objects.all())
 
         selection = np.random.choice(
             material, size=Task.N_ITEM * 2,
@@ -153,8 +154,7 @@ class Task:
         exp_decay = ExpDecay.objects.create(
             n_item=cls.N_ITEM,
             user=user,
-            cst_time=cls.CST_TIME
-        )
+            cst_time=cls.CST_TIME)
 
         psy = Psychologist.objects.create(
             user=user,
@@ -224,9 +224,10 @@ class Task:
 class RecursiveConditionManager(models.Manager):
 
     def create(self, user, first_session, begin_with_active,
-               is_item_specific):
+               is_item_specific, previous_email=None):
 
-        leitner_m, active_teaching_m = Task.create_material()
+        leitner_m, active_teaching_m = \
+            Task.create_material(previous_email=previous_email)
 
         leitner_te = Task.create_leitner_engine(
             user=user,
@@ -265,9 +266,10 @@ class RecursiveCondition(models.Model):
 class ThresholdConditionManager(models.Manager):
 
     def create(self, user, first_session, begin_with_active,
-               is_item_specific):
+               is_item_specific, previous_email=None):
 
-        leitner_m, active_teaching_m = Task.create_material()
+        leitner_m, active_teaching_m = \
+            Task.create_material(previous_email=previous_email)
 
         leitner_te = Task.create_leitner_engine(
             user=user,
