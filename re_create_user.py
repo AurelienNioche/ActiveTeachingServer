@@ -2,7 +2,6 @@ import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE",
                       "ActiveTeachingServer.settings")
 from django.core.wsgi import get_wsgi_application
-# from django.utils import timezone
 application = get_wsgi_application()
 
 import datetime
@@ -11,19 +10,18 @@ from pytz import timezone
 from user.authentication import sign_up
 from user.models.user import User
 
-from experimental_condition.models.experiment import ThresholdCondition
-
 
 def main():
 
     previous_email = "name_to_replace@aalto.fi"
     password = "password"
+    new_time = "2020-09-05 08:00"
 
     previous_u = User.objects.get(email=previous_email)
     condition = previous_u.condition
 
     new_time = timezone("Europe/Helsinki")\
-        .localize(datetime.datetime.fromisoformat("2020-09-05 08:00"))\
+        .localize(datetime.datetime.fromisoformat(new_time))\
         .astimezone(timezone('UTC'))
 
     is_item_specific = previous_u.psychologist_set.first().is_item_specific
@@ -32,7 +30,7 @@ def main():
         previous_u.session_set.order_by("available_time").first()\
         .teaching_engine.leitner is None
 
-    intermediary_email = previous_email.replace("aalto", "replace2")
+    intermediary_email = previous_email.replace("aalto", "replace")
     user = sign_up(
         email=intermediary_email,
         password=password,

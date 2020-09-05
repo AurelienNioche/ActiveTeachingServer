@@ -17,7 +17,8 @@ from experimental_condition.models.experiment \
 
 def main():
 
-    df = pd.read_csv("20200904-active-teaching-data.csv", index_col=[0], sep=';')
+    df = pd.read_csv(os.path.join("subscriptions", "active-teaching-data.csv"),
+                     index_col=[0], sep=';')
 
     assert len(df["AnonName"].unique()) == len(df["AnonName"])
 
