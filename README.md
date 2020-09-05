@@ -328,5 +328,4 @@ If you accidentally push something you don't want
 If you want to pull, put Git doesn't let you
 
     git fetch --all
-    git reset --hard
-    git pull
+    git reset --hard origin/master
