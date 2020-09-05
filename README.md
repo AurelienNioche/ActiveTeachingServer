@@ -315,3 +315,18 @@ Be careful that the address is of the following form (don't include the port):
 - /etc/apache2/sites-enabled/000-default.conf
 - /etc/systemd/system/daphne.service
 - /var/www/html/ActiveTeachingServer/credentials.py
+
+
+### In case of accident with Git (don't do this!)
+
+If you accidentally push something you don't want 
+(i.e. credentials or sensitive data)
+
+    git reset --hard <ref last correct commit>
+    git push --force
+    
+If you want to pull, put Git doesn't let you
+
+    git fetch --all
+    git reset --hard
+    git pull
