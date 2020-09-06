@@ -63,7 +63,9 @@ def main():
                         is_item_specific=is_item_specific)
 
             if user is not None:
-                print(f"User '{email}' created with success!")
+                print(f"User '{email}' created with success! "
+                      f"First session is: {first_session_string} "
+                      f"Helsinki Time")
             else:
                 raise ValueError("WARNING!!! Something went wrong!")
 
