@@ -32,10 +32,11 @@ def main():
         except Exception as e:
             print(f"encountered error '{e}', please retry!")
 
+    password = input("password:")
+
     print("Re creating user...")
 
     condition = previous_u.condition
-    password = previous_u.password
 
     is_item_specific = previous_u.psychologist_set.first().is_item_specific
 
