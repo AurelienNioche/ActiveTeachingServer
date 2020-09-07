@@ -12,17 +12,30 @@ from user.models.user import User
 
 
 def main():
+    while True:
+        try:
+            previous_email = input("previous_name:")
+            previous_email = f"{previous_email}@aalto.fi"  #"name_to_replace@aalto.fi"
+            previous_u = User.objects.get(email=previous_email)
+            break
+        except Exception as e:
+            print(f"encountered error '{e}', please retry!")
 
-    previous_email = "name_to_replace@aalto.fi"
-    password = "password"
-    new_time = "2020-09-05 08:00"
+    while True:
+        try:
+            new_time = input("new time (YYYY-MM-DD HH:MM):")
+            new_time = timezone("Europe/Helsinki") \
+                .localize(datetime.datetime.fromisoformat(new_time)) \
+                .astimezone(timezone('UTC'))
+            break
 
-    previous_u = User.objects.get(email=previous_email)
+        except Exception as e:
+            print(f"encountered error '{e}', please retry!")
+
+    print("Re creating user...")
+
     condition = previous_u.condition
-
-    new_time = timezone("Europe/Helsinki")\
-        .localize(datetime.datetime.fromisoformat(new_time))\
-        .astimezone(timezone('UTC'))
+    password = previous_u.password
 
     is_item_specific = previous_u.psychologist_set.first().is_item_specific
 
