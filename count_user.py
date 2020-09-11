@@ -13,6 +13,20 @@ from user.models.user import User
 from user.models.question import Question
 
 
+def get_n_eval_n_recall(teaching_engine):
+    if teaching_engine.evaluator.eval_done:
+        ss = teaching_engine.session_set.filter(is_evaluation=True).first()
+        q = ss.question_set.order_by("time_display")
+        q_id = np.array(q.values_list("item_id", flat=True))
+        q_r = np.array(q.values_list("success", flat=True))
+        u_id = np.unique(q_id)
+        n_recall = np.sum([np.all(q_r[q_id == id_]) for id_ in u_id])
+        n = len(u_id)
+    else:
+        n, n_recall = None, None
+    return n, n_recall
+
+
 def main():
 
     users = User.objects.filter(is_superuser=False).order_by("email")
@@ -45,23 +59,8 @@ def main():
         is_item_specific = \
             u.psychologist_set.first().is_item_specific
 
-        if te_leitner.evaluator.eval_done:
-            ss = te_leitner.session_set.filter(is_evaluation=True).first()
-            resp = ss.question_set.order_by("time_display").values_list(
-                "success", flat=True)
-            n_recall_leitner = np.sum(resp)
-            n_eval_leitner = len(resp)
-        else:
-            n_recall_leitner, n_eval_leitner = None, None
-
-        if te_active.evaluator.eval_done:
-            ss = te_active.session_set.filter(is_evaluation=True).first()
-            resp = ss.question_set.order_by("time_display").values_list(
-                "success", flat=True)
-            n_recall_act = np.sum(resp)
-            n_eval_act = len(resp)
-        else:
-            n_recall_act, n_eval_act = None, None
+        n_eval_leitner, n_recall_leitner = get_n_eval_n_recall(te_leitner)
+        n_eval_act, n_recall_act = get_n_eval_n_recall(te_active)
 
         all_session = u.session_set.order_by("available_time")
         first_session = all_session.first()
