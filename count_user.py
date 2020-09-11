@@ -102,7 +102,7 @@ def main():
 
     df = pd.DataFrame(row_list)
 
-    df.sort_values("n_ss_done")
+    df.sort_values("n_ss_done", inplace=True)
     df.to_csv(os.path.join("r.csv"))
 
 
