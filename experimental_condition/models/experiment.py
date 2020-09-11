@@ -11,7 +11,6 @@ from teaching.models.teaching_engine import TeachingEngine
 
 from teaching.models.teacher.leitner import Leitner
 from teaching.models.teacher.threshold import Threshold
-# from teaching.models.teacher.sampling import Sampling
 from teaching.models.teacher.recursive import Recursive
 
 from teaching.models.psychologist.bayesian_grid import Psychologist
@@ -20,13 +19,15 @@ from teaching_material.models.kanji import Kanji
 
 from teaching.models.learner.exp_decay import ExpDecay
 # from teaching.models.learner.walsh import Walsh2018
-#
+
+# from teaching.models.teacher.sampling import Sampling
 # from django.contrib.postgres.fields import ArrayField
 
 
 class Task:
 
-    BOUNDS = [[0.0000001, 0.1], [0.0001, 0.9999]]
+    BOUNDS = [[0.0000001, 0.00005], [0.0001, 0.9999]]
+    # [[0.0000001, 0.1], [0.0001, 0.9999]]
     GRID_METHODS = [np.linspace, np.linspace]
     GRID_SIZE = 20
     CST_TIME = 1
