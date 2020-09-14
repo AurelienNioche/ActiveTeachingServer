@@ -16,6 +16,14 @@ def main():
 
     users = User.objects.filter(is_superuser=False)
     for u in tqdm(users):
+        print("u", u.email)
+
+        if 'test' in u.email:
+            print("ignore")
+            print()
+            continue
+
+        n_session_done = u.session_set.exclude(open=True).count()
 
         qs = Question.objects.filter(user=u).order_by("time_display")
         for q in qs:
@@ -25,6 +33,8 @@ def main():
                 teacher_md = "leitner"
             elif te.threshold is not None:
                 teacher_md = "threshold"
+            elif te.sampling is not None:
+                teacher_md = "recursive"
             elif te.sampling is not None:
                 teacher_md = "sampling"
             else:
@@ -48,12 +58,13 @@ def main():
                 "session": q.session_id,
                 "is_eval": q.session.is_evaluation,
                 "ts_display": q.time_display,
-                "ts_reply": q.time_reply
+                "ts_reply": q.time_reply,
+                "n_session_done": n_session_done
             }
             row_list.append(row)
 
     df = pd.DataFrame(row_list)
-    df.to_csv(os.path.join("results.csv"))
+    df.to_csv(os.path.join("data_full.csv"))
 
 
 if __name__ == "__main__":
