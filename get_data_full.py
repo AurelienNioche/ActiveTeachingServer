@@ -15,7 +15,7 @@ def main():
     row_list = []
 
     users = User.objects.filter(is_superuser=False)
-    for u in tqdm(users):
+    for u in users:
         print("u", u.email)
 
         if 'test' in u.email:
@@ -33,7 +33,7 @@ def main():
                 teacher_md = "leitner"
             elif te.threshold is not None:
                 teacher_md = "threshold"
-            elif te.sampling is not None:
+            elif te.recursive is not None:
                 teacher_md = "recursive"
             elif te.sampling is not None:
                 teacher_md = "sampling"
