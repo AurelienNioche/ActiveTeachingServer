@@ -35,7 +35,7 @@ class Task:
     N_SESSION = 6
     N_ITER_PER_SESSION = 100
 
-    N_ITEM = 500
+    N_ITEM = 200
 
     LEARNT_THRESHOLD = 0.90
 
