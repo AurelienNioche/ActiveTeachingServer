@@ -23,12 +23,13 @@ class PsychologistManager(models.Manager):
         n_param_set, n_param = gp.shape
         grid_param = gp.flatten()
 
-        x = np.linspace(0, 1, grid_size)
-        y = stats.beta.pdf(x, a=1.5, b=5)
-        z = y[::-1, None] * y[None, :]
+        # x = np.linspace(0, 1, grid_size)
+        # y = stats.beta.pdf(x, a=1.5, b=5)
+        # z = y[::-1, None] * y[None, :]
+        # lp = np.zeros(n_param_set)
+        # lp[:] = z.flatten()
 
-        lp = np.zeros(n_param_set)
-        lp[:] = z.flatten()
+        lp = np.ones(n_param_set)
         lp -= logsumexp(lp)
 
         init_guess = np.dot(np.exp(lp), gp)
