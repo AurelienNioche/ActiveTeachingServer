@@ -25,7 +25,7 @@ class PsychologistManager(models.Manager):
 
         x = np.linspace(0, 1, grid_size)
         y = stats.beta.pdf(x, a=1.5, b=5)
-        z = y[:, None] * y[None, :]
+        z = y[::-1, None] * y[None, :]
 
         lp = np.zeros(n_param_set)
         lp[:] = z.flatten()
