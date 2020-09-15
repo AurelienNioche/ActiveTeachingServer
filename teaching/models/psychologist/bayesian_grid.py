@@ -6,6 +6,7 @@ from user.models.user import User
 
 import numpy as np
 from scipy.special import logsumexp
+import scipy.stats as stats
 
 
 EPS = np.finfo(np.float).eps
@@ -22,7 +23,12 @@ class PsychologistManager(models.Manager):
         n_param_set, n_param = gp.shape
         grid_param = gp.flatten()
 
-        lp = np.ones(n_param_set)
+        x = np.linspace(0, 1, grid_size)
+        y = stats.beta.pdf(x, a=1.5, b=5)
+        z = y[:, None] * y[None, :]
+
+        lp = np.zeros(n_param_set)
+        lp[:] = z.flatten()
         lp -= logsumexp(lp)
 
         init_guess = np.dot(np.exp(lp), gp)
