@@ -15,18 +15,18 @@ from experimental_condition.models.experiment \
 def main():
 
     while True:
-        condition = input("condition "
+        binary_cd = input("condition "
                           "(enter '0' for 'threshold' and "
                           "'1' for 'recursive'):")
-        if condition not in ('0', '1'):
+        if binary_cd not in ('0', '1'):
             print("I did not get the answer! Try again!")
         else:
             break
 
-    condition = RecursiveCondition.__name__ if int(condition) \
+    condition = RecursiveCondition.__name__ if int(binary_cd) \
         else ThresholdCondition.__name__
 
-    email = "rec@test.com" if int(condition) else "thr@test.com"
+    email = "rec@test.com" if int(binary_cd) else "thr@test.com"
 
     print(f"condition selected: {condition}")
 
