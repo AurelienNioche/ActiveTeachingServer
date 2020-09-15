@@ -15,7 +15,7 @@ def main():
     while True:
         try:
             previous_email = input("previous_name:")
-            previous_email = f"{previous_email}@aalto.fi"  #"name_to_replace@aalto.fi"
+            previous_email = f"{previous_email}@aalto.fi"
             previous_u = User.objects.get(email=previous_email)
             break
         except Exception as e:
