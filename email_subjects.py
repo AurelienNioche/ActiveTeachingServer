@@ -78,35 +78,36 @@ spam = pd.DataFrame(row_list)
 
 
 #%%
+if "interactive" in sys.argv or "int" in sys.argv:
+    interactive = True
+    print("=== Running script in interactive mode ===")
+while interactive:
+    email = input("Email: ")
+    start_date = input("Start date (d.m.yyyy): ")
+    session_time = input("Session time (H:mm): ")
+    gender = input("Gender (male/female/other): ")
+    age = input("Age: ")
+    languages = input("Languages (???): ")
+    anon_email = input("Anonymous email: ")
+    pin = input("PIN: ")
+    expecting_output = True
+    while expecting_output == True:
+        another = input("Add another user? [y/N]: ")
+        if another == "y" or another == "Y" or another == "yes" or another == "Yes":
+            interactive = True
+            break
+        elif another == "n" or another == "N":
+            interactive = False
+            break
+        elif another == "":
+            interactive = False
+            break
+        else:
+            correct_input = False
+            print("Didn't get that. Add another user? [y/N]: ")
 
 if len(sys.argv) > 1:
-    if "interactive" in sys.argv or "int" in sys.argv:
-        interactive = True
-        print("=== Running script in interactive mode ===")
-    while interactive:
-        email = input("Email: ")
-        start_date = input("Start date (d.m.yyyy): ")
-        session_time = input("Session time (H:mm): ")
-        gender = input("Gender (male/female/other): ")
-        age = input("Age: ")
-        languages = input("Languages (???): ")
-        anon_email = input("Anonymous email: ")
-        pin = input("PIN: ")
-        expecting_output = True
-        while expecting_output == True:
-            another = input("Add another user? [y/N]: ")
-            if another == "y" or another == "Y" or another == "yes" or another == "Yes":
-                interactive = True
-                break
-            elif another == "n" or another == "N":
-                interactive = False
-                break
-            elif another == "":
-                interactive = False
-                break
-            else:
-                correct_input = False
-                print("Didn't get that. Add another user? [y/N]: ")
+
 
 
 #%%
