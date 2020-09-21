@@ -140,3 +140,6 @@ static/
 # Suscription folder
 /subscriptions/
 /is_done.csv
+
+# Test
+fake_users.csv
