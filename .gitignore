@@ -116,6 +116,7 @@ templates/
 
 # Credentials
 ActiveTeachingServer/credentials.py
+credentials.py
 
 # MacOs file
 .DS_Store
