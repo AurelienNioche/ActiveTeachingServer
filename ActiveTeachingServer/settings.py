@@ -144,6 +144,7 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 
 LOGGING = {'loggers': {
+    'version': 1,
     'daphne': {
         'handlers': [
             'console',
