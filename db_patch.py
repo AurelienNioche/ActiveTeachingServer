@@ -11,9 +11,10 @@ from user.models.question import Question
 
 def main():
 
-    for q in Question.objects.all():
-        q.user = q.session.user
-        q.save()
+    for u in User.objects.exclude(is_superuser=True):
+        if 'test' not in u.email:
+            u.experiment_name = "2020-09-04"
+            u.save()
 
 
 if __name__ == "__main__":
