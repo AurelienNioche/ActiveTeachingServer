@@ -9,3 +9,4 @@ requests
 channels
 whitenoise
 psycopg2.binary
+Twisted[tls,http2]
