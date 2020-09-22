@@ -158,10 +158,27 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'django-debug.log',   # os.path.join('tmp', 'django-debug.log'),
+            'formatter': 'verbose'
+        },
+        'file_error': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'django-error.log',  # os.path.join('tmp', 'django-error.log'),
+            'formatter': 'verbose'
+        },
     },
     'loggers': {
+        'django': {
+            'handlers': ['console', 'file', 'file_error'],
+            'propagate': True,
+            'level': 'INFO'
+        },
         'daphne': {
-            'handlers': ['console', ],
+            'handlers': ['console', 'file', 'file_error'],
             'level': 'DEBUG',
             'propagate': True,
         },
