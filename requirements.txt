@@ -8,3 +8,4 @@ websocket-client
 requests
 channels
 whitenoise
+psycopg2.binary
