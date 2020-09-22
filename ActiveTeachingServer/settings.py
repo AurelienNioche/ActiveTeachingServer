@@ -145,12 +145,18 @@ EMAIL_PORT = 587
 
 LOGGING = {
     'version': 1,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+    },
     'loggers': {
         'daphne': {
-            'handlers': [
-                'console',
-            ],
-            'level': 'DEBUG'
+            'handlers': ['console', ],
+            'level': 'DEBUG',
+            'propagate': True,
         },
     }
 }
