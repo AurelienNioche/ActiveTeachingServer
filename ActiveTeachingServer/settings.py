@@ -143,14 +143,16 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 
-LOGGING = {'loggers': {
+LOGGING = {
     'version': 1,
-    'daphne': {
-        'handlers': [
-            'console',
-        ],
-        'level': 'DEBUG'
-    }, }
+    'loggers': {
+        'daphne': {
+            'handlers': [
+                'console',
+            ],
+            'level': 'DEBUG'
+        },
+    }
 }
 
 # os.makedirs('tmp', exist_ok=True)
