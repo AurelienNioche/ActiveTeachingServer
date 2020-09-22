@@ -31,14 +31,18 @@ class UserManager(BaseUserManager):
 
         return self._create_user(email, password, **extra_fields)
 
-    def create_user(self, email, password, condition, **extra_fields):
+    def create_user(self, email, password, condition,
+                    experiment_name,
+                    **extra_fields):
         """Create and save a regular User with the given email and password."""
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
 
         user = self._create_user(email=email,
                                  password=password,
-                                 condition=condition, **extra_fields)
+                                 condition=condition,
+                                 experiment_name=experiment_name,
+                                 **extra_fields)
         return user
 
 
@@ -56,6 +60,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     other_language = models.TextField(blank=True, null=True)
 
     condition = models.TextField(blank=True, null=True)
+
+    experiment_name = models.TextField(blank=True, null=True)
 
     is_staff = models.BooleanField(default=False)
 
