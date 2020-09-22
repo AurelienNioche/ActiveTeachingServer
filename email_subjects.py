@@ -1,6 +1,7 @@
 #%%
 """ Send an email upon account creation """
 
+import sys
 from smtplib import SMTP_SSL
 
 import numpy as np
@@ -25,7 +26,7 @@ def make_email_addr(local_part: str, domain_name: str) -> str:
     return f"{local_part}@{domain_name}"
 
 
-def make_pin(rng: object) -> np.ndarray:
+def make_pin(rng: np.random.Generator) -> np.ndarray:
     """Give a 4-digit PIN"""
 
     return str(rng.integers(0, 9999)).rjust(4, "0")
@@ -38,18 +39,78 @@ def load_animal_names(f_path):
     return pd.read_csv(f_path, squeeze=True)
 
 
-def main_anonimize():
+# def main_anonimize():
+#
+#     SEED = 123
+#     # random state for in case you want shuffling
+#     rs = RandomState(MT19937(SeedSequence(SEED)))
+#     rng = default_rng(SEED)
+#
+#     animals_series = load_animal_names("./animals.csv")
+#     # Next var is what you want to use
+#     anon_emails = animals_series.apply(make_email_addr, domain_name="aalto.fi").sample(
+#         frac=1, random_state=rs
+#     )
 
-    SEED = 123
-    # random state for in case you want shuffling
-    rs = RandomState(MT19937(SeedSequence(SEED)))
-    rng = default_rng(SEED)
 
-    animals_series = load_animal_names("./animals.csv")
-    # Next var is what you want to use
-    anon_emails = animals_series.apply(make_email_addr, domain_name="aalto.fi").sample(
-        frac=1, random_state=rs
-    )
+SEED = 123
+# random state for in case you want shuffling
+rs = RandomState(MT19937(SeedSequence(SEED)))
+rng = default_rng(SEED)
+
+animals_series = load_animal_names("./animals.csv")
+users_df = pd.read_csv("./fake_users.csv", index_col=0)
+
+anon_emails = animals_series.apply(make_email_addr, domain_name="aalto.fi").sample(
+    frac=1, random_state=rs
+)
+
+
+#%%
+users_df_ = users_df.copy()
+row_list = []
+for idx, user_data in users_df_.iterrows():
+    user_data.loc["AnonName"] = make_email_addr(animals_series[idx], "aalto.fi")
+    user_data.loc["PIN"] = make_pin(rng)
+    row_list.append(user_data)
+
+spam = pd.DataFrame(row_list)
+
+
+#%%
+if "interactive" in sys.argv or "int" in sys.argv:
+    interactive = True
+    print("=== Running script in interactive mode ===")
+while interactive:
+    email = input("Email: ")
+    start_date = input("Start date (d.m.yyyy): ")
+    session_time = input("Session time (H:mm): ")
+    gender = input("Gender (male/female/other): ")
+    age = input("Age: ")
+    languages = input("Languages (???): ")
+    anon_email = input("Anonymous email: ")
+    pin = input("PIN: ")
+    expecting_output = True
+    while expecting_output == True:
+        another = input("Add another user? [y/N]: ")
+        if another == "y" or another == "Y" or another == "yes" or another == "Yes":
+            interactive = True
+            break
+        elif another == "n" or another == "N":
+            interactive = False
+            break
+        elif another == "":
+            interactive = False
+            break
+        else:
+            correct_input = False
+            print("Didn't get that. Add another user? [y/N]: ")
+
+if len(sys.argv) > 1:
+
+
+
+#%%
 
 
 def main_email():
@@ -66,10 +127,50 @@ def main_email():
         s.sendmail(address_from, address_to, text)
 
 
-if __name__ == "__main__":
-    main_anonimize()
-    main_email()
+# Clean run
+# if __name__ == "__main__":
+#     main_anonimize()
+#     main_email()
 
+# ##### Block to do vertical additions
+# def make_merge_idx(
+#     len_animals: int, len_users: int, rng_gen: np.random.Generator, random: bool
+# ) -> pd.Series:
+#     """Asign a number (random or not) for later merge of anonymous name"""
+#
+#     if len_users > len_animals:
+#         raise ValueError("There are more users than anon names (animals).")
+#     if random:
+#         array = rng_gen.integers(len_animals, size=len_users)
+#     else:
+#         array = np.arange(len_users)
+#
+#     return pd.Series(array, name="AnonNum")
+#
+#
+# def subject_assign(
+#     users_df: pd.DataFrame, to_assign: pd.Series, random=True
+# ) -> pd.DataFrame:
+#     """"""
+#     pass
+#
+#
+# idx_merge = make_merge_idx(len(animals_series), len(users_df), rng, random=True)
+#
+# users_df_ = pd.concat((users_df, idx_merge), axis=1)
+# # Merge the corresponding animal to assigned idx
+# rabbit = users_df_.merge(
+#     animals_series, how="left", left_on="AnonNum", right_index=True
+# )
+# # Make the final email form
+# rabbit["AnonName"] = (
+#     rabbit["Animal"]
+#     .apply(make_email_addr, domain_name="aalto.fi")
+#     .sample(frac=1, random_state=rs)
+# )
+# # Drop the preprocessing columns
+# rabbit.drop(columns=["Animal", "AnonNum"])
+# ##### End block
 # from email.headerregistry import Address
 # from email.message import EmailMessage
 # from email.mime.multipart import MIMEMultipart
