@@ -161,13 +161,13 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': 'django-debug.log',   # os.path.join('tmp', 'django-debug.log'),
+            'filename': os.path.join(BASE_DIR, 'django-debug.log'),   # os.path.join('tmp', 'django-debug.log'),
             'formatter': 'verbose'
         },
         'file_error': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': 'django-error.log',  # os.path.join('tmp', 'django-error.log'),
+            'filename': os.path.join(BASE_DIR, 'django-error.log'),  # os.path.join('tmp', 'django-error.log'),
             'formatter': 'verbose'
         },
     },
