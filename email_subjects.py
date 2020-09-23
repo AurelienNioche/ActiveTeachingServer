@@ -1,5 +1,12 @@
 #%%
 """ Send an email upon account creation """
+import os
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ActiveTeachingServer.settings")
+# from django.core.wsgi import get_wsgi_application
+# from django.utils import timezone
+
+# application = get_wsgi_application()
 
 import sys
 from smtplib import SMTP_SSL
@@ -9,6 +16,10 @@ import pandas as pd
 from numpy.random import MT19937, RandomState, SeedSequence, default_rng
 
 import credentials
+
+# from experimental_condition.models.experiment import (RecursiveCondition, ThresholdCondition)
+# from user.authentication import sign_up
+# from user.models.user import User
 
 
 def get_credentials() -> dict:
@@ -81,33 +92,56 @@ spam = pd.DataFrame(row_list)
 if "interactive" in sys.argv or "int" in sys.argv:
     interactive = True
     print("=== Running script in interactive mode ===")
+else:
+    interactive = False
 while interactive:
-    email = input("Email: ")
-    start_date = input("Start date (d.m.yyyy): ")
-    session_time = input("Session time (H:mm): ")
-    gender = input("Gender (male/female/other): ")
-    age = input("Age: ")
-    languages = input("Languages (???): ")
-    anon_email = input("Anonymous email: ")
-    pin = input("PIN: ")
+    new_account_data = {
+        "ExperimentName": input("Experiment name: "),
+        "Email": input("Email: "),
+        "StartDate": input("Start date (d.m.yyyy): "),
+        "SessionTime": input("Session time (H:mm): "),
+        "Gender": input("Gender (male/female/other): "),
+        "Age": input("Age: "),
+        "FirstLanguage": input("First language: "),
+        "OtherLanguages": input("Other languages (x,y,z): "),
+        "AnonEmail": input("Anonymous email (xyz@aalto.fi): "),
+        "Password": input("PIN (nnnn): "),
+    }
+    print("*" * 40)
+    print("The following user will be added:")
+    print(pd.Series(new_account_data))
+    prompt_message = "Confirm adding user?"
+    confirmation = input(f"{prompt_message} [y/N]")
+    if (
+        confirmation == "y"
+        or confirmation == "Y"
+        or confirmation == "yes"
+        or confirmation == "Yes"
+    ):
+        # TODO call add_user
+        print("User created! TODO\n")
+        pass
+    elif confirmation == "n" or confirmation == "N" or confirmation == "":
+        print("User NOT added.")
+        pass
+    else:
+        correct_input = False
+        print(f"Didn't get that. {prompt_message} [y/N]: ")
     expecting_output = True
     while expecting_output == True:
-        another = input("Add another user? [y/N]: ")
+        prompt_message = "Add another user?"
+        another = input(f"{prompt_message} [y/N]: ")
         if another == "y" or another == "Y" or another == "yes" or another == "Yes":
             interactive = True
             break
-        elif another == "n" or another == "N":
-            interactive = False
-            break
-        elif another == "":
+        elif another == "n" or another == "N" or another == "":
             interactive = False
             break
         else:
             correct_input = False
-            print("Didn't get that. Add another user? [y/N]: ")
+            print(f"Didn't get that. {prompt_message} [y/N]: ")
 
-if len(sys.argv) > 1:
-
+# if len(sys.argv) > 1:
 
 
 #%%
