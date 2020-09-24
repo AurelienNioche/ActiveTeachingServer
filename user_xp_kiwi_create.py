@@ -105,7 +105,7 @@ def main_email(contact_email, app_email, app_pwd, date, time):
     """
 
     message = """From: %s\nTo: %s\nSubject: %s\n\n%s""" % (
-    email_credentials["host"], ", ".join(contact_email), "Account Created!", text)
+    email_credentials["host"], ", ".join((contact_email, )), "Account Created!", text)
 
     with SMTP_SSL("smtp.gmail.com", 465) as s:
         s.login(email_credentials["host"], email_credentials["passwrd"])
