@@ -3,10 +3,10 @@
 import os
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ActiveTeachingServer.settings")
-# from django.core.wsgi import get_wsgi_application
-# from django.utils import timezone
+from django.core.wsgi import get_wsgi_application
+from django.utils import timezone
 
-# application = get_wsgi_application()
+application = get_wsgi_application()
 
 import sys
 from smtplib import SMTP_SSL
@@ -15,11 +15,11 @@ import numpy as np
 import pandas as pd
 from numpy.random import MT19937, RandomState, SeedSequence, default_rng
 
-import credentials
-
-# from experimental_condition.models.experiment import (RecursiveCondition, ThresholdCondition)
-# from user.authentication import sign_up
-# from user.models.user import User
+import ActiveTeachingServer.credentials as credentials
+from experimental_condition.models.experiment import (RecursiveCondition,
+                                                      ThresholdCondition)
+from user.authentication import sign_up
+from user.models.user import User
 
 
 def get_credentials() -> dict:
