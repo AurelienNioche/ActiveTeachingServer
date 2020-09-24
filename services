@@ -1,0 +1,85 @@
+● activeteaching
+    State: degraded
+     Jobs: 0 queued
+   Failed: 5 units
+    Since: Thu 2020-03-26 11:43:47 EET; 5 months 9 days ago
+   CGroup: /
+           ├─user.slice
+           │ ├─user-1001.slice
+           │ │ ├─user@1001.service
+           │ │ │ └─init.scope
+           │ │ │   ├─2312 /lib/systemd/systemd --user
+           │ │ │   └─2313 (sd-pam)
+           │ │ └─session-27843.scope
+           │ │   ├─2310 sshd: niochea1 [priv]
+           │ │   ├─2353 sshd: niochea1@pts/0
+           │ │   └─2354 -zsh
+           │ └─user-1000.slice
+           │   ├─user@1000.service
+           │   │ └─init.scope
+           │   │   ├─2116 /lib/systemd/systemd --user
+           │   │   └─2117 (sd-pam)
+           │   └─session-27841.scope
+           │     ├─2114 sshd: delac1 [priv]
+           │     ├─2157 sshd: delac1@pts/1
+           │     ├─2158 -bash
+           │     └─3280 systemctl status
+           ├─init.scope
+           │ └─1 /lib/systemd/systemd --system --deserialize 32
+           └─system.slice
+             ├─irqbalance.service
+             │ └─797 /usr/sbin/irqbalance --foreground
+             ├─apache2.service
+             │ ├─ 7545 /usr/sbin/apache2 -k start
+             │ ├─28542 /usr/sbin/apache2 -k start
+             │ └─28543 /usr/sbin/apache2 -k start
+             ├─systemd-networkd.service
+             │ └─6142 /lib/systemd/systemd-networkd
+             ├─systemd-udevd.service
+             │ └─7205 /lib/systemd/systemd-udevd
+             ├─daphne.service
+             │ └─9766 /var/www/html/ActiveTeachingServer/venv/bin/python /var/www/html/ActiveTeachingServer/venv/bin/daphne -p 8001 ActiveTeachingServer.asgi:application
+             ├─cron.service
+             │ └─882 /usr/sbin/cron -f
+             ├─system-serial\x2dgetty.slice
+             │ └─serial-getty@hvc0.service
+             │   └─1005 /sbin/agetty -o -p -- \u --keep-baud 115200,38400,9600 hvc0 vt220
+             ├─polkit.service
+             │ └─1099 /usr/lib/policykit-1/polkitd --no-debug
+             ├─accounts-daemon.service
+             │ └─848 /usr/lib/accountsservice/accounts-daemon
+             ├─systemd-journald.service
+             │ └─6235 /lib/systemd/systemd-journald
+             ├─atd.service
+             │ └─780 /usr/sbin/atd -f
+             ├─unattended-upgrades.service
+             │ └─937 /usr/bin/python3 /usr/share/unattended-upgrades/unattended-upgrade-shutdown --wait-for-signal
+             ├─ssh.service
+             │ └─1171 /usr/sbin/sshd -D
+             ├─xe-linux-distribution.service
+             │ ├─24670 /usr/sbin/xe-daemon -p /var/run/xe-daemon.pid
+             │ └─24681 logger -t xe-daemon
+             ├─system-postgresql.slice
+             │ └─postgresql@10-main.service
+             │   ├─1400 /usr/lib/postgresql/10/bin/postgres -D /var/lib/postgresql/10/main -c config_file=/etc/postgresql/10/main/postgresql.conf
+             │   ├─1435 postgres: 10/main: checkpointer process   
+             │   ├─1436 postgres: 10/main: writer process   
+             │   ├─1437 postgres: 10/main: wal writer process   
+             │   ├─1438 postgres: 10/main: autovacuum launcher process   
+             │   ├─1440 postgres: 10/main: stats collector process   
+             │   └─1441 postgres: 10/main: bgworker: logical replication launcher   
+             ├─rsyslog.service
+             │ └─901 /usr/sbin/rsyslogd -n
+             ├─lxcfs.service
+             │ └─894 /usr/bin/lxcfs /var/lib/lxcfs/
+             ├─lvm2-lvmetad.service
+             │ └─8397 /sbin/lvmetad -f
+             ├─systemd-resolved.service
+             │ └─6171 /lib/systemd/systemd-resolved
+             ├─dbus.service
+             │ └─799 /usr/bin/dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only
+             ├─system-getty.slice
+             │ └─getty@tty1.service
+             │   └─1071 /sbin/agetty -o -p -- \u --noclear tty1 linux
+             └─systemd-logind.service
+               └─786 /lib/systemd/systemd-logind
