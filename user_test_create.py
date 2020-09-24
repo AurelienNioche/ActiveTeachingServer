@@ -17,7 +17,7 @@ def main():
     while True:
         binary_cd = input("condition "
                           "(enter '0' for 'threshold' and "
-                          "'1' for 'recursive'):")
+                          "'1' for 'forward'):")
         if binary_cd not in ('0', '1'):
             print("I did not get the answer! Try again!")
         else:
