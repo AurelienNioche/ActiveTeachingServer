@@ -312,6 +312,7 @@ Be careful that the address is of the following form (don't include the port):
 
 
 ### List of config files
+- /etc/apache2/apache2.conf
 - /etc/apache2/sites-enabled/000-default.conf
 - /etc/systemd/system/daphne.service
 - /var/www/html/ActiveTeachingServer/credentials.py
