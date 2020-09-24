@@ -68,7 +68,7 @@ def main_email(contact_email, app_email, app_pwd, date, time):
 
     text = f"""From: hello@hello.com
     To: hi@hi.com\n
-    Subject: <Subject goes here>\n
+    Subject: <Subject goes here>\n\n
     Dear participant,
 
     Your account has been created!
