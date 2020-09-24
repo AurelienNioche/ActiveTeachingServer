@@ -186,16 +186,17 @@ def main(file_name="20200924-active-teaching-data.csv",
             users_df.loc[idx, "begin_with_active"] = begin_with_active
 
             print("Mailing user...")
-            # main_email(contact_email=contact_email,
-            #            app_email=app_email,
-            #            app_pwd=app_pwd)
+            main_email(contact_email=contact_email,
+                       app_email=app_email,
+                       app_pwd=app_pwd)
+
+            users_df.to_csv(os.path.join("subscriptions", file_name))
+
         else:
             print(f"Something went wrong with user {contact_email}!")
 
         cd_idx += 1
         cd_idx %= len(conditions)
-
-        users_df.to_csv(os.path.join("subscriptions", file_name))
 
 
 if __name__ == "__main__":
