@@ -37,6 +37,7 @@ def main():
     print("Re creating user...")
 
     condition = previous_u.condition
+    experiment_name = previous_u.experiment_name
 
     is_item_specific = previous_u.psychologist_set.first().is_item_specific
 
@@ -52,7 +53,8 @@ def main():
         first_session=new_time,
         begin_with_active=begin_with_active,
         is_item_specific=is_item_specific,
-        previous_email=previous_email)
+        previous_email=previous_email,
+        experiment_name=experiment_name)
 
     if user is not None:
         print("Success!")

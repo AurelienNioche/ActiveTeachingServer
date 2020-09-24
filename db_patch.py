@@ -5,8 +5,8 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 from user.models.user import User
-from user.models.session import Session
-from user.models.question import Question
+# from user.models.session import Session
+# from user.models.question import Question
 
 
 def main():

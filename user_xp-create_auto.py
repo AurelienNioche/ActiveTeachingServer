@@ -23,6 +23,7 @@ def main():
     assert len(df["AnonName"].unique()) == len(df["AnonName"])
 
     conditions = {
+        # Condition name, item specific
         0: (RecursiveCondition.__name__, True),
         1: (RecursiveCondition.__name__, False),
         2: (ThresholdCondition.__name__, True),
@@ -60,7 +61,8 @@ def main():
                         condition=cd,
                         first_session=first_session,
                         begin_with_active=begin_with_active,
-                        is_item_specific=is_item_specific)
+                        is_item_specific=is_item_specific,
+                        experiment_name="2020-09-04")
 
             if user is not None:
                 print(f"user '{email}' created with success! \n"
