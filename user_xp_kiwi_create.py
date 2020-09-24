@@ -102,9 +102,6 @@ def main_email(contact_email, app_email, app_pwd, date, time):
     mail: nioche.aurelien@gmail.com
     """
 
-    # message = """From: %s\nTo: %s\nSubject: %s\n\n%s""" % (
-    # email_credentials["host"], ", ".join((contact_email, )), "Account Created!", text)
-
     subject = "Account Created!"
     message = \
         f"""From: {email_credentials["host"]}\n""" \
@@ -128,11 +125,6 @@ def main(file_name="20200924-active-teaching-data.csv",
         index_col=0)
 
     users_df.to_csv(os.path.join("subscriptions", "BKP_" + file_name))
-
-    # Create new columns
-    # for c in ("app_email", "app_pwd"):
-    #     if c not in users_df.columns:
-    #         users_df[c] = ""
 
     conditions = {
         # Condition name, begin with active
@@ -211,4 +203,4 @@ def main(file_name="20200924-active-teaching-data.csv",
 
 
 if __name__ == "__main__":
-    main("test.csv")
+    main()
