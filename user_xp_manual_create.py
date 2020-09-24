@@ -18,6 +18,8 @@ def main():
 
     print("WELCOME! This will help you to create a user!")
 
+    experiment_name = input("experiment name:")
+
     while True:
         condition = input("condition (enter '0' for 'threshold' and '1' for 'recursive'):")
         if condition not in ('0', '1'):
@@ -58,13 +60,16 @@ def main():
     password = input("password:")
 
     while True:
-        gender = input("gender (enter '0' for female and '1' for male):")
-        if gender not in ('0', '1'):
+        gender = input("gender (enter "
+                       "'0' for female, "
+                       "'1' for male, "
+                       "'2' for other):")
+        if gender not in (User.MALE, User.FEMALE, User.OTHER):
             print("I did not get the answer! Try again!")
         else:
             break
 
-    gender = User.MALE if int(gender) else User.FEMALE
+    gender = int(gender)
 
     while True:
         try:
@@ -80,11 +85,17 @@ def main():
 
         try:
 
-            first_session_string = input("Helsinki time for the first session (enter using YYYY-MM-DD HH:MM format, ex: '2020-11-04 08:00'):")
+            first_session_string = input(
+                "Helsinki time for the first session "
+                "(enter using YYYY-MM-DD HH:MM format, "
+                "ex: '2020-11-04 08:00'):")
 
-            first_session = datetime.datetime.fromisoformat(first_session_string)
-            first_session = timezone("Europe/Helsinki").localize(first_session)
-            first_session = first_session.astimezone(timezone('UTC'))
+            first_session = \
+                datetime.datetime.fromisoformat(first_session_string)
+            first_session = \
+                timezone("Europe/Helsinki").localize(first_session)
+            first_session = \
+                first_session.astimezone(timezone('UTC'))
             break
 
         except Exception as e:
@@ -102,6 +113,7 @@ def main():
         age=age,
         mother_tongue=mother_tongue,
         other_language=other_language,
+        experiment_name=experiment_name,
         condition=condition,
         first_session=first_session,
         begin_with_active=begin_with_active)

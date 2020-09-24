@@ -14,6 +14,7 @@ def login(email, password):
 
 
 def sign_up(email, password, condition,
+            experiment_name,
             gender=None, age=None,
             mother_tongue=None, other_language=None,
             *args, **kwargs):
@@ -30,7 +31,8 @@ def sign_up(email, password, condition,
             mother_tongue=mother_tongue,
             other_language=other_language,
             age=age,
-            condition=condition)
+            condition=condition,
+            experiment_name=experiment_name)
         from experimental_condition import experimental_condition
         experimental_condition.user_creation(user=u, *args, **kwargs)
 
