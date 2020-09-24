@@ -104,9 +104,12 @@ def main_email(contact_email, app_email, app_pwd, date, time):
     mail: nioche.aurelien@gmail.com
     """
 
+    message = """From: %s\nTo: %s\nSubject: %s\n\n%s""" % (
+    email_credentials["host"], ", ".join(contact_email), "Account Created!", text)
+
     with SMTP_SSL("smtp.gmail.com", 465) as s:
         s.login(email_credentials["host"], email_credentials["passwrd"])
-        s.sendmail(address_from, address_to, text)
+        s.sendmail(address_from, address_to, message)
 
 
 def main(file_name="20200924-active-teaching-data.csv",
