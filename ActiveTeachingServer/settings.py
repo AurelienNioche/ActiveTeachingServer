@@ -17,7 +17,6 @@ from . credentials import SECRET_KEY, DB_NAME, DB_PASSWORD, DB_USER, \
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-print("BASE DIR", BASE_DIR)
 
 
 # Quick-start development settings - unsuitable for production
