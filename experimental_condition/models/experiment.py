@@ -12,6 +12,7 @@ from teaching.models.teaching_engine import TeachingEngine
 from teaching.models.teacher.leitner import Leitner
 from teaching.models.teacher.threshold import Threshold
 from teaching.models.teacher.recursive import Recursive
+from teaching.models.teacher.forward import Forward
 
 from teaching.models.psychologist.bayesian_grid import Psychologist
 
@@ -188,6 +189,44 @@ class Task:
             psychologist=psy)
 
     @classmethod
+    def create_exp_decay_forward_engine(cls, user, material,
+                                        is_item_specific):
+
+        exp_decay = ExpDecay.objects.create(
+            n_item=cls.N_ITEM,
+            user=user,
+            cst_time=cls.CST_TIME)
+
+        psy = Psychologist.objects.create(
+            user=user,
+            n_item=cls.N_ITEM,
+            is_item_specific=is_item_specific,
+            grid_size=cls.GRID_SIZE,
+            grid_methods=cls.GRID_METHODS,
+            bounds=cls.BOUNDS
+        )
+
+        ev = Evaluator.objects.create(
+            user=user,
+            n_item=cls.N_ITEM,
+            n_repetition=cls.EVAL_N_REPETITION)
+
+        forward = Forward.objects.create(
+            user=user,
+            n_item=cls.N_ITEM,
+            learnt_threshold=cls.LEARNT_THRESHOLD,
+            time_per_iter=cls.TIME_PER_ITER,
+            n_iter_per_session=cls.N_ITER_PER_SESSION)
+
+        return TeachingEngine.objects.create(
+            user=user,
+            material=material,
+            evaluator=ev,
+            exp_decay=exp_decay,
+            forward=forward,
+            psychologist=psy)
+
+    @classmethod
     def create_exp_decay_threshold_engine(cls, user, material,
                                           is_item_specific):
 
@@ -259,6 +298,48 @@ class RecursiveCondition(models.Model):
     class Meta:
 
         db_table = 'recursive_condition'
+        app_label = 'experimental_condition'
+
+    def new_session(self):
+        return None
+
+
+class ForwardConditionManager(models.Manager):
+
+    def create(self, user, first_session, begin_with_active,
+               is_item_specific, previous_email=None):
+
+        leitner_m, active_teaching_m = \
+            Task.create_material(previous_email=previous_email)
+
+        leitner_te = Task.create_leitner_engine(
+            user=user,
+            material=leitner_m)
+
+        active_teaching_te = Task.create_exp_decay_forward_engine(
+            user=user,
+            material=active_teaching_m,
+            is_item_specific=is_item_specific)
+
+        Task.create_sessions(
+            active_teaching_engine=active_teaching_te,
+            leitner_teaching_engine=leitner_te,
+            first_session=first_session, user=user,
+            begin_with_active=begin_with_active)
+
+        obj = super().create(user=user)
+        return obj
+
+
+class ForwardCondition(models.Model):
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    objects = ForwardConditionManager()
+
+    class Meta:
+
+        db_table = 'forward_condition'
         app_label = 'experimental_condition'
 
     def new_session(self):
