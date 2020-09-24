@@ -58,7 +58,7 @@ def set_first_session(start_date, session_time):
     return first_session
 
 
-def main_email(contact_email, app_email, app_pwd):
+def main_email(contact_email, app_email, app_pwd, date, time):
 
     # Working to send plain text email
     # If you check internet to make the html version, filter results by date
@@ -67,6 +67,7 @@ def main_email(contact_email, app_email, app_pwd):
     address_to = (contact_email,)
 
     text = f"""
+    Subject: Account created!\n\n
     Dear participant,
 
     Your account has been created!
@@ -77,7 +78,7 @@ def main_email(contact_email, app_email, app_pwd):
     id: {app_email}
     pwd: {app_pwd}
 
-    Your first session is on XXX, XXX at XXX.
+    Your first session is on {date} at {time}.
 
     Training plan: 2 sessions per day, for 7 days.
 
@@ -188,7 +189,9 @@ def main(file_name="20200924-active-teaching-data.csv",
             print("Mailing user...")
             main_email(contact_email=contact_email,
                        app_email=app_email,
-                       app_pwd=app_pwd)
+                       app_pwd=app_pwd,
+                       date=start_date,
+                       time=session_time)
 
             users_df.to_csv(os.path.join("subscriptions", file_name))
 
