@@ -9,7 +9,7 @@ from user.authentication import sign_up
 from user.models.user import User
 
 from experimental_condition.models.experiment \
-    import RecursiveCondition, ThresholdCondition
+    import RecursiveCondition, ThresholdCondition, ForwardCondition
 
 
 def main():
@@ -23,20 +23,22 @@ def main():
         else:
             break
 
-    condition = RecursiveCondition.__name__ if int(binary_cd) \
+    condition = ForwardCondition.__name__ if int(binary_cd) \
         else ThresholdCondition.__name__
 
-    email = "rec@test.com" if int(binary_cd) else "thr@test.com"
-
-    print(f"condition selected: {condition}")
-
-    r = input("Item specific? "
-              "(enter 'yes' or 'y' for 'item specific' condition)?")
-    is_item_specific = r in ('y', 'yes')
+    email = "fwd@test.com" if int(binary_cd) else "thr@test.com"
 
     r = input("Begin with active teacher? "
               "(enter 'yes' or 'y' for 'item specific' condition)?")
-    begin_with_active = r in ('y', 'yes')
+
+    begin_with_active = r in ('y', 'yes', '')
+
+
+    # r = input("Item specific? "
+    #           "(enter 'yes' or 'y' for 'item specific' condition)?")
+    # is_item_specific = r in ('y', 'yes')
+
+    is_item_specific = True
 
     User.objects.filter(email=email).delete()
 
@@ -48,7 +50,8 @@ def main():
         condition=condition,
         first_session=timezone.now(),
         begin_with_active=begin_with_active,
-        is_item_specific=is_item_specific)
+        is_item_specific=is_item_specific,
+        experiment_name="test")
 
     if user is not None:
         print(f"User '{email}' created.")

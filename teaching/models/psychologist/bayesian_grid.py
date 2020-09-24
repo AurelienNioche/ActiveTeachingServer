@@ -23,12 +23,6 @@ class PsychologistManager(models.Manager):
         n_param_set, n_param = gp.shape
         grid_param = gp.flatten()
 
-        # x = np.linspace(0, 1, grid_size)
-        # y = stats.beta.pdf(x, a=1.5, b=5)
-        # z = y[::-1, None] * y[None, :]
-        # lp = np.zeros(n_param_set)
-        # lp[:] = z.flatten()
-
         lp = np.ones(n_param_set)
         lp -= logsumexp(lp)
 
@@ -184,8 +178,30 @@ class Psychologist(models.Model):
         t1 = timezone.now()
 
         if self.is_item_specific:
+
             param = np.array(self.param_set.order_by('item')
                              .values_list('value', flat=True))
+
+            is_rep = np.array(self.n_pres) > 1
+            not_is_rep = np.invert(is_rep)
+
+            if np.sum(is_rep) == self.n_item \
+                    or np.sum(not_is_rep) == self.n_item:
+                pass
+            else:
+
+                gp = np.reshape(self.grid_param, (-1, self.n_param))
+
+                log_post = np.array(self.logpost_set.order_by('item')
+                                    .values_list('value', flat=True))
+
+                lp_to_consider = log_post[is_rep]
+
+                lp = logsumexp(lp_to_consider, axis=0) - np.log(
+                    lp_to_consider.shape[0])
+
+                log_post[not_is_rep] = lp
+                param[not_is_rep] = np.dot(np.exp(lp), gp)
 
         else:
             param = np.asarray(self.param_set.first().value)
@@ -213,3 +229,9 @@ class LogPost(models.Model):
     item = models.IntegerField(default=None, null=True)
 
     value = ArrayField(models.FloatField(), default=list)
+
+# x = np.linspace(0, 1, grid_size)
+# y = stats.beta.pdf(x, a=1.5, b=5)
+# z = y[::-1, None] * y[None, :]
+# lp = np.zeros(n_param_set)
+# lp[:] = z.flatten()
