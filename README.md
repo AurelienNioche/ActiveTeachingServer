@@ -188,12 +188,19 @@ Remove the db
 
 ### Deployment server
 
-* Clone repository in /var/www/html/
+* Clone repository in `/var/www/html/`
 
 * Give permissions to read/write/execute to the dedicated folder 
 (here: `/var/www/html/`):
 
-    sudo chmod -R o+rwx /var/www/html/
+        
+        sudo chmod -R o+rwx /var/www/html/
+    
+* Change the initial values of file permissions for new files 
+(useful when using `git pull`)
+        
+        
+        umask 0022
  
 * Create a virtual environment
 
@@ -208,13 +215,13 @@ Remove the db
 
 
         createdb ActiveTeachingServer --owner postgres
-        python3 manage.py makemigrations
-        python3 manage.py migrate
+        python manage.py makemigrations
+        python manage.py migrate
 
 * 'Collect' the static files
 
     
-    python3 manage.py collectstatic
+    python manage.py collectstatic
  
     
 * Install Apache2
@@ -312,10 +319,10 @@ Be careful that the address is of the following form (don't include the port):
 
 
 ### List of config files
-- /etc/apache2/apache2.conf
-- /etc/apache2/sites-enabled/000-default.conf
-- /etc/systemd/system/daphne.service
-- /var/www/html/ActiveTeachingServer/credentials.py
+- `/etc/apache2/apache2.conf` (defaults are ok)
+- `/etc/apache2/sites-enabled/000-default.conf`
+- `/etc/systemd/system/daphne.service`
+- `/var/www/html/ActiveTeachingServer/credentials.py`
 
 
 ### In case of accident with Git (don't do this!)
