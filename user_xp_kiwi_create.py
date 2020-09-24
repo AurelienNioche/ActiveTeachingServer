@@ -66,9 +66,7 @@ def main_email(contact_email, app_email, app_pwd, date, time):
     address_from = email_credentials["host"]
     address_to = (contact_email,)
 
-    text = f"""From: hello@hello.com
-    To: hi@hi.com\n
-    Subject: <Subject goes here>\n\n
+    text = f"""
     Dear participant,
 
     Your account has been created!
@@ -104,8 +102,14 @@ def main_email(contact_email, app_email, app_pwd, date, time):
     mail: nioche.aurelien@gmail.com
     """
 
-    message = """From: %s\nTo: %s\nSubject: %s\n\n%s""" % (
-    email_credentials["host"], ", ".join((contact_email, )), "Account Created!", text)
+    # message = """From: %s\nTo: %s\nSubject: %s\n\n%s""" % (
+    # email_credentials["host"], ", ".join((contact_email, )), "Account Created!", text)
+
+    subject = "Account Created!"
+    message = \
+        f"""From: {email_credentials["host"]}\n""" \
+        f"""To: {", ".join(address_to)}\n""" \
+        f"""Subject: {subject}\n\n{text}"""
 
     with SMTP_SSL("smtp.gmail.com", 465) as s:
         s.login(email_credentials["host"], email_credentials["passwrd"])
