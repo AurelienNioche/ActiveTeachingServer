@@ -10,6 +10,7 @@ from teaching.models.teacher.leitner import Leitner
 from teaching.models.teacher.threshold import Threshold
 from teaching.models.teacher.sampling import Sampling
 from teaching.models.teacher.recursive import Recursive
+from teaching.models.teacher.forward import Forward
 from teaching.models.teacher.evaluator import Evaluator
 # from teaching.models.teacher.mcts import MCTSTeacher
 
@@ -60,6 +61,10 @@ class TeachingEngine(models.Model):
         Recursive,
         on_delete=models.CASCADE, null=True)
 
+    forward = models.OneToOneField(
+        Forward,
+        on_delete=models.CASCADE, null=True)
+
     psychologist = models.OneToOneField(
         Psychologist,
         on_delete=models.CASCADE, null=True)
@@ -93,6 +98,9 @@ class TeachingEngine(models.Model):
 
         elif self.recursive is not None:
             return self.recursive
+
+        elif self.forward is not None:
+            return self.forward
 
         elif self.sampling is not None:
             return self.sampling
@@ -172,7 +180,7 @@ class TeachingEngine(models.Model):
                 question_idx = teacher.ask(learner=learner, param=param,
                                            now=now_ts)
 
-            elif teacher.__class__ == Recursive:
+            elif teacher.__class__ in (Recursive, Forward):
                 assert learner.__class__ == ExpDecay
                 next_sessions = self.session_set.filter(
                     open=True,
