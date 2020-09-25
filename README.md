@@ -269,7 +269,7 @@ Remove the db
         WorkingDirectory=/var/www/html/ActiveTeachingServer
         Environment=DJANGO_SETTINGS_MODULE=ActiveTeachingServer.settings
         ExecStart=/var/www/html/ActiveTeachingServer/venv/bin/python /var/www/html/ActiveTeachingServer/venv/bin/daphne -p 8001 ActiveTeachingServer.asgi:application
-        Restart=always
+        Restart=on-failure
         
         [Install]
         WantedBy=multi-user.target
