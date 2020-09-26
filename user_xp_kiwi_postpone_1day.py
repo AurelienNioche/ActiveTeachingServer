@@ -6,6 +6,7 @@ application = get_wsgi_application()
 
 import datetime
 from pytz import timezone
+import numpy as np
 
 import pandas as pd
 
@@ -21,26 +22,34 @@ def main(file_name="20200924-active-teaching-data.csv"):
         os.path.join("subscriptions", file_name),
         index_col=0)
 
-    while True:
-        try:
-            contact_email = input("contact email")
+    contact_email = input("contact email:")
 
-            idx = users_df.index[users_df['Email'] == contact_email].tolist()[0]
-            user_row = users_df.iloc[idx]
-            previous_email = user_row["app_email"]
-            password = user_row["app_pwd"]
-            start_date = user_row["StartDate"]
-            session_time = user_row["SessionTime"]
-            first_session = set_first_session(start_date=start_date,
-                                              session_time=session_time)
-            first_session += datetime.timedelta(days=1)
-            previous_u = User.objects.get(email=previous_email)
+    idx = users_df.index[users_df['Email'] == contact_email][0]
+    user_row = users_df.loc[idx]
 
-            user_row["Notes"] += "Actually began 1 day later"
+    answer = input(f"Postpone of 1 day the beginning for {user_row['Email']}? ('y' to continue)")
+    if answer in ('y', 'yes'):
+        print("proceed...")
+    else:
+        print("operation cancelled")
+        exit(0)
 
-            break
-        except Exception as e:
-            print(f"encountered error '{e}', please retry!")
+    previous_email = user_row["app_email"]
+    password = user_row["app_pwd"]
+    start_date = user_row["StartDate"]
+    session_time = user_row["SessionTime"]
+    first_session = set_first_session(start_date=start_date,
+                                      session_time=session_time)
+    first_session += datetime.timedelta(days=1)
+
+    if isinstance(user_row["Notes"], str) and user_row["Notes"] != "":
+        new_note = f"{user_row['Notes']}\nActually began 1 day later"
+    else:
+        new_note = "Actually began 1 day later"
+
+    users_df.loc[idx, "Notes"] = new_note
+
+    previous_u = User.objects.get(email=previous_email)
 
     print("Re creating user...")
 
