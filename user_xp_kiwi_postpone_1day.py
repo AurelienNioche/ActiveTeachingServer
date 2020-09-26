@@ -35,7 +35,7 @@ def main(file_name="20200924-active-teaching-data.csv"):
         exit(0)
 
     previous_email = user_row["app_email"]
-    password = user_row["app_pwd"]
+    password = str(user_row["app_pwd"])
     start_date = user_row["StartDate"]
     session_time = user_row["SessionTime"]
     first_session = set_first_session(start_date=start_date,
