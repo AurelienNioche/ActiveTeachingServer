@@ -35,6 +35,7 @@ def main(file_name="20200924-active-teaching-data.csv"):
         exit(0)
 
     previous_email = user_row["app_email"]
+    mail_domain = previous_email.split("@")[-1]
     password = str(user_row["app_pwd"])
     start_date = user_row["StartDate"]
     session_time = user_row["SessionTime"]
@@ -62,7 +63,7 @@ def main(file_name="20200924-active-teaching-data.csv"):
         previous_u.session_set.order_by("available_time").first()\
         .teaching_engine.leitner is None
 
-    intermediary_email = previous_email.replace("aalto", "replace")
+    intermediary_email = previous_email.replace(mail_domain, "replace")
     user = sign_up(
         email=intermediary_email,
         password=password,
