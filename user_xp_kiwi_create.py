@@ -21,6 +21,10 @@ from user.authentication import sign_up
 from user.models.user import User
 
 
+MAIL_DOMAIN = "active.fi"
+CSV = os.path.join("subscriptions", "20200924-active-teaching-data.csv")
+
+
 def get_credentials() -> dict:
     """Get email username and password"""
     return {
@@ -113,18 +117,36 @@ def main_email(contact_email, app_email, app_pwd, date, time):
         s.sendmail(address_from, address_to, message)
 
 
-def main(file_name="20200924-active-teaching-data.csv",
-         experiment_name="kiwi",
-         is_item_specific=True):
+def update_csv(users_df, idx, app_email, app_pwd, condition,
+               begin_with_active):
+    users_df.loc[idx, "app_email"] = app_email
+    users_df.loc[idx, "app_pwd"] = app_pwd
+    users_df.loc[idx, "app_pwd"] = app_pwd
+    users_df.loc[idx, "condition"] = condition
+    users_df.loc[idx, "begin_with_active"] = begin_with_active
+    users_df.to_csv(CSV)
+
+
+def main(experiment_name="kiwi", is_item_specific=True):
+
+    mail_user = input("Do you want to mail the users?")
+    mail_user = mail_user in ('y', "yes")
+    if mail_user:
+        print("I will mail the users")
+    else:
+        print("I will NOT mail the users")
+
+    confirm = input("Do you confirm you choice?")
+    if confirm in ('y', 'yes'):
+        print("Creating the users...")
+    else:
+        print("Operation cancelled")
+        exit(0)
 
     # Squeeze = load as pd.Series instead of pd.Dataframe
     animals_series = pd.read_csv("animals.csv", squeeze=True)
 
-    users_df = pd.read_csv(
-        os.path.join("subscriptions", file_name),
-        index_col=0)
-
-    users_df.to_csv(os.path.join("subscriptions", "BKP_" + file_name))
+    users_df = pd.read_csv(CSV, index_col=0)
 
     conditions = {
         # Condition name, begin with active
@@ -140,33 +162,32 @@ def main(file_name="20200924-active-teaching-data.csv",
 
         app_email = user_row["app_email"] if "app_email" in user_row else None
 
-        if app_email:
+        if app_email \
+                and not (isinstance(app_email, float) and np.isnan(app_email)):
+            print(f"User already registered: {app_email}\n")
             assert User.objects.filter(email=app_email).first() is not None
             continue
-        print(user_row)
+        print(user_row + "\n")
         contact_email = user_row["Email"]
         start_date = user_row["StartDate"]
         session_time = user_row["SessionTime"]
 
-        app_email = make_email_addr(animals_series[idx],  "active.fi")
-        if User.objects.filter(email=app_email).first() is not None:
-            print(f"I will ignore the user {contact_email}, "
-                  f"it is already registered")
-            continue
-
+        app_email = make_email_addr(animals_series[idx], MAIL_DOMAIN)
         app_pwd = make_pin(seed=idx)
 
         condition, begin_with_active = conditions[cd_idx]
 
+        if User.objects.filter(email=app_email).first() is not None:
+            print(f"I will ignore the user {contact_email}, "
+                  f"it is already registered")
+            update_csv(users_df=users_df, idx=idx, app_email=app_email,
+                       app_pwd=app_pwd, condition=condition,
+                       begin_with_active=begin_with_active)
+            continue
+
         first_session = set_first_session(
             start_date=start_date,
             session_time=session_time)
-
-        # Confirm creation
-        # ready = input("create user (enter 'yes' or 'y' to continue)?")
-        # if ready not in ("y", "yes"):
-        #     print("Operation cancelled")
-        #     exit(0)
 
         user = sign_up(
             email=app_email,
@@ -179,21 +200,18 @@ def main(file_name="20200924-active-teaching-data.csv",
 
         if user is not None:
             print("Success!")
-            print("Updating csv...")
-            users_df.loc[idx, "app_email"] = app_email
-            users_df.loc[idx, "app_pwd"] = app_pwd
-            users_df.loc[idx, "app_pwd"] = app_pwd
-            users_df.loc[idx, "condition"] = condition
-            users_df.loc[idx, "begin_with_active"] = begin_with_active
 
-            print("Mailing user...")
-            main_email(contact_email=contact_email,
-                       app_email=app_email,
-                       app_pwd=app_pwd,
-                       date=start_date,
-                       time=session_time)
+            update_csv(users_df=users_df, idx=idx, app_email=app_email,
+                       app_pwd=app_pwd, condition=condition,
+                       begin_with_active=begin_with_active)
 
-            users_df.to_csv(os.path.join("subscriptions", file_name))
+            if mail_user:
+                print("Mailing user...")
+                main_email(contact_email=contact_email,
+                           app_email=app_email,
+                           app_pwd=app_pwd,
+                           date=start_date,
+                           time=session_time)
 
         else:
             print(f"Something went wrong with user {contact_email}!")
