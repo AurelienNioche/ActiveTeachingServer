@@ -167,7 +167,7 @@ def main(experiment_name="kiwi", is_item_specific=True):
             print(f"User already registered: {app_email}\n")
             assert User.objects.filter(email=app_email).first() is not None
             continue
-        print(user_row, "\n")
+
         contact_email = user_row["Email"]
         start_date = user_row["StartDate"]
         session_time = user_row["SessionTime"]
@@ -199,11 +199,13 @@ def main(experiment_name="kiwi", is_item_specific=True):
             is_item_specific=is_item_specific)
 
         if user is not None:
-            print("Success!")
 
             update_csv(users_df=users_df, idx=idx, app_email=app_email,
                        app_pwd=app_pwd, condition=condition,
                        begin_with_active=begin_with_active)
+
+            print("Created with success:")
+            print(user_row, "\n")
 
             if mail_user:
                 print("Mailing user...")
