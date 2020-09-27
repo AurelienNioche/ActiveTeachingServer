@@ -5,8 +5,7 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 import datetime
-from pytz import timezone
-import numpy as np
+import argparse
 
 import pandas as pd
 
@@ -16,22 +15,40 @@ from user.models.user import User
 from user_xp_kiwi_create import set_first_session
 
 
-def main(file_name="20200924-active-teaching-data.csv"):
+MAIL_DOMAIN = "active.fi"
+CSV = os.path.join("subscriptions", "20200924-active-teaching-data.csv")
 
-    users_df = pd.read_csv(
-        os.path.join("subscriptions", file_name),
-        index_col=0)
 
-    contact_email = input("contact email:")
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("quantity", help="how long", type=int)
+    parser.add_argument("-D", "--day", help="use days", action="store_true")
+    parser.add_argument("-H", "--hour", help="use hours", action="store_true")
+    args = parser.parse_args()
+    if args.day:
+        change = datetime.timedelta(days=args.quantity)
+        change_str = f"{args.quantity} day"
+        print(f"Change is {change_str}")
+    elif args.hour:
+        change = datetime.timedelta(hours=args.quantity)
+        change_str = f"{args.quantity} hour"
+        print(f"Change is {change_str}")
+
+    else:
+        raise ValueError
+
+    users_df = pd.read_csv(CSV, index_col=0)
+
+    contact_email = input("Contact email:")
 
     idx = users_df.index[users_df['Email'] == contact_email][0]
     user_row = users_df.loc[idx]
 
-    answer = input(f"Postpone of 1 day the beginning for {user_row['Email']}? ('y' to continue)")
+    answer = input(f"Proceed for {user_row['Email']}? ('y' to continue)")
     if answer in ('y', 'yes'):
-        print("proceed...")
+        print("Proceed...")
     else:
-        print("operation cancelled")
+        print("Operation cancelled")
         exit(0)
 
     previous_email = user_row["app_email"]
@@ -41,12 +58,13 @@ def main(file_name="20200924-active-teaching-data.csv"):
     session_time = user_row["SessionTime"]
     first_session = set_first_session(start_date=start_date,
                                       session_time=session_time)
-    first_session += datetime.timedelta(days=1)
+    first_session += change
 
+    msg = f"Actually began {change_str} later"
     if isinstance(user_row["Notes"], str) and user_row["Notes"] != "":
-        new_note = f"{user_row['Notes']}\nActually began 1 day later"
+        new_note = f"{user_row['Notes']}\n{msg}"
     else:
-        new_note = "Actually began 1 day later"
+        new_note = msg
 
     users_df.loc[idx, "Notes"] = new_note
 
@@ -75,19 +93,19 @@ def main(file_name="20200924-active-teaching-data.csv"):
         experiment_name=experiment_name)
 
     if user is not None:
-        print("Success!")
+        print("Temporary user created!")
     else:
         raise ValueError("Error! User already exist!")
 
-    print("Renaming")
+    print("Renaming...")
     User.objects.filter(email=previous_email).delete()
 
     user.email = previous_email
     user.save()
 
-    print("Updating csv")
-    users_df.to_csv(os.path.join("subscriptions", file_name))
-    print("Done")
+    print("Updating csv...")
+    users_df.to_csv(CSV)
+    print("Done!")
 
 
 if __name__ == "__main__":
