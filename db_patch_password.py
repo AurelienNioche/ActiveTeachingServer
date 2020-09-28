@@ -26,12 +26,12 @@ def main():
     for idx, user_row in users_df.iterrows():
 
         actual_pwd = get_password(user_row)
-        users_df.loc[idx, "app_pwd"] = actual_pwd
-        users_df.to_csv(CSV)
+        # users_df.loc[idx, "app_pwd"] = actual_pwd
+        # users_df.to_csv(CSV)
 
         email = user_row["app_email"]
         u = User.objects.get(email=email)
-        u.password = actual_pwd
+        u.set_password(actual_pwd)
         u.save()
 
 # for u in User.objects.exclude(is_superuser=True):
