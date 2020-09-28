@@ -19,6 +19,10 @@ MAIL_DOMAIN = "active.fi"
 CSV = os.path.join("subscriptions", "20200924-active-teaching-data.csv")
 
 
+def get_password(user_row):
+    return str(int(user_row["app_pwd"])).rjust(4, "0")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("quantity", help="how long", type=int)
@@ -53,7 +57,7 @@ def main():
 
     previous_email = user_row["app_email"]
     mail_domain = previous_email.split("@")[-1]
-    password = str(user_row["app_pwd"])
+    password = get_password(user_row)
     start_date = user_row["StartDate"]
     session_time = user_row["SessionTime"]
     first_session = set_first_session(start_date=start_date,
