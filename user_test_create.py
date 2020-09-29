@@ -10,23 +10,33 @@ from user.models.user import User
 
 from experimental_condition.models.experiment.condition_forward import ForwardCondition
 from experimental_condition.models.experiment.condition_threshold import ThresholdCondition
+from experimental_condition.models.experiment.condition_recursive import RecursiveCondition
 
 
 def main():
 
     while True:
-        binary_cd = input("condition "
+        string_cd = input("condition "
                           "(enter '0' for 'threshold' and "
-                          "'1' for 'forward'):")
-        if binary_cd not in ('0', '1'):
+                          "'1' for 'forward',"
+                          "'2' for 'recursive'):")
+        if string_cd not in ('0', '1', '2'):
             print("I did not get the answer! Try again!")
         else:
             break
 
-    condition = ForwardCondition.__name__ if int(binary_cd) \
-        else ThresholdCondition.__name__
-
-    email = "fwd@test.com" if int(binary_cd) else "thr@test.com"
+    num_cd = int(string_cd)
+    if num_cd == 0:
+        condition = ThresholdCondition.__name__
+        email = "thr@test.com"
+    elif num_cd == 1:
+        condition = ForwardCondition.__name__
+        email = "fwd@test.com"
+    elif num_cd == 2:
+        condition = RecursiveCondition.__name__
+        email = "rec@test.com"
+    else:
+        raise ValueError
 
     r = input("Begin with active teacher? "
               "(enter 'yes' or 'y' for 'item specific' condition)?")
