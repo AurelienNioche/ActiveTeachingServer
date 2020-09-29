@@ -27,10 +27,14 @@ from teaching.models.learner.exp_decay import ExpDecay
 
 class Task:
 
-    BOUNDS = [[0.025, 0.00005], [0.0001, 0.9999]]
+    # BOUNDS = [[0.025, 0.00005], [0.0001, 0.9999]]
     # BOUNDS = [[0.0000001, 0.00005], [0.0001, 0.9999]]
     # [[0.0000001, 0.1], [0.0001, 0.9999]]
-    GRID_METHODS = [np.logspace, np.linspace]
+    # GRID_METHODS = [np.logspace, np.linspace]
+
+    BOUNDS = [[2e-07, 0.025], [0.0001, 0.9999]]
+    GRID_METHODS = [np.geomspace, np.linspace]
+
     GRID_SIZE = 100
     CST_TIME = 1
 
