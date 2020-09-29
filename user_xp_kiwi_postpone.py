@@ -23,6 +23,12 @@ def get_password(user_row):
     return str(int(user_row["app_pwd"])).rjust(4, "0")
 
 
+def save_csv(users_df):
+
+    users_df["app_pwd"] = [get_password(r) for _, r in users_df.iterrows()]
+    users_df.to_csv(CSV)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("quantity", help="how long", type=int)
@@ -108,7 +114,7 @@ def main():
     user.save()
 
     print("Updating csv...")
-    users_df.to_csv(CSV)
+    save_csv(users_df)
     print("Done!")
 
 

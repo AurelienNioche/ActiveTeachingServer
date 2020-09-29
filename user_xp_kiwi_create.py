@@ -15,8 +15,9 @@ from pytz import timezone
 
 import ActiveTeachingServer.credentials as credentials
 
-from experimental_condition.models.experiment \
-    import ThresholdCondition, ForwardCondition
+from experimental_condition.models.experiment.condition_threshold import ThresholdCondition
+from experimental_condition.models.experiment.condition_forward import ForwardCondition
+
 from user.authentication import sign_up
 from user.models.user import User
 
@@ -165,8 +166,10 @@ def main(experiment_name="kiwi", is_item_specific=True):
         if app_email \
                 and not (isinstance(app_email, float) and np.isnan(app_email)):
             print(f"User already registered: {app_email}\n")
-            assert User.objects.filter(email=app_email).first() is not None
-            continue
+            if User.objects.filter(email=app_email).first() is not None:
+                continue
+
+            print(f"However, it doesn't exist in the db, I will create it...")
 
         contact_email = user_row["Email"]
         start_date = user_row["StartDate"]
