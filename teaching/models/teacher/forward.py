@@ -22,7 +22,7 @@ class Forward(models.Model):
         app_label = 'teaching'
 
     def _threshold_select(self, n_pres, param, n_item, is_item_specific,
-                          ts, last_pres, cst_time, log_thr):
+                          ts, last_pres, log_thr):
 
         if np.max(n_pres) == 0:
             item = 0
@@ -36,8 +36,7 @@ class Forward(models.Model):
                 n_item=n_item,
                 is_item_specific=is_item_specific,
                 last_pres=last_pres,
-                ts=ts,
-                cst_time=cst_time)
+                ts=ts)
 
             if np.min(log_p_seen) <= log_thr or np.sum(seen) == n_item:
                 item = np.flatnonzero(seen)[np.argmin(log_p_seen)]
@@ -48,7 +47,7 @@ class Forward(models.Model):
 
     @staticmethod
     def _cp_log_p_seen(seen, n_pres, param, n_item, is_item_specific,
-                       last_pres, ts, cst_time):
+                       last_pres, ts):
 
         if is_item_specific:
             init_forget = param[:n_item][seen, 0]
@@ -59,12 +58,11 @@ class Forward(models.Model):
         return \
             -init_forget \
             * (1 - rep_effect) ** (n_pres[seen] - 1) \
-            * (ts - last_pres[seen]) \
-            * cst_time
+            * (ts - last_pres[seen])
 
     def _forward(self, n_pres, last_pres,
                  future_ts, param, eval_ts,
-                 cst_time, is_item_specific,
+                 is_item_specific,
                  log_thr):
 
         n_item = self.n_item
@@ -86,7 +84,6 @@ class Forward(models.Model):
                 n_item=n_item,
                 is_item_specific=is_item_specific,
                 ts=now, last_pres=last_pres,
-                cst_time=cst_time,
                 log_thr=log_thr)
 
             n_item = first_item + 1
@@ -105,7 +102,6 @@ class Forward(models.Model):
                     n_item=n_item,
                     is_item_specific=is_item_specific,
                     ts=ts, last_pres=last_pres,
-                    cst_time=cst_time,
                     log_thr=log_thr)
 
                 n_pres[item] += 1
@@ -119,8 +115,7 @@ class Forward(models.Model):
                 n_item=n_item,
                 is_item_specific=is_item_specific,
                 last_pres=last_pres,
-                ts=eval_ts,
-                cst_time=cst_time)
+                ts=eval_ts)
 
             n_learnt = np.sum(log_p_seen > log_thr)
             if n_learnt == n_item:
@@ -159,7 +154,6 @@ class Forward(models.Model):
 
         n_pres = np.array(learner.n_pres, dtype=int)
         last_pres = np.array(learner.last_pres, dtype=float)
-        cst_time = learner.cst_time
 
         is_item_specific = len(param.shape) > 1
 
@@ -169,7 +163,6 @@ class Forward(models.Model):
             param=param,
             future_ts=future_ts,
             eval_ts=eval_ts,
-            cst_time=cst_time,
             is_item_specific=is_item_specific,
             n_pres=n_pres,
             last_pres=last_pres,

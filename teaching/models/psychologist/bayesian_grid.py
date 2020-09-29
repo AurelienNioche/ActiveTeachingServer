@@ -35,7 +35,7 @@ class PsychologistManager(models.Manager):
             grid_param=list(grid_param),
             n_param=n_param,
             n_item=n_item,
-            bounds=list(np.asarray(bounds).flatten()),
+            # bounds=list(np.asarray(bounds).flatten()),
             n_pres=list(n_pres),
             is_item_specific=is_item_specific)
 
@@ -100,12 +100,12 @@ class Psychologist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     grid_param = ArrayField(models.FloatField(), default=list)
-    log_post = ArrayField(models.FloatField(), default=list)
+    # log_post = ArrayField(models.FloatField(), default=list)
 
     n_item = models.IntegerField()
     n_param = models.IntegerField()
 
-    bounds = ArrayField(models.FloatField(), default=list)
+    # bounds = ArrayField(models.FloatField(), default=list)
 
     is_item_specific = models.BooleanField()
 

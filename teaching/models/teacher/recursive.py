@@ -24,7 +24,7 @@ class Recursive(models.Model):
     def _recursive_exp_decay(self,
                              n_pres, last_pres,
                              future_ts, param, eval_ts,
-                             cst_time, is_item_specific):
+                             is_item_specific):
 
         itr = 0
         n_item = self.n_item
@@ -60,8 +60,7 @@ class Recursive(models.Model):
                     p_seen = np.exp(
                         -init_forget
                         * (1 - rep_effect) ** (n_pres[seen] - 1)
-                        * (ts - last_pres[seen])
-                        * cst_time)
+                        * (ts - last_pres[seen]))
 
                     if np.min(p_seen) <= 0.90 or np.sum(seen) == n_item:
                         item = np.flatnonzero(seen)[np.argmin(p_seen)]
@@ -85,8 +84,7 @@ class Recursive(models.Model):
             p_seen = np.exp(
                 -init_forget
                 * (1 - rep_effect) ** (n_pres[seen] - 1)
-                * (eval_ts - last_pres[seen])
-                * cst_time)
+                * (eval_ts - last_pres[seen]))
 
             n_learnt = np.sum(p_seen > thr)
 
@@ -131,7 +129,6 @@ class Recursive(models.Model):
             eval_time=eval_time)
 
         n_pres, last_pres = learner.n_pres, learner.last_pres
-        cst_time = learner.cst_time
 
         is_item_specific = len(param.shape) > 1
 
@@ -139,7 +136,6 @@ class Recursive(models.Model):
             param=param,
             future_ts=ts,
             eval_ts=eval_ts,
-            cst_time=cst_time,
             is_item_specific=is_item_specific,
             n_pres=n_pres,
             last_pres=last_pres)

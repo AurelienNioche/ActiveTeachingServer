@@ -1,0 +1,26 @@
+import numpy as np
+import datetime
+
+BOUNDS = [[2e-07, 0.025], [0.0001, 0.9999]]
+GRID_METHODS = [np.geomspace, np.linspace]
+
+GRID_SIZE = 100
+
+N_SESSION = 6
+N_ITER_PER_SESSION = 100
+
+N_ITEM = 200
+
+LEARNT_THRESHOLD = 0.90
+
+TIME_PER_ITER = 4
+
+EVAL_N_REPETITION = 2
+
+TIME_DELTA_TWO_TEACHERS = datetime.timedelta(
+    seconds=TIME_PER_ITER * N_ITER_PER_SESSION)
+TIME_DELTA_TWO_SESSIONS = datetime.timedelta(
+    days=1)
+
+LEITNER_DELAY_FACTOR = 2
+LEITNER_DELAY_MIN = TIME_PER_ITER

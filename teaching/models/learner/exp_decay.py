@@ -10,7 +10,7 @@ EPS = np.finfo(np.float).eps
 
 class ExpDecayManager(models.Manager):
 
-    def create(self, user, n_item, cst_time):
+    def create(self, user, n_item):
 
         n_pres = list(np.zeros(n_item, dtype=int))
         last_pres = [None for _ in range(n_item)]
@@ -21,8 +21,7 @@ class ExpDecayManager(models.Manager):
             seen=seen,
             n_pres=n_pres,
             last_pres=last_pres,
-            n_item=n_item,
-            cst_time=cst_time)
+            n_item=n_item)
         return obj
 
 
@@ -31,7 +30,6 @@ class ExpDecay(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     n_item = models.IntegerField()
-    cst_time = models.FloatField()
 
     seen = ArrayField(models.BooleanField(), default=list)
 
@@ -54,7 +52,7 @@ class ExpDecay(models.Model):
     def p_seen(self, param, now):
 
         seen = np.asarray(self.seen)
-        n_pres = np.asarray(self.n_pres)
+        n_pres = np.asarray(self.n_pres, dtype=int)
         last_pres = np.asarray(self.last_pres, dtype=float)
         param = np.asarray(param)
 
@@ -68,8 +66,6 @@ class ExpDecay(models.Model):
 
         last_pres = last_pres[seen]
         delta = now - last_pres
-
-        delta *= self.cst_time
 
         p = np.exp(-fr * delta)
         return p, seen
@@ -100,7 +96,6 @@ class ExpDecay(models.Model):
         fr = init_forget * (1-rep_effect) ** (n_pres[seen] - 1)
 
         delta = now - last_pres[seen]
-        delta *= self.cst_time
 
         p = np.exp(-fr * delta)
         return p, seen
@@ -111,7 +106,6 @@ class ExpDecay(models.Model):
             * (1 - grid_param[:, 1]) ** (self.n_pres[item] - 1)
 
         delta = timestamp - self.last_pres[item]
-        delta *= self.cst_time
 
         p_success = np.exp(- fr * delta)
 

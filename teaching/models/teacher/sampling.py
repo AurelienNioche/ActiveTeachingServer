@@ -97,37 +97,3 @@ class Sampling(models.Model):
         item_idx = self._select_item(learner=learner, param=param, now=now,
                                      session=session)
         return item_idx
-
-
-# horizon = models.IntegerField()
-
-# So need to set them at creation ---
-# plan_it = models.IntegerField(default=0)
-
-# def _revise_goal(self, now, session):
-    #
-    #     next_ss_available = session.next_available_time.timestamp()
-    #     ss_n_iter = session.n_iteration
-    #     ss_it = session.iter
-    #
-    #     assert self.horizon <= ss_n_iter, "Case not handled!"
-    #
-    #     remain = ss_n_iter - ss_it
-    #
-    #     self.plan_it += 1
-    #     if self.plan_it == self.horizon:
-    #         self.plan_it = 0
-    #         h = self.horizon
-    #     else:
-    #         h = self.horizon - self.plan_it
-    #
-    #     timestamps = now + np.arange(h + 1, dtype=int) * self.time_per_iter
-    #
-    #     if remain < h + 1:
-    #         pred_no_break_time = now + remain * self.time_per_iter
-    #         delay = max(0, next_ss_available - pred_no_break_time)
-    #
-    #         timestamps[remain:] += delay
-    #
-    #     return h, timestamps
-

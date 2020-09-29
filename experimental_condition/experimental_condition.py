@@ -1,7 +1,8 @@
 from experimental_condition.models.test_leitner import TestLeitner
 from experimental_condition.models.pilot import Pilot
-from experimental_condition.models.experiment import \
-    ThresholdCondition, RecursiveCondition, ForwardCondition
+from experimental_condition.models.experiment.condition_forward import ForwardCondition
+from experimental_condition.models.experiment.condition_threshold import ThresholdCondition
+from experimental_condition.models.experiment.condition_recursive import RecursiveCondition
 from experimental_condition.models.test_active import TestActive
 
 CONDITION = {cls.__name__: cls for cls in (
