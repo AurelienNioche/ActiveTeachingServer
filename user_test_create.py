@@ -8,8 +8,8 @@ application = get_wsgi_application()
 from user.authentication import sign_up
 from user.models.user import User
 
-from experimental_condition.models.experiment \
-    import RecursiveCondition, ThresholdCondition, ForwardCondition
+from experimental_condition.models.experiment.condition_forward import ForwardCondition
+from experimental_condition.models.experiment.condition_threshold import ThresholdCondition
 
 
 def main():
@@ -33,10 +33,12 @@ def main():
 
     begin_with_active = r in ('y', 'yes', '')
 
-
+    # # Uncomment this for item specific manipulation
     # r = input("Item specific? "
     #           "(enter 'yes' or 'y' for 'item specific' condition)?")
     # is_item_specific = r in ('y', 'yes')
+
+    print("Creating user...\n")
 
     is_item_specific = True
 

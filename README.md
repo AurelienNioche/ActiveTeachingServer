@@ -325,7 +325,7 @@ Be careful that the address is of the following form (don't include the port):
 - `/var/www/html/ActiveTeachingServer/credentials.py`
 
 
-### In case of accident with Git (don't do this!)
+### In case of accident/misunderstanding/disagreement with Git (don't do this!)
 
 If you accidentally push something you don't want 
 (i.e. credentials or sensitive data)
@@ -333,7 +333,7 @@ If you accidentally push something you don't want
     git reset --hard <ref last correct commit>
     git push --force
     
-If you want to pull, put Git doesn't let you
+If you want to pull, but Git doesn't let you do it
 
     git fetch --all
     git reset --hard origin/master
