@@ -3,7 +3,7 @@ import pandas as pd
 
 from user_xp_kiwi_create import CSV, save_csv
 
-NEW_BATCH = os.path.join("subscriptions", "BatchE.csv")
+NEW_BATCH = os.path.join("subscriptions", "BatchF.csv")
 
 
 def main():
