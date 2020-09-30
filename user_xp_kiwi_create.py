@@ -202,7 +202,7 @@ def main(experiment_name="kiwi", is_item_specific=True):
             update_csv(users_df=users_df, idx=idx, app_email=app_email,
                        app_pwd=app_pwd, condition=condition,
                        begin_with_active=begin_with_active)
-            save_csv(CSV)
+            save_csv(users_df)
             continue
 
         first_session = set_first_session(
@@ -235,7 +235,7 @@ def main(experiment_name="kiwi", is_item_specific=True):
                            date=start_date,
                            time=session_time)
 
-            save_csv(CSV)
+            save_csv(users_df)
 
         else:
             print(f"Something went wrong with user {contact_email}!")
