@@ -10,7 +10,12 @@ def main():
 
     # import
     users_df = pd.read_csv(CSV, index_col=0)
-    new_user_df = pd.read_csv(NEW_BATCH, index_col=0)
+
+    try:
+        new_user_df = pd.read_csv(NEW_BATCH, index_col=0, sep=",")
+        assert "Email" in new_user_df.columns
+    except AssertionError:
+        new_user_df = pd.read_csv(NEW_BATCH, index_col=0, sep=";")
 
     # print original
     print("original\n", users_df)
