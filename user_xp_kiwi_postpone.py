@@ -24,6 +24,7 @@ def main():
     parser.add_argument("quantity", help="how long", type=int)
     parser.add_argument("-D", "--day", help="use days", action="store_true")
     parser.add_argument("-H", "--hour", help="use hours", action="store_true")
+    parser.add_argument("-K", "--keep", help="keep same characters", action="store_true")
     args = parser.parse_args()
     if args.day:
         change = datetime.timedelta(days=args.quantity)
@@ -36,6 +37,11 @@ def main():
 
     else:
         raise ValueError
+
+    if args.keep:
+        keep = True
+    else:
+        keep = False
 
     users_df = pd.read_csv(CSV, index_col=0)
 
@@ -82,6 +88,12 @@ def main():
         .teaching_engine.leitner is None
 
     intermediary_email = previous_email.replace(mail_domain, "replace")
+
+    if keep:
+        extra = {}
+    else:
+        extra = {"previous_email":previous_email}
+
     user = sign_up(
         email=intermediary_email,
         password=password,
@@ -89,8 +101,7 @@ def main():
         first_session=first_session,
         begin_with_active=begin_with_active,
         is_item_specific=is_item_specific,
-        previous_email=previous_email,
-        experiment_name=experiment_name)
+        experiment_name=experiment_name, **extra)
 
     if user is not None:
         print("Temporary user created!")
