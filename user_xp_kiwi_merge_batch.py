@@ -1,10 +1,7 @@
 import os
 import pandas as pd
-import numpy as np
 
-from user_xp_kiwi_create import CSV
-from user_xp_kiwi_postpone import save_csv
-
+from user_xp_kiwi_create import CSV, save_csv
 
 NEW_BATCH = os.path.join("subscriptions", "BatchE.csv")
 
