@@ -12,21 +12,11 @@ import pandas as pd
 from user.authentication import sign_up
 from user.models.user import User
 
-from user_xp_kiwi_create import set_first_session
+from user_xp_kiwi_create import set_first_session, save_csv, get_password
 
 
 MAIL_DOMAIN = "active.fi"
 CSV = os.path.join("subscriptions", "20200924-active-teaching-data.csv")
-
-
-def get_password(user_row):
-    return str(int(user_row["app_pwd"])).rjust(4, "0")
-
-
-def save_csv(users_df):
-
-    users_df["app_pwd"] = [get_password(r) for _, r in users_df.iterrows()]
-    users_df.to_csv(CSV)
 
 
 def main():

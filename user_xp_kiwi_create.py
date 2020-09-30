@@ -26,6 +26,21 @@ MAIL_DOMAIN = "active.fi"
 CSV = os.path.join("subscriptions", "20200924-active-teaching-data.csv")
 
 
+def get_password(user_row):
+    v = user_row["app_pwd"]
+    if not (isinstance(v, float) and np.isnan(
+            v)) and not isinstance(v, str):
+        return str(int(user_row["app_pwd"])).rjust(4, "0")
+    else:
+        return v
+
+
+def save_csv(users_df):
+
+    users_df["app_pwd"] = [get_password(r) for _, r in users_df.iterrows()]
+    users_df.to_csv(CSV)
+
+
 def get_credentials() -> dict:
     """Get email username and password"""
     return {
@@ -125,7 +140,7 @@ def update_csv(users_df, idx, app_email, app_pwd, condition,
     users_df.loc[idx, "app_pwd"] = app_pwd
     users_df.loc[idx, "condition"] = condition
     users_df.loc[idx, "begin_with_active"] = begin_with_active
-    users_df.to_csv(CSV)
+    return users_df
 
 
 def main(experiment_name="kiwi", is_item_specific=True):
@@ -183,9 +198,11 @@ def main(experiment_name="kiwi", is_item_specific=True):
         if User.objects.filter(email=app_email).first() is not None:
             print(f"I will ignore the user {contact_email}, "
                   f"it is already registered")
+            print("I will update the csv...")
             update_csv(users_df=users_df, idx=idx, app_email=app_email,
                        app_pwd=app_pwd, condition=condition,
                        begin_with_active=begin_with_active)
+            save_csv(CSV)
             continue
 
         first_session = set_first_session(
@@ -208,7 +225,7 @@ def main(experiment_name="kiwi", is_item_specific=True):
                        begin_with_active=begin_with_active)
 
             print("Created with success:")
-            print(user_row, "\n")
+            print(users_df.loc[idx], "\n")
 
             if mail_user:
                 print("Mailing user...")
@@ -217,6 +234,8 @@ def main(experiment_name="kiwi", is_item_specific=True):
                            app_pwd=app_pwd,
                            date=start_date,
                            time=session_time)
+
+            save_csv(CSV)
 
         else:
             print(f"Something went wrong with user {contact_email}!")
