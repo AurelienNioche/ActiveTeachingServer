@@ -27,11 +27,15 @@ def main():
     parser.add_argument("-K", "--keep", help="keep same characters", action="store_true")
     args = parser.parse_args()
     if args.day:
-        change = datetime.timedelta(days=args.quantity)
+        change = datetime.timedelta(days=abs(args.quantity))
+        if args.quantity < 0:
+            change = - change
         change_str = f"{args.quantity} day"
         print(f"Change is {change_str}")
     elif args.hour:
-        change = datetime.timedelta(hours=args.quantity)
+        change = datetime.timedelta(hours=abs(args.quantity))
+        if args.quantity < 0:
+            change = - change
         change_str = f"{args.quantity} hour"
         print(f"Change is {change_str}")
 
