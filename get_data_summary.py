@@ -35,7 +35,7 @@ def main():
 
         print("u", u.email)
 
-        if 'test' in u.email:
+        if 'test' in u.email or 'replace' in u.email or 'before' in u.email:
             print("ignore")
             print()
             continue
@@ -44,6 +44,7 @@ def main():
 
         te_thr = u.teachingengine_set.exclude(threshold=None).first()
         te_recursive = u.teachingengine_set.exclude(recursive=None).first()
+        te_forward = u.teachingengine_set.exclude(forward=None).first()
 
         if te_thr is not None:
             teacher_md = "threshold"
@@ -51,6 +52,9 @@ def main():
         elif te_recursive is not None:
             teacher_md = "recursive"
             te_active = te_recursive
+        elif te_forward is not None:
+            teacher_md = "forward"
+            te_active = te_forward
         else:
             print("ignore")
             print()
@@ -79,8 +83,14 @@ def main():
         begin_with_active = all_session.first() \
             .teaching_engine.leitner is None
 
+        try:
+            domain = u.email.split("@")[-1]
+        except:
+            domain = None
+
         row_list.append({
             "user": u.email,
+            "domain": domain,
             "teacher_md": teacher_md,
             "is_item_specific": is_item_specific,
             "begin_with_active": begin_with_active,

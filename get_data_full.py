@@ -5,7 +5,6 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 import pandas as pd
-from tqdm import tqdm
 
 from user.models.user import User
 from user.models.question import Question
@@ -18,7 +17,7 @@ def main():
     for u in users:
         print("u", u.email)
 
-        if 'test' in u.email:
+        if 'test' in u.email or 'replace' in u.email or 'before' in u.email:
             print("ignore")
             print()
             continue
@@ -37,6 +36,8 @@ def main():
                 teacher_md = "recursive"
             elif te.sampling is not None:
                 teacher_md = "sampling"
+            elif te.forward is not None:
+                teacher_md = "forward"
             else:
                 raise ValueError
 
@@ -47,8 +48,14 @@ def main():
             else:
                 learner_md = None
 
+            try:
+                domain = u.email.split("@")[-1]
+            except:
+                domain = None
+
             row = {
                 "user": u.email,
+                "domain": domain,
                 "condition": u.condition,
                 "item": q.item.id,
                 "success": q.success,

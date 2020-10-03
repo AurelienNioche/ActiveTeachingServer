@@ -7,18 +7,10 @@ from django.utils import timezone
 
 application = get_wsgi_application()
 
-import numpy as np
 import pandas as pd
 import datetime
-from smtplib import SMTP_SSL
 from pytz import timezone
 
-import ActiveTeachingServer.credentials as credentials
-
-from experimental_condition.models.experiment.condition_threshold \
-    import ThresholdCondition
-from experimental_condition.models.experiment.condition_forward \
-    import ForwardCondition
 from user.authentication import sign_up
 from user.models.user import User
 
