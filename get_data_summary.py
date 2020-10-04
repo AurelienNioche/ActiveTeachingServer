@@ -5,12 +5,10 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 import pandas as pd
-from tqdm import tqdm
 import numpy as np
 from pytz import timezone
 
 from user.models.user import User
-from user.models.question import Question
 
 
 def get_n_eval_n_recall(teaching_engine):
@@ -102,12 +100,6 @@ def main():
             "n_eval_act": n_eval_act,
             "n_recall_act": n_recall_act
         })
-
-        # is_done = np.all(eval_done)
-        # print("is done", is_done)
-        # done.append(is_done)
-        # user_list.append(u.email)
-        # print()
 
     df = pd.DataFrame(row_list)
 
