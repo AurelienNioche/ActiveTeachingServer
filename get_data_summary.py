@@ -32,9 +32,9 @@ def main():
     for u in users:
 
         print("u", u.email)
-
-        if 'test' in u.email or 'replace' in u.email or 'before' in u.email:
-            print("ignore")
+        if 'active' not in u.mail:
+        # if 'test' in u.email or 'replace' in u.email or 'before' in u.email:
+            print(f"ignore '{u.email}'")
             print()
             continue
 
