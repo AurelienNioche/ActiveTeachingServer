@@ -23,7 +23,7 @@ def main():
         all_session = u.session_set
 
         n_session_done = all_session.exclude(open=True).count()
-        if n_session_done == 14:
+        if n_session_done < 14:
 
             idx = users_df.index[users_df['app_email'] == u.email][0]
             user_row = users_df.loc[idx]
