@@ -5,6 +5,7 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 import pandas as pd
+import numpy as np
 
 from user.models.user import User
 from user_xp_kiwi_create import CSV
@@ -19,6 +20,8 @@ def main():
     male = 0
     female = 0
     other = 0
+
+    ages = []
 
     for u in users:
 
@@ -44,7 +47,11 @@ def main():
             elif gender == "O":
                 other += 1
 
+            age = user_row["Age"]
+            ages.append(age)
+
     print("male", male, "female", female, "other", other)
+    print("age", np.mean(age), np.std(age))
 
 
 if __name__ == "__main__":
