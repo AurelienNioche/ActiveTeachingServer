@@ -15,6 +15,11 @@ def main():
     users_df = pd.read_csv(CSV, index_col=0)
 
     users = User.objects.filter(is_superuser=False).order_by("email")
+
+    male = 0
+    female = 0
+    other = 0
+
     for u in users:
 
         if 'active' not in u.email:
@@ -27,7 +32,17 @@ def main():
 
             idx = users_df.index[users_df['app_email'] == u.email][0]
             user_row = users_df.loc[idx]
-            print(user_row["Email"])
+            email = user_row["Email"]
+            gender = user_row["Gender"]
+            if gender == "F":
+                female += 1
+            elif gender == "M":
+                male += 1
+            elif gender == "O":
+                other += 1
+            print(email)
+
+    print("male", male, "female", female, "other", other)
 
 
 if __name__ == "__main__":
