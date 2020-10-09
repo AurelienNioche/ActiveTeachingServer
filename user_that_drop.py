@@ -28,11 +28,14 @@ def main():
         all_session = u.session_set
 
         n_session_done = all_session.exclude(open=True).count()
-        if n_session_done < 14:
 
-            idx = users_df.index[users_df['app_email'] == u.email][0]
-            user_row = users_df.loc[idx]
+        idx = users_df.index[users_df['app_email'] == u.email][0]
+        user_row = users_df.loc[idx]
+
+        if n_session_done < 14:
             email = user_row["Email"]
+            print("drop:", email)
+        else:
             gender = user_row["Gender"]
             if gender == "F":
                 female += 1
@@ -40,7 +43,6 @@ def main():
                 male += 1
             elif gender == "O":
                 other += 1
-            print(email)
 
     print("male", male, "female", female, "other", other)
 
