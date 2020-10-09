@@ -51,7 +51,7 @@ def main():
             ages.append(age)
 
     print("male", male, "female", female, "other", other)
-    print("age", np.mean(age), np.std(age))
+    print("age", np.mean(ages), np.std(ages))
 
 
 if __name__ == "__main__":
