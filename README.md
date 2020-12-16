@@ -337,3 +337,9 @@ If you want to pull, but Git doesn't let you do it
 
     git fetch --all
     git reset --hard origin/master
+
+
+### Permissions for psql
+
+sudo chmod 700 /var/lib/postgresql/10/main
+sudo chown postgres.postgres /var/lib/postgresql/10/main
