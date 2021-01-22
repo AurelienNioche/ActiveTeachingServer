@@ -6,8 +6,6 @@ from user.models.user import User
 
 import numpy as np
 from scipy.special import logsumexp
-import scipy.stats as stats
-
 
 EPS = np.finfo(np.float).eps
 
@@ -100,12 +98,9 @@ class Psychologist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     grid_param = ArrayField(models.FloatField(), default=list)
-    # log_post = ArrayField(models.FloatField(), default=list)
 
     n_item = models.IntegerField()
     n_param = models.IntegerField()
-
-    # bounds = ArrayField(models.FloatField(), default=list)
 
     is_item_specific = models.BooleanField()
 
