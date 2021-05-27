@@ -147,13 +147,6 @@ Run Django server using the Django command
 Run:
 
     python3 db_load_xp_session.py
-<<<<<<< HEAD
-=======
-
-
-#### Kanji table modifications
->>>>>>> master
-
 
 #### Kanji table modifications
 
@@ -258,6 +251,30 @@ Remove the db
     
 * Create Daphne daemon file `/etc/systemd/system/daphne.service`
 
+    * HTTPS config:
+      
+
+        [Unit]
+        Description=ActiveTeaching Daphne Service
+        After=network.target
+        
+        [Service]
+        Type=simple
+        User=www-data
+        WorkingDirectory=/var/www/html/ActiveTeachingServer
+        Environment=DJANGO_SETTINGS_MODULE=ActiveTeachingServer.settings
+        ExecStart=/var/www/html/ActiveTeachingServer/venv/bin/python /var/www/html/ActiveTeachingServer/venv/bin/daphne -e ssl:8001:privateKey=activeteaching.research.comnet.aalto.fi.key:certKey=activeteaching.research.comnet.aalto.fi.crt ActiveTeachingServer.asgi:application
+        Restart=on-failure
+        
+        [Install]
+        WantedBy=multi-user.target
+
+and move the certification files to the right place:
+move the `activeteaching.research.comnet.aalto.fi.crt` and `activeteaching.research.comnet.aalto.fi.key` to `/var/www/html/ActiveTeachingServer`
+
+-
+    * HTTP config:
+    
 
         [Unit]
         Description=ActiveTeaching Daphne Service
@@ -319,10 +336,19 @@ Be careful that the address is of the following form (don't include the port):
 
 
 ### List of config files
-- `/etc/apache2/apache2.conf` (defaults are ok)
-- `/etc/apache2/sites-enabled/000-default.conf`
-- `/etc/systemd/system/daphne.service`
-- `/var/www/html/ActiveTeachingServer/credentials.py`
+
+* HTTP config:
+    - `/etc/apache2/apache2.conf` (defaults are ok)
+    - `/etc/apache2/sites-enabled/000-default.conf`
+    - `/etc/systemd/system/daphne.service`
+    - `/var/www/html/ActiveTeachingServer/credentials.py`
+    
+* HTTPS config:
+    - `/etc/apache2/sites-available/000-default.conf` (http config, the original one)
+    - `/etc/apache2/sites-available/000-default.conf.redirect` (your http->https redirect config, this (can?) replace `000-default.conf` when https is working)
+    - `/etc/apache2/sites-available/activeteaching.research.comnet.aalto.fi.conf` (new https config)
+    - `/etc/systemd/system/daphne.service`
+    - `/var/www/html/ActiveTeachingServer/credentials.py`
 
 
 ### In case of accident/misunderstanding/disagreement with Git (don't do this!)
