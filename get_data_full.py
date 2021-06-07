@@ -23,6 +23,7 @@ def main():
         #     continue
         if 'active' not in u.email:
             print(f"ignore: {u.email}")
+            continue
         else:
             i += 1
             print(f"user {i}: {u.email}")
