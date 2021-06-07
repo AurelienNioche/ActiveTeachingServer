@@ -76,7 +76,7 @@ def main():
                 "ts_reply": q.time_reply,
                 "n_session_done": n_session_done
             }
-            for resp_idx, meaning in enumerate(q.possible_replies):
+            for resp_idx, meaning in enumerate(q.possible_replies.all()):
                 row.update({f"pos_reply_{resp_idx}": meaning.meaning})
             row_list.append(row)
 
