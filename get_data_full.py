@@ -14,13 +14,18 @@ def main():
     row_list = []
 
     users = User.objects.filter(is_superuser=False)
+    i = -1
     for u in users:
-        print("u", u.email)
 
-        if 'test' in u.email or 'replace' in u.email or 'before' in u.email:
-            print("ignore")
-            print()
-            continue
+        # if 'test' in u.email or 'replace' in u.email or 'before' in u.email:
+        #     print("ignore")
+        #     print()
+        #     continue
+        if 'active' not in u.email:
+            print(f"ignore: {u.email}")
+        else:
+            i += 1
+            print(f"user {i}: {u.email}")
 
         n_session_done = u.session_set.exclude(open=True).count()
 
