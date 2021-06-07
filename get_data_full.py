@@ -58,7 +58,7 @@ def main():
                 "domain": domain,
                 "condition": u.condition,
                 "item": q.item.id,
-                "item_character": q.item.meaning.meaning,
+                "item_character": q.item.value,
                 "item_meaning": q.item.meaning.meaning,
                 "success": q.success,
                 "teacher_md": teacher_md,
