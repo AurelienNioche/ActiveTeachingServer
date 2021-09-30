@@ -21,7 +21,7 @@ def main():
         #     print("ignore")
         #     print()
         #     continue
-        if 'active' not in u.email:
+        if 'test' in u.email or 'replace' in u.email or 'before' in u.email:
             print(f"ignore: {u.email}")
             continue
         else:
