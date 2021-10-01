@@ -1,0 +1,54 @@
+user,gender,age,native_lang,other_lang
+0,M,19,finnish,english swedish german 
+1,M,30,urdu,english 
+2,F,26,finnish,english swedish german
+3,M,20,finnish,english french swedish 
+4,F,20,finnish,english swedish 
+5,F,29,finnish,english 
+6,F,23,swedish,finnish english 
+7,F,19,swedish,finnish english french 
+8,F,25,finnish,english swedish german russian french estonian
+9,F,27,finnish,english italian swedish spanish french
+10,F,20,finnish,english 
+11,F,26,finnish,english swedish
+12,F,27,finnish,english swedish french spanish
+13,F,30,finnish,english russian swedish 
+14,F,28,finnish,english swedish spanish german 
+15,M,34,finnish,swedish english german spanish russian 
+16,F,29,finnish,english swedish french spanish estonian 
+17,F,19,swedish,finnish english french korean
+18,M,27,finnish,english swedish german russian spanish dutch
+19,F,27,finnish,english swedish russian 
+20,F,26,finnish,english swedish 
+21,M,23,finnish,english swedish
+22,M,30,english,finnish 
+23,F,25,finnish,swedish english spanish 
+24,F,21,finnish,english swedish spanish 
+25,F,26,finnish,english swedish
+26,M,20,polish,english spanish finnish 
+27,M,25,finnish,english french 
+28,F,21,russian,finnish english french 
+29,F,28,finnish,english swedish
+30,F,19,finnish,english swedish french spanish 
+31,O,40,finnish,swedish english german russian lithuanian portuguese
+32,F,22,finnish,swedish english french
+33,M,26,spanish,english german french
+34,F,20,finnish,swedish english german
+35,F,21,finnish,english german swedish russian italian
+36,F,22,finnish,english swedish
+37,F,22,finnish,english swedish spanish
+38,F,20,finnish,english italian swedish
+39,F,29,finnish,english swedish italian french
+40,F,20,finnish,english swedish german french
+41,F,44,finnish,english swedish french italian german spanish latin portuguese russian dutch danish basque
+42,F,31,finnish,english swedish spanish
+43,F,23,finnish,english swedish korean
+44,F,19,finnish,english swedish german
+45,M,20,finnish,english
+46,M,20,swedish,finnish english spanish
+47,F,39,finnish,english swedish german korean
+48,F,26,finnish,english swedish spanish
+49,F,34,french,finnish english spanish russian swedish german hebrew
+50,F,56,spanish,english
+51,F,50,spanish,english
+52,F,25,spanish dutch,english

@@ -9,6 +9,8 @@ import pandas as pd
 from user.models.user import User
 from user.models.question import Question
 
+os.makedirs("data", exist_ok=True)
+
 
 def main():
     row_list = []
@@ -81,7 +83,7 @@ def main():
             row_list.append(row)
 
     df = pd.DataFrame(row_list)
-    df.to_csv(os.path.join("data_full.csv"))
+    df.to_csv("data/data_full.csv")
 
 
 if __name__ == "__main__":
