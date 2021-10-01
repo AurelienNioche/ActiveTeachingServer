@@ -13,8 +13,6 @@ def create_demographic_data(df, user_mail):
 
     df_demo = pd.read_csv(path)
 
-    # In[130]:
-
     user = df.user.unique()
     gender = np.zeros(len(user), dtype=object)
     age = np.zeros(len(user), dtype=int)
@@ -158,6 +156,5 @@ def main():
     create_demographic_data(df=df, user_mail=user_mail)
     create_data_incl_preliminary_exp()
 
-
-
-
+if __name__ == "__main__":
+    main()
